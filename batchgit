@@ -71,17 +71,17 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                 modified=$(git status | grep 'modified:' | sed 's/modified://g' | sed 's/^[ \t]*//g')
                 pwd
                 if [[ ! -z $untracked ]]; then
-                        echo -e "Untracked: \t\e[1;31m$untracked\e[0m"
+                        echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
                 fi
                 if [[ ! -z $modified ]]; then
-                        echo -e "Modified: \t\e[1;31m$modified\e[0m"
+                        echo -e "Modified: \n\e[1;31m$modified\e[0m"
                 fi
         done
 printf "\n"
 exit
 fi
 
-if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]]; then
+if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]]; then
 	let i=1
 	for dir in "${paths[@]}"; do
 		let i+=1
@@ -92,6 +92,25 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]]; then
         printf "\n"
 	done
 printf "\n"
+        if [[ $1 == "-n" ]]; then
+                echo -e "\nAll done for the day!\n"
+                        printf """
+                        +      o     +              o   
+                            +             o     +       +
+                        o          +
+                            o  +           +        +
+                        +        o     o       +        o
+                        -_-_-_-_-_-_-_,------,      o 
+                        _-_-_-_-_-_-_-|   /\_/\  
+                        -_-_-_-_-_-_-~|__( ^ .^)  +     +  
+                        _-_-_-_-_-_-_-''  ''      
+                        +      o         o   +       o
+                            +         +
+                        o        o         o      o     +
+                            o           +
+                        +      +     o        o      +    
+                        \n"""
+        fi
 exit
 fi
 
