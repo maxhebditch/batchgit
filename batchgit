@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]]; then
+if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
         numfind=${#findgit[@]}
         echo -e "There are $numfind git repositories \n"
