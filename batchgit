@@ -28,6 +28,8 @@ fi
 if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         if [[ ! -z $2 ]]; then 
                 echo $2 >> ~/.batchgitrc
+        else
+                echo "you need to add the directory after the flag!"
         fi
         echo -e "Added $2 to the ~/.batchgitrc file"
         choice=y
