@@ -1,0 +1,113 @@
+#!/bin/bash
+
+if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]]; then
+        findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
+        numfind=${#findgit[@]}
+        echo -e "There are $numfind git repositories \n"
+
+        if [[ ! -f ~/.batchgitrc ]]; then
+                touch ~/.batchgitrc
+                echo -e "making ~/.batchgitrc file \n"
+        else
+                mv ~/.batchgitrc ~/.batchgitrc.bak
+                touch ~/.batchgitrc
+                echo -e "making a new ~/.batchgitrc file and backing up old to ~/.batchgitrc.bak \n"
+        fi
+
+        for gdir in "${findgit[@]}"; do
+                        echo -e "$gdir"
+                        read -p "Would you like to watch this repository? (y/n): " -n 1 -r
+                        if [[ $REPLY =~ ^[Yy]$ ]]; then
+                                echo $gdir >> ~/.batchgitrc
+                        fi
+                        echo -e "\n"
+        done
+        choice=y
+fi
+
+if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
+        if [[ ! -z $2 ]]; then 
+                echo $2 >> ~/.batchgitrc
+        fi
+        echo -e "Added $2 to the ~/.batchgitrc file"
+        choice=y
+fi
+
+if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
+while true; do
+        echo -e """
+1) \t git status
+2) \t git pull
+3) \t git push
+4) \t quit
+        """
+        read -p "What happens now? " whatnow
+        case $whatnow in
+                [1]* ) now=gstatus;break;;
+                [2]* ) now=gpull;break;;
+                [3]* ) now=gpush;break;;
+                [4]* ) now=quit;break;;
+                [quit]* ) now=quit;break;;
+                [exit]* ) now=quit;break;;
+        esac
+done
+fi
+
+if [[ $now == "quit" ]]; then
+        printf "\n"
+        exit
+fi
+
+paths=( $(cat ~/.batchgitrc) )     
+
+printf "\n"
+
+if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
+        let i=1
+        for dir in "${paths[@]}"; do
+                let i+=1
+                cd $dir
+                untracked=$(git status | grep -A 3 'Untracked' | tail -n 1 | sed 's/^[ \t]*//g')
+                modified=$(git status | grep 'modified:' | sed 's/modified://g' | sed 's/^[ \t]*//g')
+                pwd
+                if [[ ! -z $untracked ]]; then
+                        echo -e "Untracked: \t\e[1;31m$untracked\e[0m"
+                fi
+                if [[ ! -z $modified ]]; then
+                        echo -e "Modified: \t\e[1;31m$modified\e[0m"
+                fi
+        done
+printf "\n"
+exit
+fi
+
+if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]]; then
+	let i=1
+	for dir in "${paths[@]}"; do
+		let i+=1
+		cd $dir
+		pwd
+		git pull
+		git push
+        printf "\n"
+	done
+printf "\n"
+exit
+fi
+
+if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
+	let i=1
+	for dir in "${paths[@]}"; do
+		let i+=1
+		cd $dir
+		pwd
+		git pull
+        printf "\n"
+	done
+printf "\n"
+exit
+fi
+
+echo "sorry, that command didn't work! Try again"
+printf "\n"
+exit
