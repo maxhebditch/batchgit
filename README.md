@@ -53,6 +53,11 @@ Script will loop through git repositories and pull from remote source.
 
 Script will loop through git repositories, pull first to avoid conflicts and then push to remote source.
 
+##Issues
+
+###Why are some of my repos not being found?
+By default, it only looks for git repos from the home folder recursively. This means that if your repo lives in `\var` or something then it won't be found. If this is an issue I can add this to the todo list. Just raise an issue!
+
 ##TODO
 1. Bootstrap new computer using `~/.batchgitrc` to git clone.
 2. Tidy up output.
