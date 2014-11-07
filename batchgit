@@ -1,5 +1,24 @@
 #!/bin/bash
 
+#add new repo to config file
+if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
+        if [[ ! -z $2 ]]; then 
+                if [[ ! -f ~/.batchgitrc ]]; then
+                        touch ~/.batchgitrc
+                        echo -e "making ~/.batchgitrc file \n"
+                fi
+                if [[ $2 == "./" ]]; then
+                        echo $(pwd) >> ~/.batchgitrc
+                else
+                        echo $2 >> ~/.batchgitrc
+                        echo -e "Added $2 to the ~/.batchgitrc file"
+                fi
+        else
+                echo "you need to add the directory after the flag!"
+        fi
+        choice=y
+fi
+
 #tests for config file, or runs if forced to redo config
 if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
@@ -26,24 +45,6 @@ if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         choice=y
 fi
 
-#add new repo to config file
-if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
-        if [[ ! -z $2 ]]; then 
-                if [[ ! -f ~/.batchgitrc ]]; then
-                        touch ~/.batchgitrc
-                        echo -e "making ~/.batchgitrc file \n"
-                fi
-                if [[ $2 == "./" ]]; then
-                        echo $(pwd) >> ~/.batchgitrc
-                else
-                        echo $2 >> ~/.batchgitrc
-                        echo -e "Added $2 to the ~/.batchgitrc file"
-                fi
-        else
-                echo "you need to add the directory after the flag!"
-        fi
-        choice=y
-fi
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
