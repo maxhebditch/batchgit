@@ -29,8 +29,12 @@ fi
 #add new repo to config file
 if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         if [[ ! -z $2 ]]; then 
-                echo $2 >> ~/.batchgitrc
-                echo -e "Added $2 to the ~/.batchgitrc file"
+                if [[ $2 == "./" ]]; then
+                        echo $(pwd) >> ~/.batchgitrc
+                else
+                        echo $2 >> ~/.batchgitrc
+                        echo -e "Added $2 to the ~/.batchgitrc file"
+                fi
         else
                 echo "you need to add the directory after the flag!"
         fi

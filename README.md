@@ -29,8 +29,9 @@ Either of these will search for git repos across the whole disk, just like the i
 
         $ batchgit -a ~/path/to/repo
         $ batchgit -add ~/path/to/repo
+        $ batchgit -a ./
 
-The use of the `-a` flag will append the directory to the configuration file. To remove a repo, you need to manually remove the line from `~/.bashgitrc` for now, adding a flag for this is on the todo list though.
+The use of the `-a` flag will append the directory to the configuration file. To remove a repo, you need to manually remove the line from `~/.bashgitrc` for now, adding a flag for this is on the todo list though. The last one will add the current directory to the configuration file.
 
 ###git status
 
