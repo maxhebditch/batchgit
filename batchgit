@@ -13,6 +13,7 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
                         echo $2 >> ~/.batchgitrc
                         echo -e "Added $2 to the ~/.batchgitrc file"
                 fi
+                sort -u -o ~/.batchgitrc ~/.batchgitrc
         else
                 echo "you need to add the directory after the flag!"
         fi
