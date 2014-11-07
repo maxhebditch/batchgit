@@ -146,8 +146,8 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
         if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
                 git push
         else
-        git pull
-		git push
+                git pull
+                git push
         fi
         printf "\n"
 	done
