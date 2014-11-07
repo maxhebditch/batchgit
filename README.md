@@ -84,7 +84,7 @@ By default, it only looks for git repos from the home folder recursively. This m
 5. Strip out # you sometimes see in git
 6. Only show pwd if repo has something to push, similar to how status works
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
-8. Add a `-d` flag for removing directory
+8. ~~Add a `-d` flag for removing directory~~
 9. Add folders recursively from current location to configuration file.
 10. ~~Handle directories that have been deleted since config file wrote~~
 11. Add option for rebasing
