@@ -20,6 +20,20 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         choice=y
 fi
 
+if [[ $1 == "-del" ]] || [[ $1 == "-d" ]]; then
+        if [[ ! -z $2 ]]; then 
+                if [[ $2 == "./" ]]; then
+                        sed -e "s|$(pwd)||g" -i  ~/.batchgitrc
+                else
+                        sed -e "s|$2||g" -i  ~/.batchgitrc
+                fi
+                sort -u -o ~/.batchgitrc ~/.batchgitrc
+        else
+                echo "you need to add the directory after the flag!"
+        fi
+        choice=y
+fi
+
 #tests for config file, or runs if forced to redo config
 if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
@@ -82,7 +96,6 @@ let i=1
 for dir in "${paths[@]}"; do
         let i+=1
         if [[ ! -d $dir ]]; then
-                clean=$(echo $dir | sed 's/\///g')
                 echo -e "The $dir directory doesn't exist anymore and has been removed from the config file"
                 sed -e "s|$dir||g" -i  ~/.batchgitrc
         fi
