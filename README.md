@@ -31,7 +31,7 @@ Either of these will search for git repos across the whole disk, just like the i
         $ batchgit -add ~/path/to/repo
         $ batchgit -a ./
 
-The use of the `-a` flag will append the directory to the configuration file. To remove a repo, you need to manually remove the line from `~/.bashgitrc` for now, adding a flag for this is on the todo list though. The last one will add the current directory to the configuration file.
+The use of the `-a` flag will append the directory to the configuration file. To remove a repo, you need to manually remove the line from `~/.bashgitrc` for now, adding a flag for this is on the todo list though. Using `./` for either of the add flags will add the current directory to the configuration file. If you use some shell magic, you can probably add directories recursively from your current location. Maybe I'll add that as a todo.
 
 ###git status
 
@@ -68,3 +68,4 @@ By default, it only looks for git repos from the home folder recursively. This m
 6. Only show pwd if repo has something to push, similar to how status wors
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
 8. Add a `-d` flag for removing directory
+9. Add folders recursively from current location to configuration file.
