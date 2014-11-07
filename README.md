@@ -39,9 +39,9 @@ It will also check to see if the folders in the configuration file still exist, 
 
 ###Removing single directores manually
 
-        $ batchgit -d ~/path/to/repo
-        $ batchgit -del ~/path/to/repo
-        $ batchgit -d ./
+        $ batchgit -r ~/path/to/repo
+        $ batchgit -rm ~/path/to/repo
+        $ batchgit -r ./
 
 This flag works exactly the opposite to the previous one. Instead of adding single directories it will remove them. 
 

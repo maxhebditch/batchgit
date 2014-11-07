@@ -24,7 +24,8 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         choice=y
 fi
 
-if [[ $1 == "-del" ]] || [[ $1 == "-d" ]]; then
+#removes single repo manually
+if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]]; then
         if [[ ! -z $2 ]]; then 
                 if [[ $2 == "./" ]]; then
                         sed -e "s|$(pwd)||g" -i  ~/.batchgitrc
@@ -138,7 +139,8 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]] || [[ $1 == 
 	for dir in "${paths[@]}"; do
 		let i+=1
 		cd $dir
-		pwd
+        REPO=${PWD##*/}
+        echo ${bold}"Repository: $REPO ${normal}"
         if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]]; then
                 git push
         else
@@ -176,7 +178,8 @@ if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
 	for dir in "${paths[@]}"; do
 		let i+=1
 		cd $dir
-		pwd
+        REPO=${PWD##*/}
+        echo ${bold}"Repository: $REPO ${normal}"
 		git pull
         printf "\n"
 	done
