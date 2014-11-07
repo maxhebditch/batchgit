@@ -78,7 +78,7 @@ By default, it only looks for git repos from the home folder recursively. This m
 
 ##TODO
 1. Bootstrap new computer using `~/.batchgitrc` to git clone.
-2. Tidy up output.
+2. ~~Tidy up output.~~ [ga7go8]
 3. Add generic commit message.
 4. Open new shells in places where changes have happened.
 5. Strip out # you sometimes see in git
