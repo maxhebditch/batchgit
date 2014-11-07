@@ -77,6 +77,19 @@ fi
 #Array where paths are held
 paths=( $(cat ~/.batchgitrc) )     
 
+#Check to ensure all local directories still exist
+let i=1
+for dir in "${paths[@]}"; do
+        let i+=1
+        if [[ ! -d $dir ]]; then
+                clean=$(echo $dir | sed 's/\///g')
+                echo -e "The $dir directory doesn't exist anymore and has been removed from the config file"
+                sed -e "s|$dir||g" -i  ~/.batchgitrc
+        fi
+done
+sed -e '/^$/d' -i ~/.batchgitrc 
+paths=( $(cat ~/.batchgitrc) )     
+
 #spacing for neatness
 printf "\n"
 
