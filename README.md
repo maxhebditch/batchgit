@@ -32,7 +32,10 @@ Either of these will search for git repos across the whole disk, just like the i
         $ batchgit -a ./
 
 The use of the `-a` flag will append the directory to the configuration file. This option will make the configuration file if it doesn't already exist, allowing you to manually `cd` around and add dirs rather than go through the setup. 
+
 To remove a repo, you need to manually remove the line from `~/.bashgitrc` for now, adding a flag for this is on the todo list though. Using `./` for either of the add flags will add the current directory to the configuration file. If you use some shell magic, you can probably add directories recursively from your current location. Maybe I'll add that as a todo.
+
+It will also check to see if the folders in the configuration file still exist, if not it will remove them to avoid issues. 
 
 ###git status
 
