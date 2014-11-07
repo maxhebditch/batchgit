@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#tests for config file, or runs if forced to redo config
 if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
         numfind=${#findgit[@]}
@@ -25,6 +26,7 @@ if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         choice=y
 fi
 
+#add new repo to config file
 if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         if [[ ! -z $2 ]]; then 
                 echo $2 >> ~/.batchgitrc
@@ -35,6 +37,7 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         choice=y
 fi
 
+#multiple choice for no option or post config
 if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
 while true; do
         echo -e """
@@ -55,15 +58,19 @@ while true; do
 done
 fi
 
+#quits script if option selected
 if [[ $now == "quit" ]]; then
         printf "\n"
         exit
 fi
 
+#Array where paths are held
 paths=( $(cat ~/.batchgitrc) )     
 
+#spacing for neatness
 printf "\n"
 
+#git status
 if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
         let i=1
         for dir in "${paths[@]}"; do
@@ -83,6 +90,7 @@ printf "\n"
 exit
 fi
 
+#git push
 if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]]; then
 	let i=1
 	for dir in "${paths[@]}"; do
@@ -116,6 +124,7 @@ o        o         o      o     +
 exit
 fi
 
+#git pull
 if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
 	let i=1
 	for dir in "${paths[@]}"; do
@@ -129,6 +138,7 @@ printf "\n"
 exit
 fi
 
+#error message
 echo "sorry, that command didn't work! Try again"
 printf "\n"
 exit
