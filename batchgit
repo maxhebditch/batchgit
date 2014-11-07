@@ -120,14 +120,18 @@ exit
 fi
 
 #git push
-if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]]; then
+if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]] || [[ $1 == "-po" ]] || [[ $1 == "-pushonly" ]]; then
 	let i=1
 	for dir in "${paths[@]}"; do
 		let i+=1
 		cd $dir
 		pwd
-		git pull
+        if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]]; then
+                git push
+        else
+        git pull
 		git push
+        fi
         printf "\n"
 	done
 printf "\n"

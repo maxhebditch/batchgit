@@ -58,6 +58,11 @@ Script will loop through git repositories and pull from remote source.
 
 Script will loop through git repositories, pull first to avoid conflicts and then push to remote source.
 
+        $ batchgit -pushonly
+        $ batchgit -po
+        
+Script will only push rather than pull then push
+
 ##Issues
 
 ###Why are some of my repos not being found?
