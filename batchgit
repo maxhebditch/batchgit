@@ -33,7 +33,7 @@ if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
                 here=n
         fi
         for dir in "${findrecurgit[@]}"; do
-                if [[ $here == "y" ]]; then
+                if [[ $here == "y" ]] || [[ $2 == "./" ]]; then
                         repdir=$(echo $dir | cut -c 2-)
                         PWD=$(pwd)
                         pwdrepdir=$PWD$repdir

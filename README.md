@@ -41,10 +41,10 @@ It will also check to see if the folders in the configuration file still exist, 
 
         $ batchgit -ar
         $ batchgit -addrecursive
+        $ batchgit -ar ./
         $ batchgit -ar /path/to/master/directory
 
-
-If all your repos live under one master directory, you might just want to only add subdirectories. If you `cd` into the correct master directory and then run the command, the script will ask you what subdirectories you want to add. Alternatively, the last command lets you set the master directory from anywhere.
+If all your repos live under one master directory, you might just want to only add subdirectories. If you `cd` into the correct master directory and then run the command alone or with `./` the script will ask you what subdirectories from the current folder you want to add. Alternatively, the last command lets you set the master directory from anywhere.
 
 ###Removing single directores manually
 
