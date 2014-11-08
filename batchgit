@@ -78,7 +78,11 @@ fi
 
 #tests for config file, or runs if forced to redo config
 if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
-        findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
+        if [[ ! -z $2 ]]; then
+                findgit=( $(find $2 -type d -name .git | xargs -n 1 dirname) )
+        else
+                findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
+        fi
         numfind=${#findgit[@]}
         echo -e "There are $numfind git repositories \n"
 

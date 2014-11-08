@@ -22,8 +22,9 @@ This will offer a multiple choice for different options which can be selected us
 
         $ batchgit -f
         $ batchgit -find
+        $ batchgit -f /var
 
-Either of these will search for git repos across the whole disk, just like the inital run.
+These will search for git repos across the whole disk. It will rewrite the configuration file, but it will save a backup to `~/.batchgitrc.bak`. By default it searches `~`, otherwise you can specify the location.
 
 ###Adding single directores manually
 
@@ -83,10 +84,9 @@ Script will loop through git repositories, pull first to avoid conflicts and the
 
 Script will only push rather than pull then push
 
-##Issues
-
+##FAQs
 ###Why are some of my repos not being found?
-When initially run, or using the `-f` flag, it will only search from your home folder. To find repos in other locations you need to use a location after the `-f` or use the add recursively function. 
+When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-f` or use the add recursively function. 
 
 ##TODO
 1. Bootstrap new computer using `~/.batchgitrc` to git clone.
