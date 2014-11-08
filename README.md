@@ -37,6 +37,13 @@ Using `./` for either of the add flags will add the current directory to the con
 
 It will also check to see if the folders in the configuration file still exist, if not it will remove them to avoid issues. 
 
+###Adding directories recursively
+
+        $ batchgit -ar
+        $ batchgit -addrecursive
+
+If all your repos live under one master directory, you might just want to only add subdirectories. If you `cd` into the correct master directory and then run the command, the script will ask you what subdirectories you want to add.
+
 ###Removing single directores manually
 
         $ batchgit -r ~/path/to/repo

@@ -24,6 +24,23 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         choice=y
 fi
 
+if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
+        findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
+        for dir in "${findrecurgit[@]}"; do
+                        repdir=$(echo $dir | cut -c 2-)
+                        PWD=$(pwd)
+                        pwdrepdir=$PWD$repdir
+                        echo -e "$pwdrepdir"
+                        read -p "Would you like to watch this repository? (y/n): " -n 1 -r
+                        if [[ $REPLY =~ ^[Yy]$ ]]; then
+                                echo -e "\n$pwdrepdir" >> ~/.batchgitrc
+                        fi
+                        echo -e "\n"
+        done
+        sort -u -o ~/.batchgitrc ~/.batchgitrc
+        choice=y
+fi
+
 #removes single repo manually
 if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]]; then
         if [[ ! -z $2 ]]; then 
