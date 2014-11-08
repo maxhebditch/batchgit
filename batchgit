@@ -25,11 +25,21 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
 fi
 
 if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
-        findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
+        if [[ -z $2 ]]; then 
+                findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
+                here=y
+        else
+                findrecurgit=( $(find $2 -type d -name .git | xargs -n 1 dirname) )
+                here=n
+        fi
         for dir in "${findrecurgit[@]}"; do
+                if [[ $here == "y" ]]; then
                         repdir=$(echo $dir | cut -c 2-)
                         PWD=$(pwd)
                         pwdrepdir=$PWD$repdir
+                else
+                        pwdrepdir=$dir
+                fi
                         echo -e "$pwdrepdir"
                         read -p "Would you like to watch this repository? (y/n): " -n 1 -r
                         if [[ $REPLY =~ ^[Yy]$ ]]; then
