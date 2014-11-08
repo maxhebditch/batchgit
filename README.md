@@ -50,9 +50,11 @@ If all your repos live under one master directory, you might just want to only a
 
         $ batchgit -r ~/path/to/repo
         $ batchgit -rm ~/path/to/repo
+        $ batchgit -remove ~/path/to/repo
         $ batchgit -r ./
+        $ batchgit -r repo
 
-This flag works exactly the opposite to the previous one. Instead of adding single directories it will remove them. 
+This flag works exactly the opposite to the previous one. Instead of adding single directories it will remove them. Either the whole path can be specified, the current folder, or using the last flag, a sub directory of the current folder (useful as can use autocomplete).
 
 ###git status
 

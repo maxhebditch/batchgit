@@ -52,10 +52,15 @@ if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
 fi
 
 #removes single repo manually
-if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]]; then
+if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
         if [[ ! -z $2 ]]; then 
                 if [[ $2 == "./" ]]; then
                         sed -e "s|$(pwd)||g" -i  ~/.batchgitrc
+                elif [[ $2 != "*/*" ]]; then
+                        PWD=$(pwd)
+                        pwdrepdir=$PWD"/"$2
+                        echo "removing $pwdrepdir"
+                        sed -e "s|$pwdrepdir||g" -i  ~/.batchgitrc
                 else
                         sed -e "s|$2||g" -i  ~/.batchgitrc
                 fi
