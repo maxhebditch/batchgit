@@ -1,7 +1,7 @@
 batchgit
 ========
 
-A shell script for maintaining git repositories system wide
+A shell script for maintaining git repositories system wide. The script maintains a list of git repositories on your disk, allowing you to run git status, git pull or git push in each folder at once. On initial run the script searches for all `.git` folders and asks which you want to add to the list. New repos can be added manually as they are created, repos can be deleted manually from the list manually or will be automatically deleted if they no longer exist.
 
 ##Configuration
 When the script is first run it looks for a dot file called `~/.batchgitrc`. If this doesn't exist, as it won't the first time you run this script, it will search for all of the git repos on the disk and ask if you want to add them to the file or not. Repos added will be monitored, others will not be. This is useful if you used git clone to get a program or script but don't want to monitor it every time.
@@ -68,7 +68,7 @@ Script will loop through git repositories, pull first to avoid conflicts and the
 
         $ batchgit -pushonly
         $ batchgit -po
-        
+
 Script will only push rather than pull then push
 
 ##Issues
