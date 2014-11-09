@@ -84,7 +84,7 @@ Script will loop through git repositories, pull first to avoid conflicts and the
 
 Script will only push rather than pull then push
 
-###git push
+###git commits
 
         $ batchgit -c
         $ batchgit -commit
