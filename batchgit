@@ -238,7 +238,9 @@ if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
 		cd $dir
         REPO=${PWD##*/}
         echo ${bold}"Repository: $REPO ${normal}"
-		git pull
+        if [[ $gitpull != *"up-to-date"* ]];
+                echo $gitpull
+        fi
         printf "\n"
 	done
 printf "\n"
