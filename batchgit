@@ -5,7 +5,6 @@ bold=`tput bold`
 normal=`tput sgr0`
 
 # git commands
-gitpush=$(git push)
 gitpull=$(git pull)
 
 #add new repo to config file
@@ -187,26 +186,27 @@ fi
 
 #git push
 if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]] || [[ $1 == "-po" ]] || [[ $1 == "-pushonly" ]]; then
-	let i=1
-	for dir in "${paths[@]}"; do
-		let i+=1
-		cd $dir
+        gitpush=$(git push)
+        let i=1
+        for dir in "${paths[@]}"; do
+        let i+=1
+        cd $dir
         REPO=${PWD##*/}
         echo ${bold}"Repository: $REPO ${normal}"
         if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
-                if [[ $gitpush != *"up-to-date"* ]];
+                if [[ $gitpush != *"up-to-date"* ]]; then
                         echo $gitpush
                 fi
         else
-                if [[ $gitpull != *"up-to-date"* ]];
-                        echo $gitpull
+                if [[ $gitpull != "Already up-to-date." ]]; then
+                        echo -e $gitpull
                 fi
-                if [[ $gitpush != *"up-to-date"* ]];
-                        echo $gitpush
+                if [[ $gitpush != *"up-to-date"* ]]; then
+                        echo -e $gitpush
                 fi
         fi
         printf "\n"
-	done
+        done
 printf "\n"
         if [[ $1 == "-n" ]]; then
                 echo -e "\nAll done for the day!\n"
@@ -232,17 +232,17 @@ fi
 
 #git pull
 if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
-	let i=1
-	for dir in "${paths[@]}"; do
-		let i+=1
-		cd $dir
-        REPO=${PWD##*/}
-        echo ${bold}"Repository: $REPO ${normal}"
-        if [[ $gitpull != *"up-to-date"* ]];
-                echo $gitpull
-        fi
-        printf "\n"
-	done
+        let i=1
+        for dir in "${paths[@]}"; do
+                let i+=1
+                cd $dir
+                REPO=${PWD##*/}
+                echo ${bold}"Repository: $REPO ${normal}"
+                if [[ $gitpull != "Already up-to-date." ]]; then
+                        echo $gitpull
+                fi
+                printf "\n"
+        done
 printf "\n"
 exit
 fi
