@@ -206,8 +206,12 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
                 fi
         fi
         printf "\n"
+<<<<<<< HEAD
         done
 printf "\n"
+=======
+	done
+>>>>>>> master
         if [[ $1 == "-n" ]]; then
                 echo -e "\nAll done for the day!\n"
                         printf """
