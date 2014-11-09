@@ -231,7 +231,7 @@ printf "\n"
 exit
 fi
 
-#For people too lazy to do proper commits
+#For people too lazy to do proper commits, cp flag will push as well
 if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
         let i=1
         for dir in "${paths[@]}"; do

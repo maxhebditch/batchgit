@@ -84,14 +84,21 @@ Script will loop through git repositories, pull first to avoid conflicts and the
 
 Script will only push rather than pull then push
 
+###git push
+
+        $ batchgit -c
+        $ batchgit -commit
+        $ batchgit -cp
+
+I don't massively recommend it, but if you are in a hurry you can use this flag to commit with a generic message from [what the commit](http://whatthecommit.com/) because it is more fun than a static message. The `-cp` flag will push as well after writing a commit message.
+
 ##FAQs
 ###Why are some of my repos not being found?
 When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-f` or use the add recursively function. 
 
 ##TODO
-1. Bootstrap new computer using `~/.batchgitrc` to git clone.
 2. ~~Tidy up output.~~ [ga7go8]
-3. Add generic commit message.
+3. ~~Add generic commit message.~~
 4. Open new shells in places where changes have happened.
 5. Strip out # you sometimes see in git
 6. Only show pwd if repo has something to push, similar to how status works
