@@ -4,6 +4,10 @@
 bold=`tput bold`
 normal=`tput sgr0`
 
+# git commands
+gitpush=$(git push)
+gitpull=$(git pull)
+
 #add new repo to config file
 if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         if [[ ! -z $2 ]]; then 
@@ -190,10 +194,16 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
         REPO=${PWD##*/}
         echo ${bold}"Repository: $REPO ${normal}"
         if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
-                git push
+                if [[ $gitpush != *"up-to-date"* ]];
+                        echo $gitpush
+                fi
         else
-                git pull
-                git push
+                if [[ $gitpull != *"up-to-date"* ]];
+                        echo $gitpull
+                fi
+                if [[ $gitpush != *"up-to-date"* ]];
+                        echo $gitpush
+                fi
         fi
         printf "\n"
 	done
