@@ -100,8 +100,7 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 2. ~~Tidy up output.~~ [ga7go8]
 3. ~~Add generic commit message.~~
 4. Open new shells in places where changes have happened.
-5. Strip out # you sometimes see in git
-6. Only show pwd if repo has something to push, similar to how status works
+5. ~~Strip out # you sometimes see in git~~
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
 8. ~~Add a `-d` flag for removing directory~~
 9. ~~Add folders recursively from current location to configuration file.~~
