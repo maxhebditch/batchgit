@@ -63,7 +63,7 @@ This flag works exactly the opposite to the previous one. Instead of adding sing
         $ batchgit -status
         $ batchgit -s
 
-The script will pull the list of git repos it's tracking from the configuration file and will list any modified or untracked files in red.
+The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red.
 
 ###git pull
 
