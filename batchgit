@@ -232,7 +232,7 @@ exit
 fi
 
 #For people too lazy to do proper commits
-if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]]; then
+if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
         let i=1
         for dir in "${paths[@]}"; do
                 let i+=1
@@ -249,6 +249,9 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]]; then
                         git add -A
                         git commit -m "$commitMessage"
                         printf "\n"
+                        if [[ $1 == "-cp" ]]; then
+                                git push
+                        fi
                 fi
         done
         exit
