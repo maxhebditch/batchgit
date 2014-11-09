@@ -235,6 +235,7 @@ fi
 if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]]; then
         let i=1
         for dir in "${paths[@]}"; do
+                let i+=1
                 cd $dir
                 numMod=$(git status | grep -c "modified")
                 mod=$(git status | grep "modified")
@@ -244,7 +245,7 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]]; then
                         echo -e "$commitMessage \n"
                 fi
         done
-        choice=y
+        exit
 fi
 
 #error message
