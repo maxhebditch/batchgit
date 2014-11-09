@@ -239,7 +239,7 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]]; then
                 cd $dir
                 numMod=$(git status | grep -c "modified")
                 numNew=$(git status | grep -c "new file")
-                numTotal=$numNew+$numMod
+                numTotal=$(($numNew + $numMod))
                 echo $numTotal
                 # if [[ $numMod != "0" ]]; then
                 #         commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
