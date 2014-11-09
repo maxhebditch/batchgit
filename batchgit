@@ -165,11 +165,15 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                 echo ${bold}"Repository: $REPO ${normal}"
                 untracked=$(git status | grep -A 3 'Untracked' | tail -n 1 | sed 's/^[ \t]*//g')
                 modified=$(git status | grep 'modified:' | sed 's/modified://g' | sed 's/^[ \t]*//g')
+                commit=$(git status | grep "commit" | sed -e 's/.*by //g' -e 's/\.//g' | head -n 1)
                 if [[ ! -z $untracked ]]; then
                         echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
                 fi
                 if [[ ! -z $modified ]]; then
                         echo -e "Modified: \n\e[1;31m$modified\e[0m"
+                fi
+                if [[ ! -z $needcommit ]]; then
+                        echo -e "Commit: \n\e[1;31m$commit\e[0m"
                 fi
                 echo
         done
