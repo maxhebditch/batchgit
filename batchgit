@@ -242,13 +242,12 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]]; then
                 numTotal=$(($numNew + $numMod))
                 REPO=${PWD##*/}
                 echo ${bold}"Repository: $REPO ${normal}"
-                echo -e "Number modified: $numTotal"
+                echo -e "Number modified: $numTotal\n"
                 if [[ $numTotal != "0" ]]; then
                         commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
                         git add .
                         git add -A
                         git commit -m "$commitMessage"
-                        echo -e "Commit message: \n$commitMessage\n"
                 fi
         done
         exit
