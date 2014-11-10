@@ -106,3 +106,4 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 9. ~~Add folders recursively from current location to configuration file.~~
 10. ~~Handle directories that have been deleted since config file wrote~~
 11. `git clone` using `~/.batchgitrc` file  
+12. Say whether one commit ahead or behind rather than just different
