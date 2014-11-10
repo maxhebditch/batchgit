@@ -82,7 +82,7 @@ Script will loop through git repositories, pull first to avoid conflicts and the
         $ batchgit -pushonly
         $ batchgit -po
 
-Script will only push rather than pull then push
+Script will only push rather than pull then push.
 
 ###git commits
 
