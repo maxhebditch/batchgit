@@ -169,6 +169,7 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                 commitStatus=$(git status | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g' | head -n 1)
                 commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
                 commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
+                commitDiverge=$(git status | grep "diverge")
                 if [[ ! -z $untracked ]]; then
                         echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
                 fi
@@ -182,6 +183,8 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                         if [[ ! -z $commitBehind ]]; then
                                 echo -e "Commit: \n\e[1;31m$commitBehind behind\e[0m"
                         fi
+                elif [[ ! -z $commitDiverge ]]; then
+                        echo "Divergence has occured"
                 elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
                         echo "Check the commits"
                 fi
