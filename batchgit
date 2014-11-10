@@ -166,6 +166,9 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                 untracked=$(git status | grep -A 3 'Untracked' | tail -n 1 | sed -e 's/^[ \t]*//g' -e 's/#//g')
                 modified=$(git ls-files -m)
                 commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
+                commitStatus=$(git status | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g' | head -n 1)
+                commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g')
+                commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
                 if [[ ! -z $untracked ]]; then
                         echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
                 fi
@@ -173,13 +176,17 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                         echo -e "Modified: \n\e[1;31m$modified\e[0m"
                 fi
                 if [[ $commit != *"nothing to commit"* ]] && [[ $commit != *"not staged"* ]] && [[ $commit != *"untracked"* ]]; then
-                        if [[ $commit == *"ahead"* ]]; then
-                                echo -e "Commit: \n\e[1;31m$commit ahead\e[0m"
-                        elif [[ $commit == *"behind"* ]]; then
-                                echo -e "Commit: \n\e[1;31m$commit behind\e[0m"
-                        else
-                                echo -e "Commit: \n\e[1;31m$commit difference\e[0m"
+                        if [[ ! -z $commitAhead ]]; then
+                                echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
                         fi
+                        if [[ ! -z $commitBehind ]]; then
+                                echo -e "Commit: \n\e[1;31m$commitBehind ahead\e[0m"
+                        fi
+                        # if [[ $commitStatus == "behind" ]]; then
+                        #         echo -e "Commit: \n\e[1;31m$commit behind\e[0m"
+                        # else
+                        #         echo -e "Commit: \n\e[1;31m$commit difference\e[0m"
+                        # fi
                 fi
                 echo
         done
