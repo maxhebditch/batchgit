@@ -254,7 +254,6 @@ if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
 		git pull
         printf "\n"
 	done
-printf "\n"
 exit
 fi
 
