@@ -166,10 +166,14 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                 untracked=$(git status | grep -A 3 'Untracked' | tail -n 1 | sed -e 's/^[ \t]*//g' -e 's/#//g')
                 modified=$(git ls-files -m)
                 commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
+                committed=$(git status | grep -A 3 "committed:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g' | tail -n 1)
                 commitStatus=$(git status | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g' | head -n 1)
                 commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
                 commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
                 commitDiverge=$(git status | grep "diverge")
+                if [[ ! -z $committed ]]; then
+                        echo -e "Commited: \n\e[1;31m$committed\e[0m"
+                fi
                 if [[ ! -z $untracked ]]; then
                         echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
                 fi
