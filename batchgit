@@ -175,7 +175,6 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                 if [[ ! -z $modified ]]; then
                         echo -e "Modified: \n\e[1;31m$modified\e[0m"
                 fi
-                # if [[ $commit != "nothing to commit"* ]] && [[ $commit != *"not staged"* ]] && [[ $commit != *"untracked"* ]]; then
                 if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
                         if [[ ! -z $commitAhead ]]; then
                                 echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
@@ -183,11 +182,6 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                         if [[ ! -z $commitBehind ]]; then
                                 echo -e "Commit: \n\e[1;31m$commitBehind behind\e[0m"
                         fi
-                        # if [[ $commitStatus == "behind" ]]; then
-                        #         echo -e "Commit: \n\e[1;31m$commit behind\e[0m"
-                        # else
-                        #         echo -e "Commit: \n\e[1;31m$commit difference\e[0m"
-                        # fi
                 fi
                 echo
         done
