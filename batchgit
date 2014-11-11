@@ -270,7 +270,11 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                 REPO=${PWD##*/}
                 echo ${bold}"Repository: $REPO ${normal}"
                 if [[ $numTotal != "0" ]]; then
-                        commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                        if [[ -z $2 ]]; then
+                                commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                        else
+                                commitMessage=$2
+                        fi
                         git add .
                         git add -A
                         git commit -m "$commitMessage"
