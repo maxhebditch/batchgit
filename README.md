@@ -86,11 +86,11 @@ Script will only push rather than pull then push.
 
 ###git commits
 
-        $ batchgit -c
+        $ batchgit -c "updated readme"
         $ batchgit -commit
         $ batchgit -cp
 
-I don't massively recommend it, but if you are in a hurry you can use this flag to commit with a generic message from [what the commit](http://whatthecommit.com/) because it is more fun than a static message. The `-cp` flag will push as well after writing a commit message.
+You can commit changes using `-c` or `-commit` and a commit message in quotes. If you don't provide a message, I don't massively recommend it, but if you are in a hurry you can use a generic message from [what the commit](http://whatthecommit.com/) because it is more fun than a static message. The `-cp` flag will push as well after writing a commit message.
 
 ##FAQs
 ###Why are some of my repos not being found?
