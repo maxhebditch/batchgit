@@ -107,3 +107,4 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 4. `cd` to places where changes have happened.
 11. `git clone` using `~/.batchgitrc` file  
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
+13. `rm` all untracked files
