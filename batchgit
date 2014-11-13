@@ -213,7 +213,8 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
 		let i+=1
 		cd $dir
         REPO=${PWD##*/}
-        echo ${bold}"Repository: $REPO ${normal}"
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
         if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
                 git push
         else
@@ -251,7 +252,8 @@ if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
 		let i+=1
 		cd $dir
         REPO=${PWD##*/}
-        echo ${bold}"Repository: $REPO ${normal}"
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
 		git pull
         printf "\n"
 	done
@@ -269,7 +271,8 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                 numUntr=$(git status | grep -c "untracked")
                 numTotal=$(($numNew + $numMod + $numUntr))
                 REPO=${PWD##*/}
-                echo ${bold}"Repository: $REPO ${normal}"
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                echo ${bold}"Repository: $REPO ${normal} $BRANCH"
                 if [[ $numTotal != "0" ]]; then
                         if [[ -z $2 ]]; then
                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
