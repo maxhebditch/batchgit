@@ -162,7 +162,8 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                 let i+=1
                 cd $dir
                 REPO=${PWD##*/}
-                echo ${bold}"Repository: $REPO ${normal}"
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                echo -e ${bold}"Repository: $REPO ${normal} $BRANCH"
                 untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
                 modified=$(git ls-files -m)
                 deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
@@ -212,7 +213,8 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
 		let i+=1
 		cd $dir
         REPO=${PWD##*/}
-        echo ${bold}"Repository: $REPO ${normal}"
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
         if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
                 git push
         else
@@ -250,7 +252,8 @@ if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
 		let i+=1
 		cd $dir
         REPO=${PWD##*/}
-        echo ${bold}"Repository: $REPO ${normal}"
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
 		git pull
         printf "\n"
 	done
@@ -269,7 +272,8 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                 numDel=$(git status | grep -c "deleted")
                 numTotal=$(($numNew + $numMod + $numUntr + $numDel))
                 REPO=${PWD##*/}
-                echo ${bold}"Repository: $REPO ${normal}"
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                echo ${bold}"Repository: $REPO ${normal} $BRANCH"
                 if [[ $numTotal != "0" ]]; then
                         if [[ -z $2 ]]; then
                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
