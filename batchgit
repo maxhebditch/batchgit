@@ -266,7 +266,8 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                 numMod=$(git status | grep -c "modified")
                 numNew=$(git status | grep -c "new file")
                 numUntr=$(git status | grep -c "untracked")
-                numTotal=$(($numNew + $numMod + $numUntr))
+                numDel=$(git status | grep -c "deleted")
+                numTotal=$(($numNew + $numMod + $numUntr + $numDel))
                 REPO=${PWD##*/}
                 echo ${bold}"Repository: $REPO ${normal}"
                 if [[ $numTotal != "0" ]]; then
