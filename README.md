@@ -108,3 +108,4 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 11. `git clone` using `~/.batchgitrc` file  
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
 13. `rm` all untracked files
+14. Alphabetical printing of repo
