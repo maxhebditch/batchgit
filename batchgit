@@ -13,10 +13,11 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
                 fi
                 if [[ $2 == "./" ]]; then
                         echo $(pwd) >> ~/.batchgitrc
+                        echo "adding $(pwd) to ~/.batchgitrc"
                 elif [[ $2 != "*/*" ]]; then
                         PWD=$(pwd)
                         pwdrepdir=$PWD"/"$2
-                        echo "adding $pwdrepdir"
+                        echo "adding $pwdrepdir to ~/.batchgitrc"
                         echo $pwdrepdir >> ~/.batchgitrc
                 else
                         echo $2 >> ~/.batchgitrc
