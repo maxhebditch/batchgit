@@ -26,7 +26,10 @@ bootstrapchoice () {
                 unset add
         fi
         if [[ $add == "yes" ]]; then
-                echo $remotesClean >> ~/.batchgit/bootstrap
+                echo $remotesClean >> ~/.batchgit/bootstraprepo
+                relativeFilepath=$(dirname $locdir)
+                relativeFilepath2=$(echo $relativeFilepath | sed -e 's|^/[^/]*||' -e 's|^/[^/]*||' -e 's|^/||')
+                echo "~/$relativeFilepath2" >> ~/.batchgit/bootstrapdir
                 echo "Added"
                 unset add
         fi
@@ -44,7 +47,11 @@ bootstrapchoice () {
 
 if [[ -f ~/.batchgit/bootstrap ]]; then
         echo -e "Bootstrap file already exists, making a back up at ~/.batchgit/bootstrap.bak\n"
-        mv ~/.batchgit/bootstrap ~/.batchgit/bootstrap.bak
+        mv ~/.batchgit/bootstraprepo ~/.batchgit/bootstraprepo.bak
+fi
+if [[ -f ~/.batchgit/bootstrapdir ]]; then
+        echo -e "Bootstrapdir file already exists, making a back up at ~/.batchgit/bootstrapdir.bak\n"
+        mv ~/.batchgit/bootstrapdir ~/.batchgit/bootstrapdir.bak
 fi
 
 if [[ $1 == "--backup" ]]; then
@@ -73,5 +80,5 @@ if [[ $1 == "--backup" ]]; then
                 fi
                 bootstrapchoice
                 echo -e "\n"
-        done < ~/.batchgitrc
+        done < ~/.batchgit/batchgitrc
 fi
