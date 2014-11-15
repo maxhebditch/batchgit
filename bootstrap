@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# todo
+# check that multiple remotes work by testing without grep "fetch"
+# print number options to match number of remotes
+# user then picks number to use for remote going forwards
+# at the end of backup offer to build batchgit takeaway
+# user transfers that to ~/ of new host
+# offer to delete takeaway at the end
+# batchgit --clone then checks for it and creates ~/.batchgit
+# check that wc -l clone remote matches local
+# if not issue warning
+# Arrays to pull out clone remote and local
+# proceed through themn by n
+# cd into local then git clone remote
+# run batchgit find afterwards to build rc file
+# run batchgit status after cloning
+# do some backwards capability stuff if batchgit already exists
+
 # Define some useful variables for printing
 bold=`tput bold`
 normal=`tput sgr0`
@@ -82,3 +99,6 @@ if [[ $1 == "--backup" ]]; then
                 echo -e "\n"
         done < ~/.batchgit/batchgitrc
 fi
+
+sed -e '/^$/d' -i ~/.batchgitrc 
+paths=( $(cat ~/.batchgitrc) )     
