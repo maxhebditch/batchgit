@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Define some useful variables for printing
+bold=`tput bold`
+normal=`tput sgr0`
+
+bootstrapchoice () {
+        echo "Would you like to add this repository to the bootstrap (Y/N)?: "
+        read addornay </dev/tty
+        case $addornay in 
+                [Yy][eE][sS]|[yY])
+                        add=yes
+                        ;;
+                [Nn][Oo]|[Nn])
+                        add=no
+                        ;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
+                        add=leave
+                        ;;
+                *)
+                        add=nonsense
+                        ;;
+        esac
+        if [[ $add == "no" ]]; then
+                echo "Not added"
+                unset add
+        fi
+        if [[ $add == "yes" ]]; then
+                echo $remotesClean >> ~/.batchgit/bootstrap
+                echo "Added"
+                unset add
+        fi
+        if [[ $add == "leave" ]]; then
+                echo "Goodbye!"
+                unset add
+                exit
+        fi
+        if [[ $add == "nonsense" ]]; then
+                echo "That choice was unclear"
+                unset add
+                bootstrapchoice
+        fi
+}
+
+if [[ -f ~/.batchgit/bootstrap ]]; then
+        echo -e "Bootstrap file already exists, making a back up at ~/.batchgit/bootstrap.bak\n"
+        mv ~/.batchgit/bootstrap ~/.batchgit/bootstrap.bak
+fi
+
+if [[ $1 == "--backup" ]]; then
+        if [[ ! -d ~/.batchgit ]]; then
+                echo "Batchgit directory does not exist, making a directory at ~/.batchgit"
+                mkdir ~/.batchgit
+                cp ~/.batchgitrc ~/.batchgit/batchgitrc
+        fi
+        while read locdir; do
+                echo -e "Local repository is $locdir"
+                cd /$locdir
+                remotes=$(git remote -v | grep "fetch")
+                remotesClean=$(echo $remotes | sed -e 's/origin//' | sed -e 's/ (fetch)//')
+                remotePresent=1
+                remoteTotal=$(echo $remotes | grep -c "fetch")
+                if [[ $remoteTotal -gt "1" ]]; then
+                        echo "The are $remoteTotal remotes"
+                        while [[ $remotePresent -le $remoteTotal ]]; do
+                                let remotePresent+=1
+                                echo $remotes
+                                echo $($remotes | grep -m$remotePresent)
+                        done
+                else
+                        echo "There is only one remote branch"
+                        echo -e "Which is:${bold}$remotesClean${normal}"
+                fi
+                bootstrapchoice
+                echo -e "\n"
+        done < ~/.batchgitrc
+fi
