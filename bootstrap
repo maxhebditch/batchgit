@@ -62,19 +62,31 @@ bootstrapchoice () {
         fi
 }
 
-if [[ -f ~/.batchgit/bootstrap ]]; then
-        echo -e "Bootstrap file already exists, making a back up at ~/.batchgit/bootstrap.bak\n"
-        mv ~/.batchgit/bootstraprepo ~/.batchgit/bootstraprepo.bak
-fi
-if [[ -f ~/.batchgit/bootstrapdir ]]; then
-        echo -e "Bootstrapdir file already exists, making a back up at ~/.batchgit/bootstrapdir.bak\n"
-        mv ~/.batchgit/bootstrapdir ~/.batchgit/bootstrapdir.bak
-fi
+checkrepodirmatch () {
+        clones=( $(cat ~/.batchgit/bootstraprepo) )
+        localRepo=( $(cat ~/.batchgit/bootstrapdir) )
+        lenclones=$(wc -l < ~/.batchgit/bootstraprepo)
+        lenlocalRepo=$(wc -l < ~/.batchgit/bootstrapdir)
+        if [[ $lenlocalRepo != $lenclones ]]; then
+                echo "The number of directories does not match the number of remote locations"
+                exit
+        fi
+}
 
 if [[ $1 == "--backup" ]]; then
+        if [[ -f ~/.batchgit/bootstraprepo ]]; then
+                echo -e "Bootstraprepo file already exists, making a back up at ~/.batchgit/bootstraprepo.bak\n"
+                mv ~/.batchgit/bootstraprepo ~/.batchgit/bootstraprepo.bak
+        fi
+        if [[ -f ~/.batchgit/bootstrapdir ]]; then
+                echo -e "Bootstrapdir file already exists, making a back up at ~/.batchgit/bootstrapdir.bak\n"
+                mv ~/.batchgit/bootstrapdir ~/.batchgit/bootstrapdir.bak
+        fi
         if [[ ! -d ~/.batchgit ]]; then
                 echo "Batchgit directory does not exist, making a directory at ~/.batchgit"
                 mkdir ~/.batchgit
+                cp ~/.batchgitrc ~/.batchgit/batchgitrc
+        elif [[ -d ~/.batchgit ]]; then
                 cp ~/.batchgitrc ~/.batchgit/batchgitrc
         fi
         while read locdir; do
@@ -98,7 +110,10 @@ if [[ $1 == "--backup" ]]; then
                 bootstrapchoice
                 echo -e "\n"
         done < ~/.batchgit/batchgitrc
+        checkrepodirmatch
 fi
 
-sed -e '/^$/d' -i ~/.batchgitrc 
-paths=( $(cat ~/.batchgitrc) )     
+if [[ $1 == "--clone" ]]; then
+        checkrepodirmatch
+        echo "${clones[@]}"
+fi
