@@ -4,18 +4,18 @@
 # check that multiple remotes work by testing without grep "fetch"
 # print number options to match number of remotes
 # user then picks number to use for remote going forwards
-# at the end of backup offer to build batchgit takeaway
+# at the end of backup offer to buildbatchgit-takeaway takeaway
 # user transfers that to ~/ of new host
 # offer to delete takeaway at the end
-# batchgit --clone then checks for it and creates ~/.batchgit
+#batchgit-takeaway --clone then checks for it and creates ~/batchgit-takeaway
 # check that wc -l clone remote matches local
 # if not issue warning
 # Arrays to pull out clone remote and local
 # proceed through themn by n
 # cd into local then git clone remote
-# run batchgit find afterwards to build rc file
-# run batchgit status after cloning
-# do some backwards capability stuff if batchgit already exists
+# runbatchgit-takeaway find afterwards to build rc file
+# runbatchgit-takeaway status after cloning
+# do some backwards capability stuff ifbatchgit-takeaway already exists
 
 # Define some useful variables for printing
 bold=`tput bold`
@@ -43,10 +43,10 @@ bootstrapchoice () {
                 unset add
         fi
         if [[ $add == "yes" ]]; then
-                echo $remotesClean >> ~/.batchgit/bootstraprepo
+                echo $remotesClean >> ~/batchgit-takeaway/bootstraprepo
                 relativeFilepath=$(dirname $locdir)
                 relativeFilepath2=$(echo $relativeFilepath | sed -e 's|^/[^/]*||' -e 's|^/[^/]*||' -e 's|^/||')
-                echo "$relativeFilepath2" >> ~/.batchgit/bootstrapdir
+                echo "$relativeFilepath2" >> ~/batchgit-takeaway/bootstrapdir
                 echo "Added"
                 unset add
         fi
@@ -63,10 +63,10 @@ bootstrapchoice () {
 }
 
 checkrepodirmatch () {
-        clones=( $(cat ~/.batchgit/bootstraprepo) )
-        localRepo=( $(cat ~/.batchgit/bootstrapdir) )
-        lenclones=$(wc -l < ~/.batchgit/bootstraprepo)
-        lenlocalRepo=$(wc -l < ~/.batchgit/bootstrapdir)
+        clones=( $(cat ~/batchgit-takeaway/bootstraprepo) )
+        localRepo=( $(cat ~/batchgit-takeaway/bootstrapdir) )
+        lenclones=$(wc -l < ~/batchgit-takeaway/bootstraprepo)
+        lenlocalRepo=$(wc -l < ~/batchgit-takeaway/bootstrapdir)
         if [[ $lenlocalRepo != $lenclones ]]; then
                 echo "The number of directories does not match the number of remote locations"
                 exit
@@ -111,26 +111,26 @@ confirmClone () {
 }
 
 if [[ $1 == "--backup" ]]; then
-        if [[ -d ~/batchgit-takeaway ]]; then
-                echo "Building a takeaway box for you at ~/batchgit-takeaway"
+        if [[ -d ~batchgit-takeaway-takeaway ]]; then
+                echo "Building a takeaway box for you at ~batchgit-takeaway-takeaway"
                 echo "This will be where the files for bootstrapping will live"
+                mkdir ~batchgit-takeaway-takeaway
+                echo "It might be an idea for you to put a copy ofbatchgit-takeaway in the folder too"
+        fi
+        if [[ -f ~/batchgit-takeaway/bootstraprepo ]]; then
+                echo -e "Bootstraprepo file already exists, making a back up at ~/batchgit-takeaway/bootstraprepo.bak\n"
+                mv ~/batchgit-takeaway/bootstraprepo ~/batchgit-takeaway/bootstraprepo.bak
+        fi
+        if [[ -f ~/batchgit-takeaway/bootstrapdir ]]; then
+                echo -e "Bootstrapdir file already exists, making a back up at ~/batchgit-takeaway/bootstrapdir.bak\n"
+                mv ~/batchgit-takeaway/bootstrapdir ~/batchgit-takeaway/bootstrapdir.bak
+        fi
+        if [[ ! -d ~/batchgit-takeaway ]]; then
+                echo "Batchgit directory does not exist, making a directory at ~/batchgit-takeaway"
                 mkdir ~/batchgit-takeaway
-                echo "It might be an idea for you to put a copy of batchgit in the folder too"
-        fi
-        if [[ -f ~/.batchgit/bootstraprepo ]]; then
-                echo -e "Bootstraprepo file already exists, making a back up at ~/.batchgit/bootstraprepo.bak\n"
-                mv ~/.batchgit/bootstraprepo ~/.batchgit/bootstraprepo.bak
-        fi
-        if [[ -f ~/.batchgit/bootstrapdir ]]; then
-                echo -e "Bootstrapdir file already exists, making a back up at ~/.batchgit/bootstrapdir.bak\n"
-                mv ~/.batchgit/bootstrapdir ~/.batchgit/bootstrapdir.bak
-        fi
-        if [[ ! -d ~/.batchgit ]]; then
-                echo "Batchgit directory does not exist, making a directory at ~/.batchgit"
-                mkdir ~/.batchgit
-                cp ~/.batchgitrc ~/.batchgit/batchgitrc
-        elif [[ -d ~/.batchgit ]]; then
-                cp ~/.batchgitrc ~/.batchgit/batchgitrc
+                cp ~/batchgit-takeawayrc ~/batchgit-takeawaybatchgit-takeawayrc
+        elif [[ -d ~/batchgit-takeaway ]]; then
+                cp ~/batchgit-takeawayrc ~/batchgit-takeawaybatchgit-takeawayrc
         fi
         while read locdir; do
                 echo -e "Local repository is $locdir"
@@ -152,8 +152,8 @@ if [[ $1 == "--backup" ]]; then
                 fi
                 bootstrapchoice
                 echo -e "\n"
-        done < ~/.batchgit/batchgitrc
-        sed -e 's|^|/home/$USER/|g' -i ~/.batchgit/bootstrapdir
+        done < ~/batchgit-takeawaybatchgit-takeawayrc
+        sed -e 's|^|/home/$USER/|g' -i ~/batchgit-takeaway/bootstrapdir
         checkrepodirmatch
 fi
 
