@@ -95,6 +95,7 @@ confirmClone () {
                 unset clonethis
         fi
         if [[ $clonethis == "yes" ]]; then
+                git clone ${clones[$i]}
                 echo "Cloned"
                 unset clonethis
         fi
@@ -173,15 +174,15 @@ if [[ $1 == "--clone" ]]; then
                 if [[ ! -d ${localRepo[$i]} ]]; then
                         if [ "${localRepo[$i]}" != '/home/$USER/' ]; then
                                 echo "Making the directory ${localRepo[$i]}"
-                                mkdir -p "${localRepo[$i]}"
+                                eval mkdir -p "${localRepo[$i]}"
                         fi
                 fi
                 eval cd ${localRepo[$i]}
                 echo "this dir is ${bold}$(pwd)${normal}"
                 echo "which should match ${localRepo[$i]}"
                 echo "for cloning ${bold}${clones[$i]}${normal}"
-                let i+=1
                 confirmClone
+                let i+=1
                 echo -e "\n"
         done 
 fi
