@@ -99,6 +99,9 @@ if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
 
         for gdir in "${findgit[@]}"; do
                         echo -e "$gdir"
+                        if [[ $1 == "--wipe" ]]; then
+                                echo $gdir >> ~/.batchgitrc
+                        fi
                         read -p "Would you like to watch this repository? (y/n): " -n 1 -r
                         if [[ $REPLY =~ ^[Yy]$ ]]; then
                                 echo $gdir >> ~/.batchgitrc
@@ -294,10 +297,13 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
 fi
 
 if [[ $1 == "--wipe" ]]; then
-	let i=1
-	for dir in "${paths[@]}"; do
-		let i+=1
-		cd $dir
+        if [[ ! -f ~/.batchgitrc ]]; then
+                echo -e "Please run batchgit -f first to find all the repositories"
+        fi
+        let i=1
+        for dir in "${paths[@]}"; do
+        let i+=1
+        cd $dir
         REPO=${PWD##*/}
         echo ${bold}"Repository: $REPO ${normal}"
         echo "on path:$(pwd)"
@@ -338,8 +344,8 @@ if [[ $1 == "--wipe" ]]; then
                 unset del
         fi
         printf "\n"
-	done
-exit
+        done
+        exit
 fi
 
 #error message
