@@ -110,12 +110,12 @@ if [[ $1 == "--backup" ]]; then
                 bootstrapchoice
                 echo -e "\n"
         done < ~/.batchgit/batchgitrc
+        sed -e 's|^|/home/$USER/|g' -i ~/.batchgit/bootstrapdir
         checkrepodirmatch
 fi
 
 if [[ $1 == "--clone" ]]; then
         checkrepodirmatch
-        sed -e 's|^|/home/$USER/|g' -i ~/.batchgit/bootstrapdir
         let i=1
         for dir in ${localRepo[@]}; do
                 let+=1
