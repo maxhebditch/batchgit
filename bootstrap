@@ -157,7 +157,7 @@ if [[ $1 == "--clone" ]]; then
         for dir in ${localRepo[@]}; do
                 eval cd ${localRepo[$i]}
                 echo "this dir is ${bold}$(pwd)${normal}"
-                echo "which should match ${bold}${localRepo[$i]}${normal}"
+                echo "which should match ${localRepo[$i]}"
                 echo "for cloning ${bold}${clones[$i]}${normal}"
                 let i+=1
                 confirmClone
