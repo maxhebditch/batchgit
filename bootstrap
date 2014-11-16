@@ -111,11 +111,12 @@ confirmClone () {
 }
 
 if [[ $1 == "--backup" ]]; then
-        if [[ -d ~batchgit-takeaway-takeaway ]]; then
-                echo "Building a takeaway box for you at ~batchgit-takeaway-takeaway"
+        if [[ ! -d ~/batchgit-takeaway ]]; then
+                echo "Building a takeaway box for you at ${bold}~/batchgit-takeaway${normal}"
                 echo "This will be where the files for bootstrapping will live"
-                mkdir ~batchgit-takeaway-takeaway
-                echo "It might be an idea for you to put a copy ofbatchgit-takeaway in the folder too"
+                mkdir ~/batchgit-takeaway
+                echo "It might be an idea for you to put a copy of batchgit-takeaway in the folder too"
+                echo ""
         fi
         if [[ -f ~/batchgit-takeaway/bootstraprepo ]]; then
                 echo -e "Bootstraprepo file already exists, making a back up at ~/batchgit-takeaway/bootstraprepo.bak\n"
@@ -125,13 +126,17 @@ if [[ $1 == "--backup" ]]; then
                 echo -e "Bootstrapdir file already exists, making a back up at ~/batchgit-takeaway/bootstrapdir.bak\n"
                 mv ~/batchgit-takeaway/bootstrapdir ~/batchgit-takeaway/bootstrapdir.bak
         fi
-        if [[ ! -d ~/batchgit-takeaway ]]; then
-                echo "Batchgit directory does not exist, making a directory at ~/batchgit-takeaway"
-                mkdir ~/batchgit-takeaway
-                cp ~/batchgit-takeawayrc ~/batchgit-takeawaybatchgit-takeawayrc
-        elif [[ -d ~/batchgit-takeaway ]]; then
-                cp ~/batchgit-takeawayrc ~/batchgit-takeawaybatchgit-takeawayrc
+        if [[ ! -f ~/.batchgitrc ]]; then
+                echo "You don't have a ~/.batchgitrc file."
+                echo "This can be created by running batchgit -find"
         fi
+        # if [[ ! -d ~/batchgit-takeaway ]]; then
+        #         echo "Batchgit directory does not exist, making a directory at ~/batchgit-takeaway"
+        #         mkdir ~/batchgit-takeaway
+        #         cp ~/batchgit-takeawayrc ~/batchgit-takeawaybatchgit-takeawayrc
+        # elif [[ -d ~/batchgit-takeaway ]]; then
+        #         cp ~/batchgit-takeawayrc ~/batchgit-takeawaybatchgit-takeawayrc
+        # fi
         while read locdir; do
                 echo -e "Local repository is $locdir"
                 cd /$locdir
@@ -152,7 +157,7 @@ if [[ $1 == "--backup" ]]; then
                 fi
                 bootstrapchoice
                 echo -e "\n"
-        done < ~/batchgit-takeawaybatchgit-takeawayrc
+        done < ~/.batchgitrc
         sed -e 's|^|/home/$USER/|g' -i ~/batchgit-takeaway/bootstrapdir
         checkrepodirmatch
 fi
