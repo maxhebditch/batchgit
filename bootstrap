@@ -46,7 +46,7 @@ bootstrapchoice () {
                 echo $remotesClean >> ~/.batchgit/bootstraprepo
                 relativeFilepath=$(dirname $locdir)
                 relativeFilepath2=$(echo $relativeFilepath | sed -e 's|^/[^/]*||' -e 's|^/[^/]*||' -e 's|^/||')
-                echo "~/$relativeFilepath2" >> ~/.batchgit/bootstrapdir
+                echo "$relativeFilepath2" >> ~/.batchgit/bootstrapdir
                 echo "Added"
                 unset add
         fi
@@ -115,5 +115,11 @@ fi
 
 if [[ $1 == "--clone" ]]; then
         checkrepodirmatch
-        echo "${clones[@]}"
+        sed -e 's|^|/home/$USER/|g' -i ~/.batchgit/batchgit/localrepo
+        let i=1
+        for dir in ${localRepo[@]}; do
+                let+=1
+                cd $dir
+                echo "this dir is $(pwd)"
+        done 
 fi
