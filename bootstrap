@@ -170,6 +170,10 @@ if [[ $1 == "--clone" ]]; then
         checkrepodirmatch
         let i=0
         for dir in ${localRepo[@]}; do
+                if [[ ! -d ${localRepo[$i]} ]]; then
+                        echo "Making the directory ${localRepo[$i]}"
+                        mkdir -p ${localRepo[$i]}
+                fi
                 eval cd ${localRepo[$i]}
                 echo "this dir is ${bold}$(pwd)${normal}"
                 echo "which should match ${localRepo[$i]}"
