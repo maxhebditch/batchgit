@@ -118,8 +118,9 @@ if [[ $1 == "--clone" ]]; then
         checkrepodirmatch
         let i=1
         for dir in ${localRepo[@]}; do
-                let+=1
+                let i+=1
                 cd $dir
                 echo "this dir is $(pwd)"
+                echo "which should match ${localRepo[$i]}"
         done 
 fi
