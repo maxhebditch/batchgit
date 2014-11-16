@@ -293,6 +293,55 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
         exit
 fi
 
+if [[ $1 == "--wipe" ]]; then
+	let i=1
+	for dir in "${paths[@]}"; do
+		let i+=1
+		cd $dir
+        REPO=${PWD##*/}
+        echo ${bold}"Repository: $REPO ${normal}"
+        echo "on path:$(pwd)"
+        echo "Wipe? (Y/N): "
+        read delornay </dev/tty
+        case $delornay in 
+                [Yy][eE][sS]|[yY])
+                        del=yes
+                        ;;
+                [Nn][Oo]|[Nn])
+                        del=no
+                        ;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
+                        del=leave
+                        ;;
+                *)
+                        del=nonsense
+                        ;;
+        esac
+        if [[ $del == "no" ]]; then
+                echo "Not wiped"
+                unset del
+        fi
+        if [[ $del == "yes" ]]; then
+                echo "Wiped"
+                echo "$PWD"
+                cd ..
+                rm -r $REPO
+                unset del
+        fi
+        if [[ $del == "leave" ]]; then
+                echo "Goodbye!"
+                unset del
+                exit
+        fi
+        if [[ $del == "nonsense" ]]; then
+                echo "That choice was unclear so untouched"
+                unset del
+        fi
+        printf "\n"
+	done
+exit
+fi
+
 #error message
 echo "sorry, that command didn't work! Try again"
 printf "\n"
