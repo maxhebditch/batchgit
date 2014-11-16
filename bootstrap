@@ -73,6 +73,43 @@ checkrepodirmatch () {
         fi
 }
 
+confirmClone () {
+        echo "Would you like to clone this repository to this location? (Y/N): "
+        read cloneornay </dev/tty
+        case $cloneornay in 
+                [Yy][eE][sS]|[yY])
+                        clonethis=yes
+                        ;;
+                [Nn][Oo]|[Nn])
+                        clonethis=no
+                        ;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
+                        clonethis=leave
+                        ;;
+                *)
+                        clonethis=nonsense
+                        ;;
+        esac
+        if [[ $clonethis == "no" ]]; then
+                echo "Not cloned"
+                unset clonethis
+        fi
+        if [[ $clonethis == "yes" ]]; then
+                echo "Cloned"
+                unset clonethis
+        fi
+        if [[ $clonethis == "leave" ]]; then
+                echo "Goodbye!"
+                unset clonethis
+                exit
+        fi
+        if [[ $clonethis == "nonsense" ]]; then
+                echo "That choice was unclear"
+                unset clonethis
+                confirmClone
+        fi
+}
+
 if [[ $1 == "--backup" ]]; then
         if [[ -f ~/.batchgit/bootstraprepo ]]; then
                 echo -e "Bootstraprepo file already exists, making a back up at ~/.batchgit/bootstraprepo.bak\n"
@@ -116,11 +153,14 @@ fi
 
 if [[ $1 == "--clone" ]]; then
         checkrepodirmatch
-        let i=1
+        let i=0
         for dir in ${localRepo[@]}; do
+                eval cd ${localRepo[$i]}
+                echo "this dir is ${bold}$(pwd)${normal}"
+                echo "which should match ${bold}${localRepo[$i]}${normal}"
+                echo "for cloning ${bold}${clones[$i]}${normal}"
                 let i+=1
-                cd $dir
-                echo "this dir is $(pwd)"
-                echo "which should match ${localRepo[$i]}"
+                confirmClone
+                echo -e "\n"
         done 
 fi
