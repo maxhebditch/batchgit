@@ -100,11 +100,13 @@ if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         for gdir in "${findgit[@]}"; do
                         echo -e "$gdir"
                         if [[ $1 == "--wipe" ]]; then
+                                read -p "Is this one of repos you will wipe? (y/n): " -n 1 -r
                                 echo $gdir >> ~/.batchgitrc
-                        fi
-                        read -p "Would you like to watch this repository? (y/n): " -n 1 -r
-                        if [[ $REPLY =~ ^[Yy]$ ]]; then
-                                echo $gdir >> ~/.batchgitrc
+                        else
+                                read -p "Would you like to watch this repository? (y/n): " -n 1 -r
+                                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                                        echo $gdir >> ~/.batchgitrc
+                                fi
                         fi
                         echo -e "\n"
         done
