@@ -111,6 +111,12 @@ confirmClone () {
 }
 
 if [[ $1 == "--backup" ]]; then
+        if [[ -d ~/batchgit-takeaway ]]; then
+                echo "Building a takeaway box for you at ~/batchgit-takeaway"
+                echo "This will be where the files for bootstrapping will live"
+                mkdir ~/batchgit-takeaway
+                echo "It might be an idea for you to put a copy of batchgit in the folder too"
+        fi
         if [[ -f ~/.batchgit/bootstraprepo ]]; then
                 echo -e "Bootstraprepo file already exists, making a back up at ~/.batchgit/bootstraprepo.bak\n"
                 mv ~/.batchgit/bootstraprepo ~/.batchgit/bootstraprepo.bak
