@@ -115,7 +115,7 @@ fi
 
 if [[ $1 == "--clone" ]]; then
         checkrepodirmatch
-        sed -e 's|^|/home/$USER/|g' -i ~/.batchgit/batchgit/localrepo
+        sed -e 's|^|/home/$USER/|g' -i ~/.batchgit/bootstrapdir
         let i=1
         for dir in ${localRepo[@]}; do
                 let+=1
