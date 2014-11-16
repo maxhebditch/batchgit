@@ -92,6 +92,30 @@ Script will only push rather than pull then push.
 
 You can commit changes using `-c` or `-commit` and a commit message in quotes. If you don't provide a message, I don't massively recommend it, but if you are in a hurry you can use a generic message from [what the commit](http://whatthecommit.com/) because it is more fun than a static message. The `-cp` flag will push as well after writing a commit message.
 
+##Bootstrapping
+
+###backup
+The script can be used to make a backup list of all the current `git` repos on the disk. 
+
+        $ batchgit --backup
+
+This will go through each repo asking if they should be backed up or not. At the moment the script only works with the first remote repo, if you have many you may have to change this amnually, see below. Once completed the script will create a folder at `~/batchgit-takeaway`. This should then be copied to the new machine with a copy of the `batchgit` shell script. 
+
+###clone
+Once in the new machine the script should be run as follows
+
+        $ batchgit --clone
+
+This will then go through the files in the `~/batchgit-takeaway` folder and ask if each repo should be cloned. The way the script works is to directly mirror the filepaths the repos were in on the old system. If you want to change this you can look at the filepaths in `~/batchgit-takeaway/bootstrapdir` and adjust accordingly. The first filepath will be used for the first remote repo in `~/batchgit-takeaway/bootstraprepo`.
+
+###wipe
+
+The script can now also be used to wipe multiple repos at once using
+
+        $ batchgit --wipe
+
+As usual, it will find the repos and ask you one at a time which you want to keep.
+
 ##FAQs
 ###Why are some of my repos not being found?
 When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-f` or use the add recursively function. 
@@ -105,7 +129,8 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 10. ~~Handle directories that have been deleted since config file wrote~~
 12. ~~Say whether one commit ahead or behind rather than just different~~
 4. `cd` to places where changes have happened.
-11. `git clone` using `~/.batchgitrc` file  
+11. ~~`git clone` using `~/.batchgitrc` file~~
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
 13. `rm` all untracked files
 14. Alphabetical printing of repo
+15. ~~multiple wipes~~
