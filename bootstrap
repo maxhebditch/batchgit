@@ -137,6 +137,8 @@ if [[ $1 == "--backup" ]]; then
         # elif [[ -d ~/batchgit-takeaway ]]; then
         #         cp ~/batchgit-takeawayrc ~/batchgit-takeawaybatchgit-takeawayrc
         # fi
+        echo -e "\n${bold}BACKUP MODE"
+        echo -e "===========${normal}\n"
         while read locdir; do
                 echo -e "Local repository is $locdir"
                 cd /$locdir
@@ -163,6 +165,8 @@ if [[ $1 == "--backup" ]]; then
 fi
 
 if [[ $1 == "--clone" ]]; then
+        echo -e "\n${bold}CLONE MODE"
+        echo -e "==========${normal}\n"
         checkrepodirmatch
         let i=0
         for dir in ${localRepo[@]}; do
