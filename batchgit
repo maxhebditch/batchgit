@@ -760,8 +760,6 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                         lastVal=$#
                 fi
                 for (( c=2; c<=$lastVal; c++ )); do
-                        echo "Dir is ${Dir[$c]}"
-                        echo "Checking specific named repositories: ${bold}${Dir[$c]}${normal}"
                         inRc=$(grep "${Dir[$c]}" ~/.batchgitrc)
                         if [[ ! -z $inRc ]]; then
                                 cd $inRc
@@ -771,8 +769,7 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                                         git add .
                                         git add -A
                                         #commits
-                                        commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
-                                        git commit -m "$commitMessage"
+                                        git commit -m "$commitmessage"
                                         printf "\n"
                                         #if -cp flag present then it will also push after committing
                                         if [[ $1 == "-cp" ]]; then
@@ -787,6 +784,7 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                         fi
                 done
         fi
+        exit
 fi
 
 
