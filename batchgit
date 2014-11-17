@@ -459,14 +459,15 @@ fi
 paths=( $(cat ~/.batchgitrc) )     
 
 #Check to ensure all local directories still exist
-let i=1
 for dir in "${paths[@]}"; do
-        let i+=1
+        #checks that the directory still exists before running anything
         if [[ ! -d $dir ]]; then
                 echo -e "The $dir directory doesn't exist anymore and has been removed from the config file"
                 sed -e "s|$dir||g" -i  ~/.batchgitrc
         fi
 done
+#deletes blank lines from the batchgitrc file
+#could potentially be moved into the loop above
 sed -e '/^$/d' -i ~/.batchgitrc 
 paths=( $(cat ~/.batchgitrc) )     
 
@@ -475,38 +476,50 @@ printf "\n"
 
 #git status
 if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
-        let i=1
+        #goes through the folders in the list
         for dir in "${paths[@]}"; do
-                let i+=1
+                #moves into the directory listed
                 cd $dir
+                #gives the repo name
                 REPO=${PWD##*/}
+                #returns the branch
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                #prints the repository name and branch to stdout
                 echo -e ${bold}"Repository: $REPO ${normal} $BRANCH"
+                #looks for types of modifications that can popup in git status
                 untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
                 modified=$(git ls-files -m)
                 deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
                 commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
                 committed=$(git status | sed -n -e '/committed:/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
                 newfiles=$(git status | sed -n -e '/committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
+                #status of commit
                 commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
                 commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
                 commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
                 commitDiverge=$(git status | grep "diverged"*)
+                #if there are commited files echoes that
                 if [[ ! -z $committed ]]; then
                         echo -e "Commited: \n\e[1;31m$committed\e[0m"
                 fi
+                #if there are new files, echoes that
                 if [[ ! -z $newfiles ]]; then
                         echo -e "New: \n\e[1;32m$newfiles\e[0m"
                 fi
+                #if there are deleted files, echoes that
                 if [[ ! -z $deleted ]]; then
                         echo -e "Deleted: \n\e[1;31m$deleted\e[0m"
                 fi
+                #if there are untracked files, echoes that
                 if [[ ! -z $untracked ]]; then
                         echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
                 fi
+                #if there are modified files, echoes that
                 if [[ ! -z $modified ]]; then
                         echo -e "Modified: \n\e[1;31m$modified\e[0m"
                 fi
+                #checks status of commit, in front, ahead or diverged. Never seen diverged
+                #happen though so I can't guarantee it works
                 if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
                         if [[ ! -z $commitAhead ]]; then
                                 echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
@@ -526,21 +539,23 @@ fi
 
 #git push
 if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]] || [[ $1 == "-po" ]] || [[ $1 == "-pushonly" ]]; then
-	let i=1
 	for dir in "${paths[@]}"; do
-		let i+=1
+        #moves into dir
 		cd $dir
         REPO=${PWD##*/}
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+        #if pushonly then only pushes
         if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
                 git push
+        #otherwise will do a pull before pushing. for safety
         else
                 git pull
                 git push
         fi
         printf "\n"
 	done
+        #not sure what this is doing here
         if [[ $1 == "-n" ]]; then
                 echo -e "\nAll done for the day!\n"
                         printf """
@@ -565,9 +580,8 @@ fi
 
 #git pull
 if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
-	let i=1
 	for dir in "${paths[@]}"; do
-		let i+=1
+        #echos dir name and branch then pulls
 		cd $dir
         REPO=${PWD##*/}
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -580,9 +594,8 @@ fi
 
 #For people too lazy to do proper commits, cp flag will push as well
 if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
-        let i=1
         for dir in "${paths[@]}"; do
-                let i+=1
+                #moves into dir and looks for files that need commiting
                 cd $dir
                 numMod=$(git status | grep -c "modified")
                 numNew=$(git status | grep -c "new file")
@@ -592,16 +605,23 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+                #if there are any files that need commiting then goes doewn the following
                 if [[ $numTotal != "0" ]]; then
+                        #if there is not arguement then will use a random arguement curled from whatthecommit
+                        #for a laugh
                         if [[ -z $2 ]]; then
                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                        #if there is an arguement then it will use that instead
                         else
                                 commitMessage=$2
                         fi
+                        #adds files
                         git add .
                         git add -A
+                        #commits
                         git commit -m "$commitMessage"
                         printf "\n"
+                        #if -cp flag present then it will also push after committing
                         if [[ $1 == "-cp" ]]; then
                                 git push
                         fi
@@ -611,6 +631,7 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
 fi
 
 if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
+        #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
         func1=$1
         checkbatchgit func1 
         wipeRepos
