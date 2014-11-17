@@ -4,6 +4,14 @@
 bold=`tput bold`
 normal=`tput sgr0`
 
+assignDynamicDir () {
+        numCurArg=1
+        while [ $numCurArg -lt $# ]; do
+                numCurArg=$((numCurArg+1))
+                Dir[$numCurArg]=${!numCurArg}
+        done
+}
+
 #function that goes through your list of repos in ~/.batchgitrc and asks which to keep
 wipeRepos () {
         echo -e "\n${bold}WIPE MODE"
@@ -237,13 +245,6 @@ confirmClone () {
         fi
 }
 
-assignDynamicDir () {
-        numCurArg=1
-        while [ $numCurArg -lt $# ]; do
-                numCurArg=$((numCurArg+1))
-                Dir[$numCurArg]=${!numCurArg}
-        done
-}
 
 gitStatus () {
         #gives the repo name
@@ -333,32 +334,6 @@ gitCommit () {
         REPO=${PWD##*/}
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         echo ${bold}"Repository: $REPO ${normal} $BRANCH"
-        #if there are any files that need commiting then goes doewn the following
-        if [[ $numTotal != "0" ]]; then
-                #if there is not arguement then will use a random arguement curled from whatthecommit
-                #for a laugh
-                if [[ -z $2 ]]; then
-                        commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
-                #if there is an arguement then it will use that instead
-                else
-                        commitMessage=$2
-                fi
-                #adds files
-                git add .
-                git add -A
-                #commits
-                git commit -m "$commitMessage"
-                printf "\n"
-                #if -cp flag present then it will also push after committing
-                if [[ $1 == "-cp" ]]; then
-                        git push
-                fi
-                echo ""
-        fi
-        if [[ $numTotal == "0" ]]; then
-                echo "Nothing to commit here"
-                echo ""
-        fi
 }
 
 #Array where paths are held
@@ -696,14 +671,115 @@ exit
 fi
 
 if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
-        if [[ $# -gt 1 ]]; then
-                assignDynamicDir $@
-                for dynamicDir in ${Dir[@]}; do
-                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+        #if there is only one arguement, it has to be -c so batchcommit with 
+        #whatthecommit commit message
+        if [[ $# == "1" ]]; then
+                #goes through the folders in the list
+                for dir in "${paths[@]}"; do
+                        #moves into the directory listed
+                        cd $dir
+                        gitCommit
+                        if [[ $numTotal != "0" ]]; then
+                                #adds files
+                                git add .
+                                git add -A
+                                #commits
+                                commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                                git commit -m "$commitMessage"
+                                printf "\n"
+                                #if -cp flag present then it will also push after committing
+                                if [[ $1 == "-cp" ]]; then
+                                        git push
+                                fi
+                                echo ""
+                        fi
+                done
+        fi
+        #if there are two arguements, then there are combinations of options
+        if [[ $# == "2" ]]; then
+                #if there are spaces in the second argument, then probably a commit message then batchgit
+                if [[ "$2" =~ ( |\') ]]; then #'
+                        for dir in "${paths[@]}"; do
+                                #moves into the directory listed
+                                cd $dir
+                                gitCommit
+                                if [[ $numTotal != "0" ]]; then
+                                        #adds files
+                                        git add .
+                                        git add -A
+                                        #commits
+                                        echo "commit message is $2"
+                                        commitmessage=$2
+                                        git commit -m "$commitMessage"
+                                        printf "\n"
+                                        #if -cp flag present then it will also push after committing
+                                        if [[ $1 == "-cp" ]]; then
+                                                git push
+                                        fi
+                                        echo ""
+                                fi
+                        done
+                #if it doesn't look like a message its probably for a specific dir
+                #however as there are only two arguments have to use a whathecommit message
+                else
+                        echo "Checking specific named repositories: ${bold}$2${normal}"
+                        inRc=$(grep "$2" ~/.batchgitrc)
+                        cd $inRc
+                        gitCommit
+                        if [[ $numTotal != "0" ]]; then
+                                #adds files
+                                git add .
+                                git add -A
+                                #commits
+                                commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                                git commit -m "$commitMessage"
+                                printf "\n"
+                                #if -cp flag present then it will also push after committing
+                                if [[ $1 == "-cp" ]]; then
+                                        git push
+                                fi
+                                echo ""
+                        fi
+                fi
+        fi
+        #if there are more than two options then there are more options
+        if [[ $# -gt "2" ]]; then
+                #assigns dir variables to arguements
+                numCurArg=1
+                while [ $numCurArg -lt $# ]; do
+                        numCurArg=$((numCurArg+1))
+                        Dir[$numCurArg]=${!numCurArg}
+                done
+                #if the last arguement looks like a commit message, make it the commit message
+                if [[ ${Dir[$#]} =~ ( |\') ]]; then #'
+                        commitmessage=${Dir[$#]}
+                        lastVal=$(($#-1))
+                #otherwise set it to whathecommit
+                else
+                        commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                        lastVal=$#
+                fi
+                for (( c=2; c<=$lastVal; c++ )); do
+                        echo "Dir is ${Dir[$c]}"
+                        echo "Checking specific named repositories: ${bold}${Dir[$c]}${normal}"
+                        inRc=$(grep "${Dir[$c]}" ~/.batchgitrc)
                         if [[ ! -z $inRc ]]; then
                                 cd $inRc
                                 gitCommit
+                                if [[ $numTotal != "0" ]]; then
+                                        #adds files
+                                        git add .
+                                        git add -A
+                                        #commits
+                                        commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                                        git commit -m "$commitMessage"
+                                        printf "\n"
+                                        #if -cp flag present then it will also push after committing
+                                        if [[ $1 == "-cp" ]]; then
+                                                git push
+                                        fi
+                                        echo ""
+                                fi
                         fi
                         if [[ -z $inRc ]]; then
                                 echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
@@ -711,15 +787,111 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                         fi
                 done
         fi
-        if [[ $# == "1" ]]; then
-                #goes through the folders in the list
-                for dir in "${paths[@]}"; do
-                        #moves into the directory listed
-                        cd $dir
-                        gitCommit
-                done
-        fi
 fi
+
+
+
+
+
+
+
+                # for dynamicDir in ${Dir[@]}; do
+
+
+#                 if [[ $numTotal == "0" ]]; then
+#                         echo "Nothing to commit here"
+#                         echo ""
+#                 fi
+
+
+
+#                         if [[ -z $2 ]]; then
+#                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+#                         #if there is an arguement then it will use that instead
+#                         else
+#                                 commitMessage=$2
+#                         fi
+
+
+
+
+
+
+#                 numCurArg=1
+#                 while [ $numCurArg -lt $# ]; do
+#                         numCurArg=$((numCurArg+1))
+#                         Dir[$numCurArg]=${!numCurArg}
+#                 done
+#                 for dynamicDir in ${Dir[@]}; do
+#                         echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+#                         inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+#                         if [[ ! -z $inRc ]]; then
+#                                 cd $inRc
+#                                 gitCommit
+#                                 #if there are any files that need commiting then goes doewn the following
+#                                 if [[ $numTotal != "0" ]]; then
+#                                         #if there is not arguement then will use a random arguement curled from whatthecommit
+#                                         #for a laugh
+#                                         if [[ -z $2 ]]; then
+#                                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+#                                         #if there is an arguement then it will use that instead
+#                                         else
+#                                                 commitMessage=$2
+#                                         fi
+#                                         #adds files
+#                                         git add .
+#                                         git add -A
+#                                         #commits
+#                                         git commit -m "$commitMessage"
+#                                         printf "\n"
+#                                         #if -cp flag present then it will also push after committing
+#                                         if [[ $1 == "-cp" ]]; then
+#                                                 git push
+#                                         fi
+#                                         echo ""
+#                                 fi
+#                                 if [[ $numTotal == "0" ]]; then
+#                                         echo "Nothing to commit here"
+#                                         echo ""
+#                                 fi
+#                         fi
+#                         if [[ -z $inRc ]]; then
+#                                 echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+#                                 echo ""
+#                         fi
+#                 done
+#         fi
+#         if [[ $# == "1" ]]; then
+#                 #goes through the folders in the list
+#                 for dir in "${paths[@]}"; do
+#                         #moves into the directory listed
+#                         cd $dir
+#                         gitCommit
+#                         #if there are any files that need commiting then goes doewn the following
+#                         if [[ $numTotal != "0" ]]; then
+#                                 #if there is not arguement then will use a random arguement curled from whatthecommit
+#                                 #for a laugh
+#                                 if [[ -z $2 ]]; then
+#                                         commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+#                                 #if there is an arguement then it will use that instead
+#                                 else
+#                                         commitMessage=$2
+#                                 fi
+#                                 #adds files
+#                                 git add .
+#                                 git add -A
+#                                 #commits
+#                                 git commit -m "$commitMessage"
+#                                 printf "\n"
+#                                 #if -cp flag present then it will also push after committing
+#                                 if [[ $1 == "-cp" ]]; then
+#                                         git push
+#                                 fi
+#                                 echo ""
+#                         fi
+#                 done
+#         fi
+# fi
 
 if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
         #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
