@@ -138,3 +138,4 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 17. Remove `./` as its not needed
 18. Loop for checking batchgitrc presence
 19. Turn git status into a function
+20. Batchgit push single directories
