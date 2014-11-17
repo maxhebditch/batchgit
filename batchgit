@@ -4,65 +4,80 @@
 bold=`tput bold`
 normal=`tput sgr0`
 
+#function that goes through your list of repos in ~/.batchgitrc and asks which to keep
 wipeRepos () {
         echo -e "\n${bold}WIPE MODE"
         echo -e "==========${normal}\n"
         let i=1
+        #cycles through dirs in file
         for dir in "${paths[@]}"; do
-        let i+=1
-        cd $dir
-        REPO=${PWD##*/}
-        echo ${bold}"Repository: $REPO ${normal}"
-        echo "on path:$(pwd)"
-        echo "Wipe? (Y/N): "
-        read delornay </dev/tty
-        case $delornay in 
-                [Yy][eE][sS]|[yY])
-                        del=yes
-                        ;;
-                [Nn][Oo]|[Nn])
-                        del=no
-                        ;;
-                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
-                        del=leave
-                        ;;
-                *)
-                        del=nonsense
-                        ;;
-        esac
-        if [[ $del == "no" ]]; then
-                echo "Not wiped"
-                unset del
-        fi
-        if [[ $del == "yes" ]]; then
-                echo "$PWD"
-                cd ..
-                rm -r $REPO
-                echo "Wiped"
-                unset del
-        fi
-        if [[ $del == "leave" ]]; then
-                echo "Goodbye!"
-                unset del
-                exit
-        fi
-        if [[ $del == "nonsense" ]]; then
-                echo "That choice was unclear so untouched"
-                unset del
-        fi
-        printf "\n"
+                let i+=1
+                cd $dir
+                REPO=${PWD##*/}
+                echo ${bold}"Repository: $REPO ${normal}"
+                echo "on path:$(pwd)"
+                echo "Wipe? (Y/N): "
+                read delornay </dev/tty
+                case $delornay in 
+                        [Yy][eE][sS]|[yY])
+                                del=yes
+                                ;;
+                        [Nn][Oo]|[Nn])
+                                del=no
+                                ;;
+                        [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
+                                del=leave
+                                ;;
+                        *)
+                                del=nonsense
+                                ;;
+                esac
+                #these should be incorporated in line as in checkbatchgit function
+                #don't delete anything
+                if [[ $del == "no" ]]; then
+                        echo "Not wiped"
+                        unset del
+                fi
+                if [[ $del == "yes" ]]; then
+                        #if yes to delete then moves up one and recursively deletes
+                        echo "$PWD"
+                        cd ..
+                        #could have sudo here to save y for write protected file
+                        #but don't want to force sudo
+                        rm -r $REPO
+                        echo "Wiped"
+                        unset del
+                fi
+                #quits
+                if [[ $del == "leave" ]]; then
+                        echo "Goodbye!"
+                        unset del
+                        exit
+                fi
+                #if it doesn't match one of the above then it takes the safe option
+                #Could change this to return back to function
+                if [[ $del == "nonsense" ]]; then
+                        echo "That choice was unclear so untouched"
+                        unset del
+                fi
+                printf "\n"
         done
         exit
 }
 
 checkbatchgit () {
+        #checks that batchgitrc exists, if not then goes
+        #to function to search for current repos
         if [[ ! -f ~/.batchgitrc ]]; then
                 findgitrepos func1
         fi
+        #if file does exist, then check how many lines are in it
         numberInbatchgitrc=$(wc -l < ~/.batchgitrc)
+        #if zero lines (i.e. empty) then searches for repos as above
         if [[ $numberInbatchgitrc == "0" ]]; then
                 findgitrepos func1
         fi
+        #if has lines, set paths array to them
         if [[ -f ~/.batchgitrc ]]; then
                 paths=( $(cat ~/.batchgitrc) )     
         fi
@@ -70,32 +85,42 @@ checkbatchgit () {
 
 
 findgitrepos () {
+        #Runs a find to look for repos
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
+        #counts how many are inside
         numfind=${#findgit[@]}
         func1=$1
+        #tells user how many repos they have
         echo -e "There are $numfind git repositories \n"
+        #if file doesn't exist, then makes one
         if [[ ! -f ~/.batchgitrc ]]; then
                 touch ~/.batchgitrc
                 echo -e "making a ~/.batchgitrc file \n"
+        #if it does exist then it makes a backup
         else
                 mv ~/.batchgitrc ~/.batchgitrc.bak
                 touch ~/.batchgitrc
                 echo -e "making a new ~/.batchgitrc file and backing up old to ~/.batchgitrc.bak \n"
         fi
+        #runs through all the repos it has found
         for gdir in "${findgit[@]}"; do
                         echo -e "$gdir"
                         echo "Include this repository? (Y/N): "
                         read incRepo </dev/tty
                         case $incRepo in 
+                                #Can keep track of repo, and if so writes it to file
                                 [Yy][eE][sS]|[yY])
                                         echo $gdir >> ~/.batchgitrc
                                         ;;
+                                #no action if not kept
                                 [Nn][Oo]|[Nn])
                                         :
                                         ;;
+                                #option to quit
                                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
                                         exit
                                         ;;
+                                #if there is nonsense, then just return to begin
                                 *)
                                         findgitrepos
                                         ;;
@@ -105,8 +130,10 @@ findgitrepos () {
 }
 
 bootstrapchoice () {
+        #For bootstrap mode, asks which should be written to boostrap file
         echo "Would you like to add this repository to the bootstrap (Y/N)?: "
         read addornay </dev/tty
+        #again, I can makes these inline choices to save lines/time
         case $addornay in 
                 [Yy][eE][sS]|[yY])
                         add=yes
@@ -121,24 +148,31 @@ bootstrapchoice () {
                         add=nonsense
                         ;;
         esac
+        #do nothing if not
         if [[ $add == "no" ]]; then
                 echo "Not added"
                 unset add
         fi
+        #if yes then write to file
         if [[ $add == "yes" ]]; then
+                #echo the remote address to one file
                 echo $remotesClean >> ~/batchgit-takeaway/bootstraprepo
                 relativeFilepath=$(dirname $locdir)
                 relativeFilepath2=$(echo $relativeFilepath | sed -e 's|^/[^/]*||' -e 's|^/[^/]*||' -e 's|^/||')
+                #echo the filepath that the repo lives in (i.e. the full parent file path)
+                #and change the user name to $USER for compatibility.
                 echo "$relativeFilepath2" >> ~/batchgit-takeaway/bootstrapdir
                 echo "Added"
                 unset add
         fi
         if [[ $add == "leave" ]]; then
+                #quit if thats your choice
                 echo "Goodbye!"
                 unset add
                 exit
         fi
         if [[ $add == "nonsense" ]]; then
+                #nonsensical return to the beginning.
                 echo "That choice was unclear"
                 unset add
                 bootstrapchoice
@@ -146,10 +180,15 @@ bootstrapchoice () {
 }
 
 checkrepodirmatch () {
+        #before running the bootstrap
+        #get the list of remotes
         clones=( $(cat ~/batchgit-takeaway/bootstraprepo) )
+        #get the parent file paths
         localRepo=( $(cat ~/batchgit-takeaway/bootstrapdir) )
+        #count the numbers of each
         lenclones=$(wc -l < ~/batchgit-takeaway/bootstraprepo)
         lenlocalRepo=$(wc -l < ~/batchgit-takeaway/bootstrapdir)
+        #ensure backup ran correctly and there is an equal number of both
         if [[ $lenlocalRepo != $lenclones ]]; then
                 echo "The number of directories does not match the number of remote locations"
                 exit
@@ -157,6 +196,7 @@ checkrepodirmatch () {
 }
 
 confirmClone () {
+        #ask whether to clone or not
         echo "Would you like to clone this repository to this location? (Y/N): "
         read cloneornay </dev/tty
         case $cloneornay in 
@@ -173,10 +213,13 @@ confirmClone () {
                         clonethis=nonsense
                         ;;
         esac
+        #Wow, I really hated putting thise things up there where they belong
+        #Beer coding is not efficient coding
         if [[ $clonethis == "no" ]]; then
                 echo "Not cloned"
                 unset clonethis
         fi
+        #if answer is yes then git clone the ith number in the array
         if [[ $clonethis == "yes" ]]; then
                 git clone ${clones[$i]}
                 echo "Cloned"
@@ -187,6 +230,7 @@ confirmClone () {
                 unset clonethis
                 exit
         fi
+        #if you enter nonsense, you are just going to have to try again
         if [[ $clonethis == "nonsense" ]]; then
                 echo "That choice was unclear"
                 unset clonethis
@@ -195,6 +239,8 @@ confirmClone () {
 }
 
 if [[ $1 == "--backup" ]]; then
+        #if the flag for backup mode has been used
+        #check if the takeaway directory doesn't already exists
         if [[ ! -d ~/batchgit-takeaway ]]; then
                 echo "Building a takeaway box for you at ${bold}~/batchgit-takeaway${normal}"
                 echo "This will be where the files for bootstrapping will live"
@@ -202,6 +248,7 @@ if [[ $1 == "--backup" ]]; then
                 echo "It might be an idea for you to put a copy of batchgit-takeaway in the folder too"
                 echo ""
         fi
+        #if the following files already exist, back them up and make new ones.
         if [[ -f ~/batchgit-takeaway/bootstraprepo ]]; then
                 echo -e "Bootstraprepo file already exists, making a back up at ~/batchgit-takeaway/bootstraprepo.bak\n"
                 mv ~/batchgit-takeaway/bootstraprepo ~/batchgit-takeaway/bootstraprepo.bak
@@ -210,12 +257,17 @@ if [[ $1 == "--backup" ]]; then
                 echo -e "Bootstrapdir file already exists, making a back up at ~/batchgit-takeaway/bootstrapdir.bak\n"
                 mv ~/batchgit-takeaway/bootstrapdir ~/batchgit-takeaway/bootstrapdir.bak
         fi
+        #check if a batchgitrepo exists, if not then tell them to run it. Or let the function run
         if [[ ! -f ~/.batchgitrc ]]; then
                 echo "You don't have a ~/.batchgitrc file."
                 echo "This can be created by running batchgit -find"
+                echo "or the following"
+                findgitrepos
         fi
+        #backup mode begins
         echo -e "\n${bold}BACKUP MODE"
         echo -e "===========${normal}\n"
+        #cycle through files in the batchgitrc and ask if they should be added to the clone
         while read locdir; do
                 echo -e "Local repository is $locdir"
                 cd /$locdir
@@ -223,40 +275,55 @@ if [[ $1 == "--backup" ]]; then
                 remotesClean=$(echo $remotes | sed -e 's/origin//' | sed -e 's/ (fetch)//')
                 remotePresent=1
                 remoteTotal=$(echo $remotes | grep -c "fetch")
+                #Count how many remotes exist, actually I am not sure of this works
                 if [[ $remoteTotal -gt "1" ]]; then
                         echo "The are $remoteTotal remotes"
                         while [[ $remotePresent -le $remoteTotal ]]; do
                                 let remotePresent+=1
                                 echo $remotes
                                 echo $($remotes | grep -m$remotePresent)
+                                echo "Sorry, I haven't got round to making multiple remotes work."
+                                echo "Please let me know what the output from having multiple remotes looks like and I'll try and make it work"
                         done
                 else
+                        #echo the remote
                         echo "There is only one remote branch"
                         echo -e "Which is:${bold}$remotesClean${normal}"
                 fi
+                #run through the multiple choice for bootstrapping
                 bootstrapchoice
                 echo -e "\n"
         done < ~/.batchgitrc
+        #changes all of the first line to user, this assumes that all directories live in ~
+        #something to optimise if anyone beside me actually uses it.
         sed -e 's|^|/home/$USER/|g' -i ~/batchgit-takeaway/bootstrapdir
+        #function to check backup list has cycle through properly
         checkrepodirmatch
         exit
 fi
 
 if [[ $1 == "--clone" ]]; then
+        #enter if clone flag used
         echo -e "\n${bold}CLONE MODE"
         echo -e "==========${normal}\n"
+        #checks that repos match paths in number
         checkrepodirmatch
         let i=0
         for dir in ${localRepo[@]}; do
+                #if directory not present then it makes it
                 if [[ ! -d ${localRepo[$i]} ]]; then
                         if [ "${localRepo[$i]}" != '/home/$USER/' ]; then
                                 echo "Making the directory ${localRepo[$i]}"
                                 eval mkdir -p "${localRepo[$i]}"
                         fi
                 fi
+                #moves to the dir in question
                 eval cd ${localRepo[$i]}
+                #tells you where you are
                 echo "this dir is ${bold}$(pwd)${normal}"
+                #tells you what it should match
                 echo "which should match ${localRepo[$i]}"
+                #tells you what its going to put there
                 echo "for cloning ${bold}${clones[$i]}${normal}"
                 confirmClone
                 let i+=1
@@ -267,27 +334,36 @@ fi
 
 #add new repo to config file
 if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
+        #add individual dir/repo mode
         if [[ ! -z $2 ]]; then 
+                #checks rc exists, think this is / should be a function
                 if [[ ! -f ~/.batchgitrc ]]; then
                         touch ~/.batchgitrc
                         echo -e "making ~/.batchgitrc file \n"
                 fi
+                #think that is isnt actually necessary, anyways, adds current dir if ./ used
                 if [[ $2 == "./" ]]; then
                         echo $(pwd) >> ~/.batchgitrc
                         echo "adding $(pwd) to ~/.batchgitrc"
+                #allows adding subdir of current by checking slashes are not used
                 elif [[ $2 != "*/*" ]]; then
                         PWD=$(pwd)
+                        #adds based on pwd plus arguement
                         pwdrepdir=$PWD"/"$2
                         echo "adding $pwdrepdir to ~/.batchgitrc"
                         echo $pwdrepdir >> ~/.batchgitrc
+                #allows adding full file path
                 else
                         echo $2 >> ~/.batchgitrc
                         echo -e "Added $2 to the ~/.batchgitrc file"
                 fi
+                #removes any duplicates
                 sort -u -o ~/.batchgitrc ~/.batchgitrc
         else
+                #error if dir not added
                 echo "you need to add the directory after the flag!"
         fi
+        #needs to be replaced by function
         choice=y
 fi
 
@@ -348,7 +424,7 @@ fi
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
-findgitrepos
+#gives some options
 while true; do
         echo -e """
 1) \t git status
@@ -360,6 +436,7 @@ while true; do
         """
         read -p "What happens now? " whatnow
         case $whatnow in
+                #could turn these into functions, but work fine as is
                 [1]* ) now=gstatus;break;;
                 [2]* ) now=gpull;break;;
                 [3]* ) now=gpullpush;break;;
