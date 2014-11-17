@@ -140,3 +140,4 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 19. ~~Turn git status into a function~~
 20. ~~Batchgit push single directories~~
 21. Offer alternative to whatthecommit message
+22. Update README with specific folder pushing
