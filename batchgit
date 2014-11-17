@@ -83,7 +83,6 @@ checkbatchgit () {
         fi
 }
 
-
 findgitrepos () {
         #Runs a find to look for repos
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
@@ -238,6 +237,142 @@ confirmClone () {
         fi
 }
 
+assignDynamicDir () {
+        numCurArg=1
+        while [ $numCurArg -lt $# ]; do
+                numCurArg=$((numCurArg+1))
+                Dir[$numCurArg]=${!numCurArg}
+        done
+}
+
+gitStatus () {
+        #gives the repo name
+        REPO=${PWD##*/}
+        #returns the branch
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        #prints the repository name and branch to stdout
+        echo -e ${bold}"Repository: $REPO ${normal} $BRANCH"
+        #looks for types of modifications that can popup in git status
+        untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
+        modified=$(git ls-files -m)
+        deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
+        commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
+        committed=$(git status | sed -n -e '/committed:/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
+        newfiles=$(git status | sed -n -e '/committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
+        #status of commit
+        commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
+        commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
+        commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
+        commitDiverge=$(git status | grep "diverged"*)
+        #if there are commited files echoes that
+        if [[ ! -z $committed ]]; then
+                echo -e "Commited: \n\e[1;31m$committed\e[0m"
+        fi
+        #if there are new files, echoes that
+        if [[ ! -z $newfiles ]]; then
+                echo -e "New: \n\e[1;32m$newfiles\e[0m"
+        fi
+        #if there are deleted files, echoes that
+        if [[ ! -z $deleted ]]; then
+                echo -e "Deleted: \n\e[1;31m$deleted\e[0m"
+        fi
+        #if there are untracked files, echoes that
+        if [[ ! -z $untracked ]]; then
+                echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
+        fi
+        #if there are modified files, echoes that
+        if [[ ! -z $modified ]]; then
+                echo -e "Modified: \n\e[1;31m$modified\e[0m"
+        fi
+        #checks status of commit, in front, ahead or diverged. Never seen diverged
+        #happen though so I can't guarantee it works
+        if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
+                if [[ ! -z $commitAhead ]]; then
+                        echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
+                fi
+                if [[ ! -z $commitBehind ]]; then
+                        echo -e "Commit: \n\e[1;31m$commitBehind behind\e[0m"
+                fi
+        elif [[ ! -z $commitDiverge ]]; then
+                echo "Divergence has occured"
+        elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
+                echo "You are ahead and behind"
+        fi
+        echo ""
+}
+
+gitPull () {
+        REPO=${PWD##*/}
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+		git pull
+        printf "\n"
+}
+
+gitPush () {
+        REPO=${PWD##*/}
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+        #if pushonly then only pushes
+        if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
+                git push
+        #otherwise will do a pull before pushing. for safety
+        else
+                git pull
+                git push
+        fi
+        printf "\n"
+}
+
+gitCommit () {
+        numMod=$(git status | grep -c "modified")
+        numNew=$(git status | grep -c "new file")
+        numUntr=$(git status | grep -c "untracked")
+        numDel=$(git status | grep -c "deleted")
+        numTotal=$(($numNew + $numMod + $numUntr + $numDel))
+        REPO=${PWD##*/}
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+        #if there are any files that need commiting then goes doewn the following
+        if [[ $numTotal != "0" ]]; then
+                #if there is not arguement then will use a random arguement curled from whatthecommit
+                #for a laugh
+                if [[ -z $2 ]]; then
+                        commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+                #if there is an arguement then it will use that instead
+                else
+                        commitMessage=$2
+                fi
+                #adds files
+                git add .
+                git add -A
+                #commits
+                git commit -m "$commitMessage"
+                printf "\n"
+                #if -cp flag present then it will also push after committing
+                if [[ $1 == "-cp" ]]; then
+                        git push
+                fi
+                echo ""
+        fi
+        if [[ $numTotal == "0" ]]; then
+                echo "Nothing to commit here"
+                echo ""
+        fi
+}
+
+#Array where paths are held
+paths=( $(cat ~/.batchgitrc) )     
+
+#Check to ensure all local directories still exist
+for dir in "${paths[@]}"; do
+        #checks that the directory still exists before running anything
+        if [[ ! -d $dir ]]; then
+                echo -e "The $dir directory doesn't exist anymore and has been removed from the config file"
+                sed -e "s|$dir||g" -i  ~/.batchgitrc
+        fi
+done
+
 if [[ $1 == "--backup" ]]; then
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
@@ -367,7 +502,6 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         choice=y
 fi
 
-
 if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
         if [[ -z $2 ]]; then 
                 findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
@@ -421,7 +555,6 @@ if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         findgitrepos func1
 fi
 
-
 #multiple choice for no option or post config
 if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
 #gives some options
@@ -455,106 +588,90 @@ if [[ $now == "quit" ]]; then
         exit
 fi
 
-#Array where paths are held
-paths=( $(cat ~/.batchgitrc) )     
-
-#Check to ensure all local directories still exist
-for dir in "${paths[@]}"; do
-        #checks that the directory still exists before running anything
-        if [[ ! -d $dir ]]; then
-                echo -e "The $dir directory doesn't exist anymore and has been removed from the config file"
-                sed -e "s|$dir||g" -i  ~/.batchgitrc
-        fi
-done
 #deletes blank lines from the batchgitrc file
 #could potentially be moved into the loop above
 sed -e '/^$/d' -i ~/.batchgitrc 
-paths=( $(cat ~/.batchgitrc) )     
-
-#spacing for neatness
-printf "\n"
 
 #git status
 if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
-        #goes through the folders in the list
-        for dir in "${paths[@]}"; do
-                #moves into the directory listed
-                cd $dir
-                #gives the repo name
-                REPO=${PWD##*/}
-                #returns the branch
-                BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                #prints the repository name and branch to stdout
-                echo -e ${bold}"Repository: $REPO ${normal} $BRANCH"
-                #looks for types of modifications that can popup in git status
-                untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
-                modified=$(git ls-files -m)
-                deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
-                commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
-                committed=$(git status | sed -n -e '/committed:/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
-                newfiles=$(git status | sed -n -e '/committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
-                #status of commit
-                commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
-                commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
-                commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
-                commitDiverge=$(git status | grep "diverged"*)
-                #if there are commited files echoes that
-                if [[ ! -z $committed ]]; then
-                        echo -e "Commited: \n\e[1;31m$committed\e[0m"
-                fi
-                #if there are new files, echoes that
-                if [[ ! -z $newfiles ]]; then
-                        echo -e "New: \n\e[1;32m$newfiles\e[0m"
-                fi
-                #if there are deleted files, echoes that
-                if [[ ! -z $deleted ]]; then
-                        echo -e "Deleted: \n\e[1;31m$deleted\e[0m"
-                fi
-                #if there are untracked files, echoes that
-                if [[ ! -z $untracked ]]; then
-                        echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
-                fi
-                #if there are modified files, echoes that
-                if [[ ! -z $modified ]]; then
-                        echo -e "Modified: \n\e[1;31m$modified\e[0m"
-                fi
-                #checks status of commit, in front, ahead or diverged. Never seen diverged
-                #happen though so I can't guarantee it works
-                if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
-                        if [[ ! -z $commitAhead ]]; then
-                                echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
+        if [[ $# -gt 1 ]]; then
+                assignDynamicDir $@
+                for dynamicDir in ${Dir[@]}; do
+                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                        if [[ ! -z $inRc ]]; then
+                                cd $inRc
+                                gitStatus
                         fi
-                        if [[ ! -z $commitBehind ]]; then
-                                echo -e "Commit: \n\e[1;31m$commitBehind behind\e[0m"
+                        if [[ -z $inRc ]]; then
+                                echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+                                echo ""
                         fi
-                elif [[ ! -z $commitDiverge ]]; then
-                        echo "Divergence has occured"
-                elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
-                        echo "You are ahead and behind"
-                fi
-                echo
-        done
-exit
+                done
+        fi
+        if [[ $# == "1" ]]; then
+                #goes through the folders in the list
+                for dir in "${paths[@]}"; do
+                        #moves into the directory listed
+                        cd $dir
+                        gitStatus 
+                done
+        fi
+        exit
+fi
+
+#git pull
+if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
+        if [[ $# -gt 1 ]]; then
+                assignDynamicDir $@
+                for dynamicDir in ${Dir[@]}; do
+                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                        if [[ ! -z $inRc ]]; then
+                                cd $inRc
+                                gitPull
+                        fi
+                        if [[ -z $inRc ]]; then
+                                echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
+                                echo ""
+                        fi
+                done
+        fi
+        if [[ $# == "1" ]]; then
+                #goes through the folders in the list
+                for dir in "${paths[@]}"; do
+                        #moves into the directory listed
+                        cd $dir
+                        gitPull 
+                done
+        fi
 fi
 
 #git push
 if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]] || [[ $1 == "-po" ]] || [[ $1 == "-pushonly" ]]; then
-	for dir in "${paths[@]}"; do
-        #moves into dir
-		cd $dir
-        REPO=${PWD##*/}
-        BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
-        #if pushonly then only pushes
-        if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
-                git push
-        #otherwise will do a pull before pushing. for safety
-        else
-                git pull
-                git push
+        if [[ $# -gt 1 ]]; then
+                assignDynamicDir $@
+                for dynamicDir in ${Dir[@]}; do
+                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                        if [[ ! -z $inRc ]]; then
+                                cd $inRc
+                                gitPush
+                        fi
+                        if [[ -z $inRc ]]; then
+                                echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
+                                echo ""
+                        fi
+                done
         fi
-        printf "\n"
-	done
+        if [[ $# == "1" ]]; then
+                #goes through the folders in the list
+                for dir in "${paths[@]}"; do
+                        #moves into the directory listed
+                        cd $dir
+                        gitPush
+                done
+        fi
         #not sure what this is doing here
         if [[ $1 == "-n" ]]; then
                 echo -e "\nAll done for the day!\n"
@@ -578,56 +695,30 @@ o        o         o      o     +
 exit
 fi
 
-#git pull
-if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
-	for dir in "${paths[@]}"; do
-        #echos dir name and branch then pulls
-		cd $dir
-        REPO=${PWD##*/}
-        BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
-		git pull
-        printf "\n"
-	done
-exit
-fi
-
-#For people too lazy to do proper commits, cp flag will push as well
 if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
-        for dir in "${paths[@]}"; do
-                #moves into dir and looks for files that need commiting
-                cd $dir
-                numMod=$(git status | grep -c "modified")
-                numNew=$(git status | grep -c "new file")
-                numUntr=$(git status | grep -c "untracked")
-                numDel=$(git status | grep -c "deleted")
-                numTotal=$(($numNew + $numMod + $numUntr + $numDel))
-                REPO=${PWD##*/}
-                BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo ${bold}"Repository: $REPO ${normal} $BRANCH"
-                #if there are any files that need commiting then goes doewn the following
-                if [[ $numTotal != "0" ]]; then
-                        #if there is not arguement then will use a random arguement curled from whatthecommit
-                        #for a laugh
-                        if [[ -z $2 ]]; then
-                                commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
-                        #if there is an arguement then it will use that instead
-                        else
-                                commitMessage=$2
+        if [[ $# -gt 1 ]]; then
+                assignDynamicDir $@
+                for dynamicDir in ${Dir[@]}; do
+                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                        if [[ ! -z $inRc ]]; then
+                                cd $inRc
+                                gitCommit
                         fi
-                        #adds files
-                        git add .
-                        git add -A
-                        #commits
-                        git commit -m "$commitMessage"
-                        printf "\n"
-                        #if -cp flag present then it will also push after committing
-                        if [[ $1 == "-cp" ]]; then
-                                git push
+                        if [[ -z $inRc ]]; then
+                                echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+                                echo ""
                         fi
-                fi
-        done
-        exit
+                done
+        fi
+        if [[ $# == "1" ]]; then
+                #goes through the folders in the list
+                for dir in "${paths[@]}"; do
+                        #moves into the directory listed
+                        cd $dir
+                        gitCommit
+                done
+        fi
 fi
 
 if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
