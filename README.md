@@ -134,3 +134,7 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 13. `rm` all untracked files
 14. Alphabetical printing of repo
 15. ~~multiple wipes~~
+16. Optimise loops
+17. Remove `./` as its not needed
+18. Loop for checking batchgitrc presence
+19. Turn git status into a function
