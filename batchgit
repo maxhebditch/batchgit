@@ -4,6 +4,7 @@
 bold=`tput bold`
 normal=`tput sgr0`
 
+#function that assigns n number of command line arguements
 assignDynamicDir () {
         numCurArg=1
         while [ $numCurArg -lt $# ]; do
@@ -73,6 +74,8 @@ wipeRepos () {
         exit
 }
 
+#function that checks that the ~/.batchgitrc exists or if its empty and 
+#runs find git
 checkbatchgit () {
         #checks that batchgitrc exists, if not then goes
         #to function to search for current repos
@@ -91,6 +94,7 @@ checkbatchgit () {
         fi
 }
 
+#function that finds git repos on the disk
 findgitrepos () {
         #Runs a find to look for repos
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
@@ -136,6 +140,7 @@ findgitrepos () {
         done
 }
 
+#function that asks which repos to bootstrap
 bootstrapchoice () {
         #For bootstrap mode, asks which should be written to boostrap file
         echo "Would you like to add this repository to the bootstrap (Y/N)?: "
@@ -186,6 +191,8 @@ bootstrapchoice () {
         fi
 }
 
+#function that ensures the number of repos to bootstrap
+#matches the number of directories that are present
 checkrepodirmatch () {
         #before running the bootstrap
         #get the list of remotes
@@ -202,6 +209,7 @@ checkrepodirmatch () {
         fi
 }
 
+#function that asks whether repo should be cloned or not
 confirmClone () {
         #ask whether to clone or not
         echo "Would you like to clone this repository to this location? (Y/N): "
@@ -245,6 +253,8 @@ confirmClone () {
         fi
 }
 
+#function that checks the git status output for different types of
+#modifications and then echoes them
 gitStatus () {
         #gives the repo name
         REPO=${PWD##*/}
@@ -291,16 +301,19 @@ gitStatus () {
                         echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
                 fi
                 if [[ ! -z $commitBehind ]]; then
-                        echo -e "Commit: \n\e[1;31m$commitBehind behind\e[0m"
+                        echo -e "Commit: \n\e[1;31m$commitBehind, behind\e[0m"
                 fi
+        #look for divergence
         elif [[ ! -z $commitDiverge ]]; then
                 echo "Divergence has occured"
+        #not sure when this one might pop up
         elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
                 echo "You are ahead and behind"
         fi
         echo ""
 }
 
+#function that pulls repos
 gitPull () {
         REPO=${PWD##*/}
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -309,6 +322,7 @@ gitPull () {
         printf "\n"
 }
 
+#function that pushes repos
 gitPush () {
         REPO=${PWD##*/}
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -324,6 +338,7 @@ gitPush () {
         printf "\n"
 }
 
+#function that checks for different types of commits
 gitCommit () {
         numMod=$(git status | grep -c "modified")
         numNew=$(git status | grep -c "new file")
@@ -347,6 +362,7 @@ for dir in "${paths[@]}"; do
         fi
 done
 
+#arguement to backup
 if [[ $1 == "--backup" ]]; then
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
@@ -411,6 +427,7 @@ if [[ $1 == "--backup" ]]; then
         exit
 fi
 
+#if clone flag is used
 if [[ $1 == "--clone" ]]; then
         #enter if clone flag used
         echo -e "\n${bold}CLONE MODE"
@@ -476,6 +493,7 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
         choice=y
 fi
 
+#recursive addition of repos
 if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
         if [[ -z $2 ]]; then 
                 findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
@@ -532,6 +550,7 @@ fi
 #multiple choice for no option or post config
 if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
 #gives some options
+#want to overhaul this section
 while true; do
         echo -e """
 1) \t git status
@@ -670,6 +689,7 @@ o        o         o      o     +
 exit
 fi
 
+#commit flag, complicated due to flag and commit message catching
 if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
         #if there is only one arguement, it has to be -c so batchcommit with 
         #whatthecommit commit message
@@ -704,13 +724,14 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                                 cd $dir
                                 gitCommit
                                 if [[ $numTotal != "0" ]]; then
+                                        echo "HERE"
                                         #adds files
                                         git add .
                                         git add -A
                                         #commits
                                         echo "commit message is $2"
                                         commitmessage=$2
-                                        git commit -m "$commitMessage"
+                                        git commit -m "$2"
                                         printf "\n"
                                         #if -cp flag present then it will also push after committing
                                         if [[ $1 == "-cp" ]]; then
@@ -787,8 +808,10 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
         exit
 fi
 
+#catch wipe flag
 if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
         #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
+        #dont think i need to set this to $1: change
         func1=$1
         checkbatchgit func1 
         wipeRepos
