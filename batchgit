@@ -724,7 +724,6 @@ if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
                                 cd $dir
                                 gitCommit
                                 if [[ $numTotal != "0" ]]; then
-                                        echo "HERE"
                                         #adds files
                                         git add .
                                         git add -A
