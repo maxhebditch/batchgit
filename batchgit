@@ -220,10 +220,10 @@ gitPush () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         echo ${bold}"Repository: $REPO ${normal} $BRANCH"
         #if pushonly then only pushes
-        if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]] ; then
+        if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]]; then
                 git push
         #otherwise will do a pull before pushing. for safety
-        else
+        elif [[ $1 == "-push" ]] || [[ $now == "gpull" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]]; then
                 git pull
                 git push
         fi
@@ -548,7 +548,7 @@ fi
 if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]] || [[ $1 == "-po" ]] || [[ $1 == "-pushonly" ]]; then
         if [[ $# -gt 1 ]]; then
                 if [[ $2 == "./" ]]; then
-                        gitPush
+                        gitPush $1
                 else
                         assignDynamicDir $@
                         for dynamicDir in ${Dir[@]}; do
@@ -556,7 +556,7 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
                                 inRc=$(grep "$dynamicDir" ~/.batchgitrc)
                                 if [[ ! -z $inRc ]]; then
                                         cd $inRc
-                                        gitPush
+                                        gitPush $1
                                 fi
                                 if [[ -z $inRc ]]; then
                                         echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
@@ -570,7 +570,7 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
                 for dir in "${paths[@]}"; do
                         #moves into the directory listed
                         cd $dir
-                        gitPush
+                        gitPush $1
                 done
         fi
         #not sure what this is doing here
