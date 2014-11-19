@@ -15,13 +15,6 @@ assignDynamicDir () {
 
 #function that goes through your list of repos in ~/.batchgitrc and asks which to keep
 wipeRepos () {
-        echo -e "\n${bold}WIPE MODE"
-        echo -e "==========${normal}\n"
-        let i=1
-        #cycles through dirs in file
-        for dir in "${paths[@]}"; do
-                let i+=1
-                cd $dir
                 REPO=${PWD##*/}
                 echo ${bold}"Repository: $REPO ${normal}"
                 echo "on path:$(pwd)"
@@ -62,7 +55,6 @@ wipeRepos () {
                         unset del
                 fi
                 printf "\n"
-        done
         exit
 }
 
@@ -781,9 +773,31 @@ fi
 if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
         #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
         #dont think i need to set this to $1: change
-        func1=$1
-        checkbatchgit func1 
-        wipeRepos
+        echo -e "\n${bold}WIPE MODE"
+        echo -e "==========${normal}\n"
+        #cycles through dirs in file
+        if [[ $# == "1" ]]; then
+                let i=1
+                for dir in "${paths[@]}"; do
+                        let i+=1
+                        cd $dir
+                        wipeRepos
+                done
+        elif [[ $# -gt 1 ]]; then
+                assignDynamicDir $@
+                for dynamicDir in ${Dir[@]}; do
+                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                        if [[ ! -z $inRc ]]; then
+                                cd $inRc
+                                wipeRepos
+                        fi
+                        if [[ -z $inRc ]]; then
+                                echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+                                echo ""
+                        fi
+                done
+        fi
 fi
 
 #add ability to go to goptions but then still read through file
