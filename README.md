@@ -63,16 +63,16 @@ This flag works exactly the opposite to the previous one. Instead of adding sing
         $ batchgit -status
         $ batchgit -s
         $ batchgit -s ./
-        $ batchgit -s bin pseudoAb antigencalc
+        $ batchgit -s repo1 repo2 repo3
 
-The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red. Alternatively just current or a list of specific ones.
+The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red. Alternatively just current or a list of specific ones. The specific repos, `repo1`, `repo2`, and `repo3` in the above example, have to be in your `~/.batchgitrc` file.
 
 ###git pull
 
         $ batchgit -pull
         $ batchgit -d
         $ batchgit -d ./
-        $ batchgit -d bin pseudoAb antigencalc
+        $ batchgit -d repo1 repo2 repo3
 
 Script will loop through git repositories and pull from remote source. Or just specific ones or current.
 
@@ -81,14 +81,14 @@ Script will loop through git repositories and pull from remote source. Or just s
         $ batchgit -push
         $ batchgit -u
         $ batchgit -u ./
-        $ batchgit -u bin pseudoAb antigencalc
+        $ batchgit -u repo1 repo2 repo3
 
 Script will loop through git repositories, pull first to avoid conflicts and then push to remote source. Can be done on all repos or just specific pnes.
 
         $ batchgit -pushonly
         $ batchgit -po
         $ batchgit -po ./
-        $ batchgit -po bin pseudoAb antigencalc
+        $ batchgit -po repo1 repo2 repo3
 
 Script will only push rather than pull then push.
 
@@ -125,7 +125,7 @@ The script can now also be used to wipe multiple repos at once using
 As usual, it will find the repos and ask you one at a time which you want to keep. Or singular repos as so
 
         $ batchgit --wipe ./
-        $ batchgit --wipe bin pseudoAb antigencalc
+        $ batchgit --wipe repo1 repo2 repo3
 
 ##FAQs
 ###Why are some of my repos not being found?
@@ -153,3 +153,4 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 22. ~~Update README with specific folder pushing~~
 23. Add multiple repos to batchgit -remove
 24. Think about nomenclature
+25. Add support for specific repos by path for pushing pulling statusing etc
