@@ -100,40 +100,18 @@ bootstrapchoice () {
         read addornay </dev/tty
         #again, I can makes these inline choices to save lines/time
         case $addornay in 
-                [Yy][eE][sS]|[yY]) add=yes ;;
-                [Nn][Oo]|[Nn]) add=no ;;
-                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) add=leave ;;
-                *) add=nonsense ;;
+                [Yy][eE][sS]|[yY])
+                        #echo the remote address to one file
+                        echo $remotesClean >> ~/batchgit-takeaway/bootstraprepo relativeFilepath=$(dirname $locdir)
+                        relativeFilepath2=$(echo $relativeFilepath | sed -e 's|^/[^/]*||' -e 's|^/[^/]*||' -e 's|^/||')
+                        #echo the filepath that the repo lives in (i.e. the full parent file path)
+                        #and change the user name to $USER for compatibility.
+                        echo "$relativeFilepath2" >> ~/batchgit-takeaway/bootstrapdir
+                        echo "Added";;
+                [Nn][Oo]|[Nn]) echo "Not added" ;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo "quiting" && exit ;;
+                *) echo "That choice was unclear" && bootstrapchoice ;;
         esac
-        #do nothing if not
-        if [[ $add == "no" ]]; then
-                echo "Not added"
-                unset add
-        fi
-        #if yes then write to file
-        if [[ $add == "yes" ]]; then
-                #echo the remote address to one file
-                echo $remotesClean >> ~/batchgit-takeaway/bootstraprepo
-                relativeFilepath=$(dirname $locdir)
-                relativeFilepath2=$(echo $relativeFilepath | sed -e 's|^/[^/]*||' -e 's|^/[^/]*||' -e 's|^/||')
-                #echo the filepath that the repo lives in (i.e. the full parent file path)
-                #and change the user name to $USER for compatibility.
-                echo "$relativeFilepath2" >> ~/batchgit-takeaway/bootstrapdir
-                echo "Added"
-                unset add
-        fi
-        if [[ $add == "leave" ]]; then
-                #quit if thats your choice
-                echo "Goodbye!"
-                unset add
-                exit
-        fi
-        if [[ $add == "nonsense" ]]; then
-                #nonsensical return to the beginning.
-                echo "That choice was unclear"
-                unset add
-                bootstrapchoice
-        fi
 }
 
 #function that ensures the number of repos to bootstrap
