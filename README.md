@@ -62,25 +62,33 @@ This flag works exactly the opposite to the previous one. Instead of adding sing
 
         $ batchgit -status
         $ batchgit -s
+        $ batchgit -s ./
+        $ batchgit -s bin pseudoAb antigencalc
 
-The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red.
+The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red. Alternatively just current or a list of specific ones.
 
 ###git pull
 
         $ batchgit -pull
         $ batchgit -d
+        $ batchgit -d ./
+        $ batchgit -d bin pseudoAb antigencalc
 
-Script will loop through git repositories and pull from remote source.
+Script will loop through git repositories and pull from remote source. Or just specific ones or current.
 
 ###git push
 
         $ batchgit -push
         $ batchgit -u
+        $ batchgit -u ./
+        $ batchgit -u bin pseudoAb antigencalc
 
-Script will loop through git repositories, pull first to avoid conflicts and then push to remote source.
+Script will loop through git repositories, pull first to avoid conflicts and then push to remote source. Can be done on all repos or just specific pnes.
 
         $ batchgit -pushonly
         $ batchgit -po
+        $ batchgit -po ./
+        $ batchgit -po bin pseudoAb antigencalc
 
 Script will only push rather than pull then push.
 
@@ -114,7 +122,10 @@ The script can now also be used to wipe multiple repos at once using
 
         $ batchgit --wipe
 
-As usual, it will find the repos and ask you one at a time which you want to keep.
+As usual, it will find the repos and ask you one at a time which you want to keep. Or singular repos as so
+
+        $ batchgit --wipe ./
+        $ batchgit --wipe bin pseudoAb antigencalc
 
 ##FAQs
 ###Why are some of my repos not being found?
@@ -128,16 +139,17 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 9. ~~Add folders recursively from current location to configuration file.~~
 10. ~~Handle directories that have been deleted since config file wrote~~
 12. ~~Say whether one commit ahead or behind rather than just different~~
-4. `cd` to places where changes have happened.
 11. ~~`git clone` using `~/.batchgitrc` file~~
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
 13. `rm` all untracked files
 14. Alphabetical printing of repo
 15. ~~multiple wipes~~
-16. Optimise loops
+16. ~~Optimise loops~~
 17. Remove `./` as its not needed
 18. Loop for checking batchgitrc presence
 19. ~~Turn git status into a function~~
 20. ~~Batchgit push single directories~~
 21. Offer alternative to whatthecommit message
-22. Update README with specific folder pushing
+22. ~~Update README with specific folder pushing~~
+23. Add multiple repos to batchgit -remove
+24. Think about nomenclature
