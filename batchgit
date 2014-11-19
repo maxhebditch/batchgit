@@ -515,19 +515,23 @@ fi
 #git pull
 if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
         if [[ $# -gt 1 ]]; then
-                assignDynamicDir $@
-                for dynamicDir in ${Dir[@]}; do
-                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-                        if [[ ! -z $inRc ]]; then
-                                cd $inRc
-                                gitPull
-                        fi
-                        if [[ -z $inRc ]]; then
-                                echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
-                                echo ""
-                        fi
-                done
+                if [[ $2 == "./" ]]; then
+                        gitPull
+                else
+                        assignDynamicDir $@
+                        for dynamicDir in ${Dir[@]}; do
+                                echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                                inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                                if [[ ! -z $inRc ]]; then
+                                        cd $inRc
+                                        gitPull
+                                fi
+                                if [[ -z $inRc ]]; then
+                                        echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
+                                        echo ""
+                                fi
+                        done
+                fi
         fi
         if [[ $# == "1" ]] || [[ $now == "gpull" ]]; then
                 #goes through the folders in the list
@@ -543,19 +547,23 @@ fi
 #git push
 if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]] || [[ $1 == "-po" ]] || [[ $1 == "-pushonly" ]]; then
         if [[ $# -gt 1 ]]; then
-                assignDynamicDir $@
-                for dynamicDir in ${Dir[@]}; do
-                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-                        if [[ ! -z $inRc ]]; then
-                                cd $inRc
-                                gitPush
-                        fi
-                        if [[ -z $inRc ]]; then
-                                echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
-                                echo ""
-                        fi
-                done
+                if [[ $2 == "./" ]]; then
+                        gitPush
+                else
+                        assignDynamicDir $@
+                        for dynamicDir in ${Dir[@]}; do
+                                echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                                inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                                if [[ ! -z $inRc ]]; then
+                                        cd $inRc
+                                        gitPush
+                                fi
+                                if [[ -z $inRc ]]; then
+                                        echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
+                                        echo ""
+                                fi
+                        done
+                fi
         fi
         if [[ $# == "1" ]] || [[ $now == "gpullpush" ]] || [[ $now == "gpush" ]]; then
                 #goes through the folders in the list
@@ -721,19 +729,23 @@ if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
                         wipeRepos
                 done
         elif [[ $# -gt 1 ]]; then
-                assignDynamicDir $@
-                for dynamicDir in ${Dir[@]}; do
-                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-                        if [[ ! -z $inRc ]]; then
-                                cd $inRc
-                                wipeRepos
-                        fi
-                        if [[ -z $inRc ]]; then
-                                echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
-                                echo ""
-                        fi
-                done
+                if [[ $2 == "./" ]]; then
+                        wipeRepos
+                else
+                        assignDynamicDir $@
+                        for dynamicDir in ${Dir[@]}; do
+                                echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+                                inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+                                if [[ ! -z $inRc ]]; then
+                                        cd $inRc
+                                        wipeRepos
+                                fi
+                                if [[ -z $inRc ]]; then
+                                        echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+                                        echo ""
+                                fi
+                        done
+                fi
         fi
 exit
 fi
