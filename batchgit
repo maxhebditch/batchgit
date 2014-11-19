@@ -100,7 +100,6 @@ findgitrepos () {
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
         #counts how many are inside
         numfind=${#findgit[@]}
-        func1=$1
         #tells user how many repos they have
         echo -e "There are $numfind git repositories \n"
         #if file doesn't exist, then makes one
@@ -120,21 +119,13 @@ findgitrepos () {
                         read incRepo </dev/tty
                         case $incRepo in 
                                 #Can keep track of repo, and if so writes it to file
-                                [Yy][eE][sS]|[yY])
-                                        echo $gdir >> ~/.batchgitrc
-                                        ;;
+                                [Yy][eE][sS]|[yY]) echo $gdir >> ~/.batchgitrc;;
                                 #no action if not kept
-                                [Nn][Oo]|[Nn])
-                                        :
-                                        ;;
+                                [Nn][Oo]|[Nn]) : ;;
                                 #option to quit
-                                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
-                                        exit
-                                        ;;
+                                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) exit ;;
                                 #if there is nonsense, then just return to begin
-                                *)
-                                        findgitrepos
-                                        ;;
+                                *) findgitrepos ;;
                         esac
                 echo -e "\n"
         done
@@ -352,13 +343,14 @@ gitCommit () {
 
 gitOptions () {
 echo -e """
-1) \t git status
-2) \t git pull
-3) \t git pull and push
-4) \t git push only
-5) \t delete repos
-6) \t git backup
-7) \t git clone
+1) \t find git repos
+2) \t run git status
+3) \t pull git repositories
+4) \t pull and then push git repositories
+5) \t push git repos only
+6) \t delete repos from disk
+7) \t create a bootstrap folder for your repositories
+8) \t bootstrap your machine
 
 quit or exit to stop
 
@@ -366,13 +358,14 @@ quit or exit to stop
         echo "What happens now?"
         read whatnow </dev/tty
         case $whatnow in
-                [1]) now=gstatus;;
-                [2]) now=gpull;;
-                [3]) now=gpullpush;;
-                [4]) now=gpush;;
-                [5]) now=wipe;;
-                [6]) now=backup;;
-                [7]) now=clone;;
+                [1]) now=gfind;;
+                [2]) now=gstatus;;
+                [3]) now=gpull;;
+                [4]) now=gpullpush;;
+                [5]) now=gpush;;
+                [6]) now=wipe;;
+                [7]) now=backup;;
+                [8]) now=clone;;
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
@@ -576,9 +569,9 @@ if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
 fi
 
 #tests for config file, or runs if forced to redo config
-if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
-        func1=$1
-        findgitrepos func1
+if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]] || [[ $now == "gfind" ]]; then
+        findgitrepos
+        exit
 fi
 
 
@@ -631,7 +624,7 @@ if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
                         fi
                 done
         fi
-        if [[ $# == "1" ]]; then
+        if [[ $# == "1" ]] || [[ $now == "gpull" ]]; then
                 #goes through the folders in the list
                 for dir in "${paths[@]}"; do
                         #moves into the directory listed
@@ -659,7 +652,7 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
                         fi
                 done
         fi
-        if [[ $# == "1" ]]; then
+        if [[ $# == "1" ]] || [[ $now == "gpullpush" ]] || [[ $now == "gpush" ]]; then
                 #goes through the folders in the list
                 for dir in "${paths[@]}"; do
                         #moves into the directory listed
@@ -817,6 +810,9 @@ if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
         wipeRepos
 fi
 
+#add ability to go to goptions but then still read through file
+#maybe [[ $1 != -p, etc etc but would take forver
+#this is why i really should just use setopt
 #error message
 echo "sorry, that command didn't work! Try again"
 printf "\n"
