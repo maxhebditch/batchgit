@@ -28,18 +28,10 @@ wipeRepos () {
                 echo "Wipe? (Y/N): "
                 read delornay </dev/tty
                 case $delornay in 
-                        [Yy][eE][sS]|[yY])
-                                del=yes
-                                ;;
-                        [Nn][Oo]|[Nn])
-                                del=no
-                                ;;
-                        [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
-                                del=leave
-                                ;;
-                        *)
-                                del=nonsense
-                                ;;
+                        [Yy][eE][sS]|[yY]) del=yes ;;
+                        [Nn][Oo]|[Nn]) del=no ;;
+                        [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) del=leave ;;
+                        *) del=nonsense ;;
                 esac
                 #these should be incorporated in line as in checkbatchgit function
                 #don't delete anything
@@ -138,18 +130,10 @@ bootstrapchoice () {
         read addornay </dev/tty
         #again, I can makes these inline choices to save lines/time
         case $addornay in 
-                [Yy][eE][sS]|[yY])
-                        add=yes
-                        ;;
-                [Nn][Oo]|[Nn])
-                        add=no
-                        ;;
-                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
-                        add=leave
-                        ;;
-                *)
-                        add=nonsense
-                        ;;
+                [Yy][eE][sS]|[yY]) add=yes ;;
+                [Nn][Oo]|[Nn]) add=no ;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) add=leave ;;
+                *) add=nonsense ;;
         esac
         #do nothing if not
         if [[ $add == "no" ]]; then
@@ -206,18 +190,10 @@ confirmClone () {
         echo "Would you like to clone this repository to this location? (Y/N): "
         read cloneornay </dev/tty
         case $cloneornay in 
-                [Yy][eE][sS]|[yY])
-                        clonethis=yes
-                        ;;
-                [Nn][Oo]|[Nn])
-                        clonethis=no
-                        ;;
-                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee])
-                        clonethis=leave
-                        ;;
-                *)
-                        clonethis=nonsense
-                        ;;
+                [Yy][eE][sS]|[yY]) clonethis=yes ;;
+                [Nn][Oo]|[Nn]) clonethis=no ;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) clonethis=leave ;;
+                *) clonethis=nonsense ;;
         esac
         #Wow, I really hated putting thise things up there where they belong
         #Beer coding is not efficient coding
