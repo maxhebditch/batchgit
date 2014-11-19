@@ -21,41 +21,19 @@ wipeRepos () {
                 echo "Wipe? (Y/N): "
                 read delornay </dev/tty
                 case $delornay in 
-                        [Yy][eE][sS]|[yY]) del=yes ;;
-                        [Nn][Oo]|[Nn]) del=no ;;
-                        [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) del=leave ;;
-                        *) del=nonsense ;;
+                        [Yy][eE][sS]|[yY])
+                                #if yes to delete then moves up one and recursively deletes
+                                echo "$PWD"
+                                cd ..
+                                #could have sudo here to save y for write protected file
+                                #but don't want to force sudo
+                                rm -r $REPO
+                                echo "Wiped";;
+                        [Nn][Oo]|[Nn]) echo "Not wiped" ;;
+                        [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo "quiting" && exit ;;
+                        *) echo "That choice was unclear so untouched";;
                 esac
-                #these should be incorporated in line as in checkbatchgit function
-                #don't delete anything
-                if [[ $del == "no" ]]; then
-                        echo "Not wiped"
-                        unset del
-                fi
-                if [[ $del == "yes" ]]; then
-                        #if yes to delete then moves up one and recursively deletes
-                        echo "$PWD"
-                        cd ..
-                        #could have sudo here to save y for write protected file
-                        #but don't want to force sudo
-                        rm -r $REPO
-                        echo "Wiped"
-                        unset del
-                fi
-                #quits
-                if [[ $del == "leave" ]]; then
-                        echo "Goodbye!"
-                        unset del
-                        exit
-                fi
-                #if it doesn't match one of the above then it takes the safe option
-                #Could change this to return back to function
-                if [[ $del == "nonsense" ]]; then
-                        echo "That choice was unclear so untouched"
-                        unset del
-                fi
                 printf "\n"
-        exit
 }
 
 #function that checks that the ~/.batchgitrc exists or if its empty and 
@@ -182,34 +160,11 @@ confirmClone () {
         echo "Would you like to clone this repository to this location? (Y/N): "
         read cloneornay </dev/tty
         case $cloneornay in 
-                [Yy][eE][sS]|[yY]) clonethis=yes ;;
-                [Nn][Oo]|[Nn]) clonethis=no ;;
-                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) clonethis=leave ;;
-                *) clonethis=nonsense ;;
+                [Yy][eE][sS]|[yY]) git clone ${clones[$i]} && echo "cloned" ;;
+                [Nn][Oo]|[Nn]) echo "Not cloned" ;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo "quiting" && exit ;;
+                *) echo "That choice was unclear" && confirmClone ;;
         esac
-        #Wow, I really hated putting thise things up there where they belong
-        #Beer coding is not efficient coding
-        if [[ $clonethis == "no" ]]; then
-                echo "Not cloned"
-                unset clonethis
-        fi
-        #if answer is yes then git clone the ith number in the array
-        if [[ $clonethis == "yes" ]]; then
-                git clone ${clones[$i]}
-                echo "Cloned"
-                unset clonethis
-        fi
-        if [[ $clonethis == "leave" ]]; then
-                echo "Goodbye!"
-                unset clonethis
-                exit
-        fi
-        #if you enter nonsense, you are just going to have to try again
-        if [[ $clonethis == "nonsense" ]]; then
-                echo "That choice was unclear"
-                unset clonethis
-                confirmClone
-        fi
 }
 
 #function that checks the git status output for different types of
@@ -798,6 +753,7 @@ if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
                         fi
                 done
         fi
+exit
 fi
 
 #add ability to go to goptions but then still read through file
