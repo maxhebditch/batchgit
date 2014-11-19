@@ -72,13 +72,13 @@ checkbatchgit () {
         #checks that batchgitrc exists, if not then goes
         #to function to search for current repos
         if [[ ! -f ~/.batchgitrc ]]; then
-                findgitrepos func1
+                findgitrepos
         fi
         #if file does exist, then check how many lines are in it
         numberInbatchgitrc=$(wc -l < ~/.batchgitrc)
         #if zero lines (i.e. empty) then searches for repos as above
         if [[ $numberInbatchgitrc == "0" ]]; then
-                findgitrepos func1
+                findgitrepos
         fi
         #if has lines, set paths array to them
         if [[ -f ~/.batchgitrc ]]; then
