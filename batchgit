@@ -350,8 +350,42 @@ gitCommit () {
         echo ${bold}"Repository: $REPO ${normal} $BRANCH"
 }
 
+gitOptions () {
+echo -e """
+1) \t git status
+2) \t git pull
+3) \t git pull and push
+4) \t git push only
+5) \t delete repos
+6) \t git backup
+7) \t git clone
+
+quit or exit to stop
+
+        """
+        echo "What happens now?"
+        read whatnow </dev/tty
+        case $whatnow in
+                [1]) now=gstatus;;
+                [2]) now=gpull;;
+                [3]) now=gpullpush;;
+                [4]) now=gpush;;
+                [5]) now=wipe;;
+                [6]) now=backup;;
+                [7]) now=clone;;
+                [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
+                * ) echo "that was nonsense"; gitOptions;;
+        esac
+        echo ""
+}
+
 #Array where paths are held
 paths=( $(cat ~/.batchgitrc) )     
+
+#multiple choice for no option or post config
+if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
+        gitOptions
+fi
 
 #Check to ensure all local directories still exist
 for dir in "${paths[@]}"; do
@@ -363,7 +397,7 @@ for dir in "${paths[@]}"; do
 done
 
 #arguement to backup
-if [[ $1 == "--backup" ]]; then
+if [[ $1 == "--backup" ]] || [[ $now == "backup" ]]; then
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
         if [[ ! -d ~/batchgit-takeaway ]]; then
@@ -428,7 +462,7 @@ if [[ $1 == "--backup" ]]; then
 fi
 
 #if clone flag is used
-if [[ $1 == "--clone" ]]; then
+if [[ $1 == "--clone" ]] || [[ $now == "clone" ]]; then
         #enter if clone flag used
         echo -e "\n${bold}CLONE MODE"
         echo -e "==========${normal}\n"
@@ -547,39 +581,6 @@ if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]]; then
         findgitrepos func1
 fi
 
-#multiple choice for no option or post config
-if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
-#gives some options
-#want to overhaul this section
-while true; do
-        echo -e """
-1) \t git status
-2) \t git pull
-3) \t git pull and push
-4) \t git push only
-5) \t delete repos
-6) \t quit
-        """
-        read -p "What happens now? " whatnow
-        case $whatnow in
-                #could turn these into functions, but work fine as is
-                [1]* ) now=gstatus;break;;
-                [2]* ) now=gpull;break;;
-                [3]* ) now=gpullpush;break;;
-                [4]* ) now=gpush;break;;
-                [5]* ) now=wipe;break;;
-                [6]* ) now=quit;break;;
-                [quit]* ) now=quit;break;;
-                [exit]* ) now=quit;break;;
-        esac
-done
-fi
-
-#quits script if option selected
-if [[ $now == "quit" ]]; then
-        printf "\n"
-        exit
-fi
 
 #deletes blank lines from the batchgitrc file
 #could potentially be moved into the loop above
@@ -602,7 +603,7 @@ if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
                         fi
                 done
         fi
-        if [[ $# == "1" ]]; then
+        if [[ $# == "1" ]] || [[ $now == "gstatus" ]]; then
                 #goes through the folders in the list
                 for dir in "${paths[@]}"; do
                         #moves into the directory listed
