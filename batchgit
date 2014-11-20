@@ -3,6 +3,8 @@
 # Define some useful variables for printing
 bold=`tput bold`
 normal=`tput sgr0`
+#Array where paths are held
+paths=( $(cat ~/.batchgitrc) )     
 
 #function that assigns n number of command line arguements
 assignDynamicDir () {
@@ -148,6 +150,7 @@ confirmClone () {
 #function that checks the git status output for different types of
 #modifications and then echoes them
 gitStatus () {
+        paths=( $(cat ~/.batchgitrc) )     
         #gives the repo name
         REPO=${PWD##*/}
         #returns the branch
@@ -243,9 +246,9 @@ gitCommit () {
 }
 
 gitOptions () {
-echo -e """
-1) \t find git repos
-2) \t run git status
+        echo -e """
+1) \t run git status
+2) \t find git repos
 3) \t pull git repositories
 4) \t pull and then push git repositories
 5) \t push git repos only
@@ -259,8 +262,8 @@ quit or exit to stop
         echo "What happens now?"
         read whatnow </dev/tty
         case $whatnow in
-                [1]) now=gfind;;
-                [2]) now=gstatus;;
+                [1]) now=gstatus;;
+                [2]) now=gfind;;
                 [3]) now=gpull;;
                 [4]) now=gpullpush;;
                 [5]) now=gpush;;
@@ -273,11 +276,8 @@ quit or exit to stop
         echo ""
 }
 
-#Array where paths are held
-paths=( $(cat ~/.batchgitrc) )     
-
 #multiple choice for no option or post config
-if [[ $# == 0 ]] || [[ $choice == "y" ]]; then
+if [[ $# == 0 ]]; then
         gitOptions
 fi
 
@@ -417,8 +417,7 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
                 #error if dir not added
                 echo "you need to add the directory after the flag!"
         fi
-        #needs to be replaced by function
-        choice=y
+exit
 fi
 
 #recursive addition of repos
@@ -446,13 +445,14 @@ if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
                         echo -e "\n"
         done
         sort -u -o ~/.batchgitrc ~/.batchgitrc
-        choice=y
+exit
 fi
 
 #removes single repo manually
 if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
         if [[ ! -z $2 ]]; then 
                 if [[ $2 == "./" ]]; then
+                        echo "removing $(pwd)"
                         sed -e "s|$(pwd)||g" -i  ~/.batchgitrc
                 elif [[ $2 != "*/*" ]]; then
                         PWD=$(pwd)
@@ -462,11 +462,11 @@ if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
                 else
                         sed -e "s|$2||g" -i  ~/.batchgitrc
                 fi
-                sort -u -o ~/.batchgitrc ~/.batchgitrc
         else
                 echo "you need to add the directory after the flag!"
         fi
-        choice=y
+        sort -u -o ~/.batchgitrc ~/.batchgitrc
+exit
 fi
 
 #tests for config file, or runs if forced to redo config
