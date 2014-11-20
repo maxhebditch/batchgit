@@ -3,8 +3,6 @@
 # Define some useful variables for printing
 bold=`tput bold`
 normal=`tput sgr0`
-#Array where paths are held
-paths=( $(cat ~/.batchgitrc) )     
 
 #function that assigns n number of command line arguements
 assignDynamicDir () {
@@ -60,6 +58,7 @@ checkbatchgit () {
 
 #function that finds git repos on the disk
 findgitrepos () {
+        echo "Looking for repos, please wait"
         #Runs a find to look for repos
         findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
         #counts how many are inside
@@ -150,7 +149,6 @@ confirmClone () {
 #function that checks the git status output for different types of
 #modifications and then echoes them
 gitStatus () {
-        paths=( $(cat ~/.batchgitrc) )     
         #gives the repo name
         REPO=${PWD##*/}
         #returns the branch
@@ -275,6 +273,14 @@ quit or exit to stop
         esac
         echo ""
 }
+
+checkbatchgit
+
+#tests for config file, or runs if forced to redo config
+if [[ $1 == "-f" ]] || [[ $1 == "-find" ]] || [[ $now == "gfind" ]]; then
+        findgitrepos
+exit
+fi
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]]; then
@@ -468,13 +474,6 @@ if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
         sort -u -o ~/.batchgitrc ~/.batchgitrc
 exit
 fi
-
-#tests for config file, or runs if forced to redo config
-if [[ $1 == "-f" ]] || [[ ! -f ~/.batchgitrc ]] || [[ $1 == "-find" ]] || [[ $now == "gfind" ]]; then
-        findgitrepos
-        exit
-fi
-
 
 #deletes blank lines from the batchgitrc file
 #could potentially be moved into the loop above
