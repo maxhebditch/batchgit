@@ -139,18 +139,18 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 9. ~~Add folders recursively from current location to configuration file.~~
 10. ~~Handle directories that have been deleted since config file wrote~~
 12. ~~Say whether one commit ahead or behind rather than just different~~
+17. ~~Remove `./` as its not needed~~
 11. ~~`git clone` using `~/.batchgitrc` file~~
+15. ~~multiple wipes~~
+16. ~~Optimise loops~~
+19. ~~Turn git status into a function~~
+20. ~~Batchgit push single directories~~
+22. ~~Update README with specific folder pushing~~
+23. Add multiple repos to batchgit -remove
+21. Offer alternative to whatthecommit message
+24. Think about nomenclature
+25. Add support for specific repos by path for pushing pulling statusing etc
 7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
 13. `rm` all untracked files
 14. Alphabetical printing of repo
-15. ~~multiple wipes~~
-16. ~~Optimise loops~~
-17. Remove `./` as its not needed
 18. Loop for checking batchgitrc presence
-19. ~~Turn git status into a function~~
-20. ~~Batchgit push single directories~~
-21. Offer alternative to whatthecommit message
-22. ~~Update README with specific folder pushing~~
-23. Add multiple repos to batchgit -remove
-24. Think about nomenclature
-25. Add support for specific repos by path for pushing pulling statusing etc
