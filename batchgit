@@ -329,7 +329,7 @@ if [[ $1 == "--backup" ]] || [[ $now == "backup" ]]; then
         #cycle through files in the batchgitrc and ask if they should be added to the clone
         while read locdir; do
                 echo -e "Local repository is $locdir"
-                cd /$locdir
+                cd $locdir
                 remotes=$(git remote -v | grep "fetch")
                 remotesClean=$(echo $remotes | sed -e 's/origin//' | sed -e 's/ (fetch)//')
                 remotePresent=1
