@@ -221,13 +221,10 @@ gitPush () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         echo ${bold}"Repository: $REPO ${normal} $BRANCH"
         #if pushonly then only pushes
-        if [[ $1 == "-pushonly" ]] || [[ $1 == "-po" ]] || [[ $now == "gpush" ]]; then
-                git push
-        #otherwise will do a pull before pushing. for safety
-        elif [[ $1 == "-push" ]] || [[ $now == "gpull" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]]; then
+        if [[ $now == "gpullpush" ]]; then
                 git pull
-                git push
         fi
+        git push
         printf "\n"
 }
 
@@ -287,6 +284,8 @@ do
                         now=gpull;;
                 u)
                         now=gpullpush;;
+                p)
+                        now=gpush;;
                 r)
                         now=wipe;;
                 b)
