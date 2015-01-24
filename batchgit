@@ -13,7 +13,7 @@ assignDynamicDir () {
         done
 }
 
-#function that goes through your list of repos in ~/.batchgitrc and asks which to keep
+#function that goes through your list of repos in ~/.batchgitrc and asks which to remove from disk
 wipeRepos () {
                 REPO=${PWD##*/}
                 echo ${bold}"Repository: $REPO ${normal}"
