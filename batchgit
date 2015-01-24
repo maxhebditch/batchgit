@@ -276,16 +276,41 @@ quit or exit to stop
 
 checkbatchgit
 
+while getopts sfduprbi?a: OPTION
+do
+        case $OPTION in
+                s)
+                        now=gstatus;;
+                f)
+                        now=gfind;;
+                d)
+                        now=gpull;;
+                u)
+                        now=gpullpush;;
+                r)
+                        now=wipe;;
+                b)
+                        now=backup;;
+                i)
+                        now=clone;;
+                a)
+                        now=add
+                        addDir=$OPTARG;;
+                *)
+                        gitOptions;;
+esac
+done
+
 #tests for config file, or runs if forced to redo config
-if [[ $1 == "-f" ]] || [[ $1 == "-find" ]] || [[ $now == "gfind" ]]; then
+if [[ $now == "gfind" ]]; then
         findgitrepos
 exit
 fi
 
 #multiple choice for no option or post config
-if [[ $# == 0 ]]; then
-        gitOptions
-fi
+# if [[ $# == 0 ]]; then
+#         gitOptions
+# fi
 
 #Check to ensure all local directories still exist
 for dir in "${paths[@]}"; do
@@ -297,7 +322,7 @@ for dir in "${paths[@]}"; do
 done
 
 #arguement to backup
-if [[ $1 == "--backup" ]] || [[ $now == "backup" ]]; then
+if [[ $now == "backup" ]]; then
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
         if [[ ! -d ~/batchgit-takeaway ]]; then
@@ -362,7 +387,7 @@ if [[ $1 == "--backup" ]] || [[ $now == "backup" ]]; then
 fi
 
 #if clone flag is used
-if [[ $1 == "--clone" ]] || [[ $now == "clone" ]]; then
+if [[ $now == "clone" ]]; then
         #enter if clone flag used
         echo -e "\n${bold}CLONE MODE"
         echo -e "==========${normal}\n"
@@ -393,29 +418,29 @@ if [[ $1 == "--clone" ]] || [[ $now == "clone" ]]; then
 fi
 
 #add new repo to config file
-if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
+if [[ $now == "add" ]]; then
         #add individual dir/repo mode
-        if [[ ! -z $2 ]]; then 
+        if [[ ! -z $addDir ]]; then 
                 #checks rc exists, think this is / should be a function
                 if [[ ! -f ~/.batchgitrc ]]; then
                         touch ~/.batchgitrc
                         echo -e "making ~/.batchgitrc file \n"
                 fi
                 #think that is isnt actually necessary, anyways, adds current dir if ./ used
-                if [[ $2 == "./" ]]; then
+                if [[ $addDir == "./" ]]; then
                         echo $(pwd) >> ~/.batchgitrc
                         echo "adding $(pwd) to ~/.batchgitrc"
                 #allows adding subdir of current by checking slashes are not used
-                elif [[ $2 != "*/*" ]]; then
+                elif [[ $addDir != "*/*" ]]; then
                         PWD=$(pwd)
                         #adds based on pwd plus arguement
-                        pwdrepdir=$PWD"/"$2
+                        pwdrepdir=$PWD"/"$addDir
                         echo "adding $pwdrepdir to ~/.batchgitrc"
                         echo $pwdrepdir >> ~/.batchgitrc
                 #allows adding full file path
                 else
-                        echo $2 >> ~/.batchgitrc
-                        echo -e "Added $2 to the ~/.batchgitrc file"
+                        echo $addDir >> ~/.batchgitrc
+                        echo -e "Added $addDir to the ~/.batchgitrc file"
                 fi
                 #removes any duplicates
                 sort -u -o ~/.batchgitrc ~/.batchgitrc
@@ -426,145 +451,150 @@ if [[ $1 == "-add" ]] || [[ $1 == "-a" ]]; then
 exit
 fi
 
-#recursive addition of repos
-if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
-        if [[ -z $2 ]]; then 
-                findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
-                here=y
-        else
-                findrecurgit=( $(find $2 -type d -name .git | xargs -n 1 dirname) )
-                here=n
-        fi
-        for dir in "${findrecurgit[@]}"; do
-                if [[ $here == "y" ]] || [[ $2 == "./" ]]; then
-                        repdir=$(echo $dir | cut -c 2-)
-                        PWD=$(pwd)
-                        pwdrepdir=$PWD$repdir
-                else
-                        pwdrepdir=$dir
-                fi
-                        echo -e "$pwdrepdir"
-                        read -p "Would you like to watch this repository? (y/n): " -n 1 -r
-                        if [[ $REPLY =~ ^[Yy]$ ]]; then
-                                echo -e "\n$pwdrepdir" >> ~/.batchgitrc
-                        fi
-                        echo -e "\n"
-        done
-        sort -u -o ~/.batchgitrc ~/.batchgitrc
-exit
-fi
+# #recursive addition of repos
+# if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
+#         if [[ -z $2 ]]; then 
+#                 findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
+#                 here=y
+#         else
+#                 findrecurgit=( $(find $2 -type d -name .git | xargs -n 1 dirname) )
+#                 here=n
+#         fi
+#         for dir in "${findrecurgit[@]}"; do
+#                 if [[ $here == "y" ]] || [[ $2 == "./" ]]; then
+#                         repdir=$(echo $dir | cut -c 2-)
+#                         PWD=$(pwd)
+#                         pwdrepdir=$PWD$repdir
+#                 else
+#                         pwdrepdir=$dir
+#                 fi
+#                         echo -e "$pwdrepdir"
+#                         read -p "Would you like to watch this repository? (y/n): " -n 1 -r
+#                         if [[ $REPLY =~ ^[Yy]$ ]]; then
+#                                 echo -e "\n$pwdrepdir" >> ~/.batchgitrc
+#                         fi
+#                         echo -e "\n"
+#         done
+#         sort -u -o ~/.batchgitrc ~/.batchgitrc
+# exit
+# fi
 
-#removes single repo manually
-if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
-        if [[ ! -z $2 ]]; then 
-                if [[ $2 == "./" ]]; then
-                        echo "removing $(pwd)"
-                        sed -e "s|$(pwd)||g" -i  ~/.batchgitrc
-                elif [[ $2 != "*/*" ]]; then
-                        PWD=$(pwd)
-                        pwdrepdir=$PWD"/"$2
-                        echo "removing $pwdrepdir"
-                        sed -e "s|$pwdrepdir||g" -i  ~/.batchgitrc
-                else
-                        sed -e "s|$2||g" -i  ~/.batchgitrc
-                fi
-        else
-                echo "you need to add the directory after the flag!"
-        fi
-        sort -u -o ~/.batchgitrc ~/.batchgitrc
-exit
-fi
+# #removes single repo manually
+# if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
+#         if [[ ! -z $2 ]]; then 
+#                 if [[ $2 == "./" ]]; then
+#                         echo "removing $(pwd)"
+#                         sed -e "s|$(pwd)||g" -i  ~/.batchgitrc
+#                 elif [[ $2 != "*/*" ]]; then
+#                         PWD=$(pwd)
+#                         pwdrepdir=$PWD"/"$2
+#                         echo "removing $pwdrepdir"
+#                         sed -e "s|$pwdrepdir||g" -i  ~/.batchgitrc
+#                 else
+#                         sed -e "s|$2||g" -i  ~/.batchgitrc
+#                 fi
+#         else
+#                 echo "you need to add the directory after the flag!"
+#         fi
+#         sort -u -o ~/.batchgitrc ~/.batchgitrc
+# exit
+# fi
 
 #deletes blank lines from the batchgitrc file
 #could potentially be moved into the loop above
 sed -e '/^$/d' -i ~/.batchgitrc 
 
 #git status
-if [[ $1 == "-status" ]] || [[ $now == "gstatus" ]] || [[ $1 == "-s" ]]; then
-        if [[ $# -gt 1 ]]; then
-                if [[ $2 == "./" ]]; then
-                        gitStatus
-                else
-                assignDynamicDir $@
-                for dynamicDir in ${Dir[@]}; do
-                        echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                        inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-                        if [[ ! -z $inRc ]]; then
-                                cd $inRc
-                                gitStatus
-                        fi
-                        if [[ -z $inRc ]]; then
-                                echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
-                                echo ""
-                        fi
-                done
-                fi
-        fi
-        if [[ $# == "1" ]] || [[ $now == "gstatus" ]]; then
-                #goes through the folders in the list
-                for dir in "${paths[@]}"; do
-                        #moves into the directory listed
-                        cd $dir
-                        gitStatus 
-                done
-        fi
+if [[ $now == "gstatus" ]]; then
+        # if [[ $# -gt 1 ]]; then
+        #         if [[ $2 == "./" ]]; then
+        #                 gitStatus
+        #         else
+        #         assignDynamicDir $@
+        #         for dynamicDir in ${Dir[@]}; do
+        #                 echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+        #                 inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+        #                 if [[ ! -z $inRc ]]; then
+        #                         cd $inRc
+        #                         gitStatus
+        #                 fi
+        #                 if [[ -z $inRc ]]; then
+        #                         echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+        #                         echo ""
+        #                 fi
+        #         done
+        #         fi
+        # fi
+        # if [[ $# == "1" ]] || [[ $now == "gstatus" ]]; then
+        #         #goes through the folders in the list
+        #         for dir in "${paths[@]}"; do
+        #                 #moves into the directory listed
+        #                 cd $dir
+        #                 gitStatus 
+        #         done
+        # fi
+        for dir in "${paths[@]}"; do
+                #moves into the directory listed
+                cd $dir
+                gitStatus 
+        done
         exit
 fi
 
 #git pull
-if [[ $1 == "-pull" ]] || [[ $now == "gpull" ]] || [[ $1 == "-d" ]]; then
-        if [[ $# -gt 1 ]]; then
-                if [[ $2 == "./" ]]; then
-                        gitPull
-                else
-                        assignDynamicDir $@
-                        for dynamicDir in ${Dir[@]}; do
-                                echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                                inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-                                if [[ ! -z $inRc ]]; then
-                                        cd $inRc
-                                        gitPull
-                                fi
-                                if [[ -z $inRc ]]; then
-                                        echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
-                                        echo ""
-                                fi
-                        done
-                fi
-        fi
-        if [[ $# == "1" ]] || [[ $now == "gpull" ]]; then
+if [[ $now == "gpull" ]]; then
+        # if [[ $# -gt 1 ]]; then
+        #         if [[ $2 == "./" ]]; then
+        #                 gitPull
+        #         else
+        #                 assignDynamicDir $@
+        #                 for dynamicDir in ${Dir[@]}; do
+        #                         echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+        #                         inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+        #                         if [[ ! -z $inRc ]]; then
+        #                                 cd $inRc
+        #                                 gitPull
+        #                         fi
+        #                         if [[ -z $inRc ]]; then
+        #                                 echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
+        #                                 echo ""
+        #                         fi
+        #                 done
+        #         fi
+        # fi
+        # if [[ $# == "1" ]] || [[ $now == "gpull" ]]; then
                 #goes through the folders in the list
                 for dir in "${paths[@]}"; do
                         #moves into the directory listed
                         cd $dir
                         gitPull 
                 done
-        fi
+        # fi
 exit
 fi
 
 #git push
-if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || [[ $1 == "-u" ]] || [[ $1 == "-n" ]] || [[ $1 == "-po" ]] || [[ $1 == "-pushonly" ]]; then
-        if [[ $# -gt 1 ]]; then
-                if [[ $2 == "./" ]]; then
-                        gitPush $1
-                else
-                        assignDynamicDir $@
-                        for dynamicDir in ${Dir[@]}; do
-                                echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                                inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-                                if [[ ! -z $inRc ]]; then
-                                        cd $inRc
-                                        gitPush $1
-                                fi
-                                if [[ -z $inRc ]]; then
-                                        echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
-                                        echo ""
-                                fi
-                        done
-                fi
-        fi
-        if [[ $# == "1" ]] || [[ $now == "gpullpush" ]] || [[ $now == "gpush" ]]; then
+if [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]]; then
+        # if [[ $# -gt 1 ]]; then
+        #         if [[ $2 == "./" ]]; then
+        #                 gitPush $1
+        #         else
+        #                 assignDynamicDir $@
+        #                 for dynamicDir in ${Dir[@]}; do
+        #                         echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+        #                         inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+        #                         if [[ ! -z $inRc ]]; then
+        #                                 cd $inRc
+        #                                 gitPush $1
+        #                         fi
+        #                         if [[ -z $inRc ]]; then
+        #                                 echo "No repo named $dynamicDir exists in your ~/.batchgitrc file"
+        #                                 echo ""
+        #                         fi
+        #                 done
+        #         fi
+        # fi
+        if [[ $now == "gpullpush" ]] || [[ $now == "gpush" ]]; then
                 #goes through the folders in the list
                 for dir in "${paths[@]}"; do
                         #moves into the directory listed
@@ -572,182 +602,182 @@ if [[ $1 == "-push" ]] || [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]] || 
                         gitPush $1
                 done
         fi
-        #not sure what this is doing here
-        if [[ $1 == "-n" ]]; then
-                echo -e "\nAll done for the day!\n"
-                        printf """
-+      o     +              o   
-    +             o     +       +
-o          +
-    o  +           +        +
-+        o     o       +        o
--_-_-_-_-_-_-_,------,      o 
-_-_-_-_-_-_-_-|   /\_/\  
--_-_-_-_-_-_-~|__( ^ .^)  +     +  
-_-_-_-_-_-_-_-''  ''      
-+      o         o   +       o
-    +         +
-o        o         o      o     +
-    o           +
-+      +     o        o      +    
-\n"""
-        fi
+        # #not sure what this is doing here
+        # if [[ $1 == "-n" ]]; then
+        #         echo -e "\nAll done for the day!\n"
+        #                 printf """
+# +      o     +              o   
+    # +             o     +       +
+# o          +
+    # o  +           +        +
+# +        o     o       +        o
+# -_-_-_-_-_-_-_,------,      o 
+# _-_-_-_-_-_-_-|   /\_/\  
+# -_-_-_-_-_-_-~|__( ^ .^)  +     +  
+# _-_-_-_-_-_-_-''  ''      
+# +      o         o   +       o
+    # +         +
+# o        o         o      o     +
+    # o           +
+# +      +     o        o      +    
+# \n"""
+        # fi
 exit
 fi
 
 #commit flag, complicated due to flag and commit message catching
-if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
-        #if there is only one arguement, it has to be -c so batchcommit with 
-        #whatthecommit commit message
-        if [[ $# == "1" ]]; then
-                #goes through the folders in the list
-                for dir in "${paths[@]}"; do
-                        #moves into the directory listed
-                        cd $dir
-                        gitCommit
-                        if [[ $numTotal != "0" ]]; then
-                                #adds files
-                                git add .
-                                git add -A
-                                #commits
-                                commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
-                                git commit -m "$commitMessage"
-                                printf "\n"
-                                #if -cp flag present then it will also push after committing
-                                if [[ $1 == "-cp" ]]; then
-                                        git push
-                                fi
-                                echo ""
-                        fi
-                done
-        fi
-        #if there are two arguements, then there are combinations of options
-        if [[ $# == "2" ]]; then
-                #if there are spaces in the second argument, then probably a commit message then batchgit
-                if [[ "$2" =~ ( |\') ]]; then #'
-                        for dir in "${paths[@]}"; do
-                                #moves into the directory listed
-                                cd $dir
-                                gitCommit
-                                if [[ $numTotal != "0" ]]; then
-                                        #adds files
-                                        git add .
-                                        git add -A
-                                        #commits
-                                        echo "commit message is $2"
-                                        commitmessage=$2
-                                        git commit -m "$2"
-                                        printf "\n"
-                                        #if -cp flag present then it will also push after committing
-                                        if [[ $1 == "-cp" ]]; then
-                                                git push
-                                        fi
-                                        echo ""
-                                fi
-                        done
-                #if it doesn't look like a message its probably for a specific dir
-                #however as there are only two arguments have to use a whathecommit message
-                else
-                        echo "Checking specific named repositories: ${bold}$2${normal}"
-                        inRc=$(grep "$2" ~/.batchgitrc)
-                        cd $inRc
-                        gitCommit
-                        if [[ $numTotal != "0" ]]; then
-                                #adds files
-                                git add .
-                                git add -A
-                                #commits
-                                commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
-                                git commit -m "$commitMessage"
-                                printf "\n"
-                                #if -cp flag present then it will also push after committing
-                                if [[ $1 == "-cp" ]]; then
-                                        git push
-                                fi
-                                echo ""
-                        fi
-                fi
-        fi
-        #if there are more than two options then there are more options
-        if [[ $# -gt "2" ]]; then
-                #assigns dir variables to arguements
-                numCurArg=1
-                while [ $numCurArg -lt $# ]; do
-                        numCurArg=$((numCurArg+1))
-                        Dir[$numCurArg]=${!numCurArg}
-                done
-                #if the last arguement looks like a commit message, make it the commit message
-                if [[ ${Dir[$#]} =~ ( |\') ]]; then #'
-                        commitmessage=${Dir[$#]}
-                        lastVal=$(($#-1))
-                #otherwise set it to whathecommit
-                else
-                        commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
-                        lastVal=$#
-                fi
-                for (( c=2; c<=$lastVal; c++ )); do
-                        inRc=$(grep "${Dir[$c]}" ~/.batchgitrc)
-                        if [[ ! -z $inRc ]]; then
-                                cd $inRc
-                                gitCommit
-                                if [[ $numTotal != "0" ]]; then
-                                        #adds files
-                                        git add .
-                                        git add -A
-                                        #commits
-                                        git commit -m "$commitmessage"
-                                        printf "\n"
-                                        #if -cp flag present then it will also push after committing
-                                        if [[ $1 == "-cp" ]]; then
-                                                git push
-                                        fi
-                                        echo ""
-                                fi
-                        fi
-                        if [[ -z $inRc ]]; then
-                                echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
-                                echo ""
-                        fi
-                done
-        fi
-        exit
-fi
+# if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
+#         #if there is only one arguement, it has to be -c so batchcommit with 
+#         #whatthecommit commit message
+#         if [[ $# == "1" ]]; then
+#                 #goes through the folders in the list
+#                 for dir in "${paths[@]}"; do
+#                         #moves into the directory listed
+#                         cd $dir
+#                         gitCommit
+#                         if [[ $numTotal != "0" ]]; then
+#                                 #adds files
+#                                 git add .
+#                                 git add -A
+#                                 #commits
+#                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+#                                 git commit -m "$commitMessage"
+#                                 printf "\n"
+#                                 #if -cp flag present then it will also push after committing
+#                                 if [[ $1 == "-cp" ]]; then
+#                                         git push
+#                                 fi
+#                                 echo ""
+#                         fi
+#                 done
+#         fi
+#         #if there are two arguements, then there are combinations of options
+#         if [[ $# == "2" ]]; then
+#                 #if there are spaces in the second argument, then probably a commit message then batchgit
+#                 if [[ "$2" =~ ( |\') ]]; then #'
+#                         for dir in "${paths[@]}"; do
+#                                 #moves into the directory listed
+#                                 cd $dir
+#                                 gitCommit
+#                                 if [[ $numTotal != "0" ]]; then
+#                                         #adds files
+#                                         git add .
+#                                         git add -A
+#                                         #commits
+#                                         echo "commit message is $2"
+#                                         commitmessage=$2
+#                                         git commit -m "$2"
+#                                         printf "\n"
+#                                         #if -cp flag present then it will also push after committing
+#                                         if [[ $1 == "-cp" ]]; then
+#                                                 git push
+#                                         fi
+#                                         echo ""
+#                                 fi
+#                         done
+#                 #if it doesn't look like a message its probably for a specific dir
+#                 #however as there are only two arguments have to use a whathecommit message
+#                 else
+#                         echo "Checking specific named repositories: ${bold}$2${normal}"
+#                         inRc=$(grep "$2" ~/.batchgitrc)
+#                         cd $inRc
+#                         gitCommit
+#                         if [[ $numTotal != "0" ]]; then
+#                                 #adds files
+#                                 git add .
+#                                 git add -A
+#                                 #commits
+#                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+#                                 git commit -m "$commitMessage"
+#                                 printf "\n"
+#                                 #if -cp flag present then it will also push after committing
+#                                 if [[ $1 == "-cp" ]]; then
+#                                         git push
+#                                 fi
+#                                 echo ""
+#                         fi
+#                 fi
+#         fi
+#         #if there are more than two options then there are more options
+#         if [[ $# -gt "2" ]]; then
+#                 #assigns dir variables to arguements
+#                 numCurArg=1
+#                 while [ $numCurArg -lt $# ]; do
+#                         numCurArg=$((numCurArg+1))
+#                         Dir[$numCurArg]=${!numCurArg}
+#                 done
+#                 #if the last arguement looks like a commit message, make it the commit message
+#                 if [[ ${Dir[$#]} =~ ( |\') ]]; then #'
+#                         commitmessage=${Dir[$#]}
+#                         lastVal=$(($#-1))
+#                 #otherwise set it to whathecommit
+#                 else
+#                         commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
+#                         lastVal=$#
+#                 fi
+#                 for (( c=2; c<=$lastVal; c++ )); do
+#                         inRc=$(grep "${Dir[$c]}" ~/.batchgitrc)
+#                         if [[ ! -z $inRc ]]; then
+#                                 cd $inRc
+#                                 gitCommit
+#                                 if [[ $numTotal != "0" ]]; then
+#                                         #adds files
+#                                         git add .
+#                                         git add -A
+#                                         #commits
+#                                         git commit -m "$commitmessage"
+#                                         printf "\n"
+#                                         #if -cp flag present then it will also push after committing
+#                                         if [[ $1 == "-cp" ]]; then
+#                                                 git push
+#                                         fi
+#                                         echo ""
+#                                 fi
+#                         fi
+#                         if [[ -z $inRc ]]; then
+#                                 echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+#                                 echo ""
+#                         fi
+#                 done
+#         fi
+#         exit
+# fi
 
 #catch wipe flag
-if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
-        #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
-        #dont think i need to set this to $1: change
-        echo -e "\n${bold}WIPE MODE"
-        echo -e "==========${normal}\n"
-        #cycles through dirs in file
-        if [[ $# == "1" ]]; then
-                let i=1
-                for dir in "${paths[@]}"; do
-                        let i+=1
-                        cd $dir
-                        wipeRepos
-                done
-        elif [[ $# -gt 1 ]]; then
-                if [[ $2 == "./" ]]; then
-                        wipeRepos
-                else
-                        assignDynamicDir $@
-                        for dynamicDir in ${Dir[@]}; do
-                                echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-                                inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-                                if [[ ! -z $inRc ]]; then
-                                        cd $inRc
-                                        wipeRepos
-                                fi
-                                if [[ -z $inRc ]]; then
-                                        echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
-                                        echo ""
-                                fi
-                        done
-                fi
-        fi
-exit
-fi
+# if [[ $now == "wipe" ]]; then
+#         #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
+#         #dont think i need to set this to $1: change
+#         echo -e "\n${bold}WIPE MODE"
+#         echo -e "==========${normal}\n"
+#         #cycles through dirs in file
+#         if [[ $# == "1" ]]; then
+#                 let i=1
+#                 for dir in "${paths[@]}"; do
+#                         let i+=1
+#                         cd $dir
+#                         wipeRepos
+#                 done
+#         elif [[ $# -gt 1 ]]; then
+#                 if [[ $2 == "./" ]]; then
+#                         wipeRepos
+#                 else
+#                         assignDynamicDir $@
+#                         for dynamicDir in ${Dir[@]}; do
+#                                 echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
+#                                 inRc=$(grep "$dynamicDir" ~/.batchgitrc)
+#                                 if [[ ! -z $inRc ]]; then
+#                                         cd $inRc
+#                                         wipeRepos
+#                                 fi
+#                                 if [[ -z $inRc ]]; then
+#                                         echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
+#                                         echo ""
+#                                 fi
+#                         done
+#                 fi
+#         fi
+# exit
+# fi
 
 #add ability to go to goptions but then still read through file
 #maybe [[ $1 != -p, etc etc but would take forver
