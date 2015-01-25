@@ -221,7 +221,7 @@ gitPush () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         echo ${bold}"Repository: $REPO ${normal} $BRANCH"
         #if pushonly then only pushes
-        if [[ $now == "gpullpush" ]]; then
+        if [[ $gpullpush == "y" ]]; then
                 git pull
         fi
         git push
@@ -257,14 +257,14 @@ quit or exit to stop
         echo "What happens now?"
         read whatnow </dev/tty
         case $whatnow in
-                [1]) now=gstatus;;
-                [2]) now=gfind;;
-                [3]) now=gpull;;
-                [4]) now=gpullpush;;
-                [5]) now=gpush;;
-                [6]) now=wipe;;
-                [7]) now=backup;;
-                [8]) now=clone;;
+                [1]) gstatus=y;;
+                [2]) gfind=y;;
+                [3]) gpull=y;;
+                [4]) gpullpush=y;;
+                [5]) gpush=y;;
+                [6]) wipe=y;;
+                [7]) backup=y;;
+                [8]) clone=y;;
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
@@ -277,39 +277,48 @@ while getopts sfduprbi?a: OPTION
 do
         case $OPTION in
                 s)
-                        now=gstatus;;
+                        gstatus=y
+                        ;;
                 f)
-                        now=gfind;;
+                        gfind=y
+                        ;;
                 d)
-                        now=gpull;;
+                        gpull=y
+                        ;;
                 u)
-                        now=gpullpush;;
+                        gpullpush=y
+                        ;;
                 p)
-                        now=gpush;;
+                        gpush=y
+                        ;;
                 r)
-                        now=wipe;;
+                        wipe=y
+                        ;;
                 b)
-                        now=backup;;
+                        backup=y
+                        ;;
                 i)
-                        now=clone;;
+                        clone=y
+                        ;;
                 a)
-                        now=add
-                        addDir=$OPTARG;;
+                        add=y
+                        addDir=$OPTARG
+                        ;;
                 *)
-                        gitOptions;;
-esac
+                        gitOptions
+                        ;;
+        esac
 done
 
 #tests for config file, or runs if forced to redo config
-if [[ $now == "gfind" ]]; then
+if [[ $gfind == "y" ]]; then
         findgitrepos
-exit
 fi
 
 #multiple choice for no option or post config
-# if [[ $# == 0 ]]; then
-#         gitOptions
-# fi
+if [[ $# == 0 ]]; then
+        gitOptions
+fi
 
 #Check to ensure all local directories still exist
 for dir in "${paths[@]}"; do
@@ -321,7 +330,7 @@ for dir in "${paths[@]}"; do
 done
 
 #arguement to backup
-if [[ $now == "backup" ]]; then
+if [[ $backup == "y" ]]; then
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
         if [[ ! -d ~/batchgit-takeaway ]]; then
@@ -378,15 +387,14 @@ if [[ $now == "backup" ]]; then
                 echo -e "\n"
         done < ~/.batchgitrc
         #changes all of the first line to user, this assumes that all directories live in ~
-        #something to optimise if anyone beside me actually uses it.
+        #something == "y to optimise if anyone beside me actually uses it.
         sed -e 's|^|/home/$USER/|g' -i ~/batchgit-takeaway/bootstrapdir
         #function to check backup list has cycle through properly
         checkrepodirmatch
-        exit
 fi
 
 #if clone flag is used
-if [[ $now == "clone" ]]; then
+if [[ $clone == "y" ]]; then
         #enter if clone flag used
         echo -e "\n${bold}CLONE MODE"
         echo -e "==========${normal}\n"
@@ -413,11 +421,10 @@ if [[ $now == "clone" ]]; then
                 let i+=1
                 echo -e "\n"
         done 
-        exit
 fi
 
 #add new repo to config file
-if [[ $now == "add" ]]; then
+if [[ $add == "y" ]]; then
         #add individual dir/repo mode
         if [[ ! -z $addDir ]]; then 
                 #checks rc exists, think this is / should be a function
@@ -447,7 +454,6 @@ if [[ $now == "add" ]]; then
                 #error if dir not added
                 echo "you need to add the directory after the flag!"
         fi
-exit
 fi
 
 # #recursive addition of repos
@@ -475,7 +481,6 @@ fi
 #                         echo -e "\n"
 #         done
 #         sort -u -o ~/.batchgitrc ~/.batchgitrc
-# exit
 # fi
 
 # #removes single repo manually
@@ -496,7 +501,6 @@ fi
 #                 echo "you need to add the directory after the flag!"
 #         fi
 #         sort -u -o ~/.batchgitrc ~/.batchgitrc
-# exit
 # fi
 
 #deletes blank lines from the batchgitrc file
@@ -504,7 +508,7 @@ fi
 sed -e '/^$/d' -i ~/.batchgitrc 
 
 #git status
-if [[ $now == "gstatus" ]]; then
+if [[ $gstatus == "y" ]]; then
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitStatus
@@ -537,11 +541,10 @@ if [[ $now == "gstatus" ]]; then
                 cd $dir
                 gitStatus 
         done
-        exit
 fi
 
 #git pull
-if [[ $now == "gpull" ]]; then
+if [[ $gpull == "y" ]]; then
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitPull
@@ -569,11 +572,10 @@ if [[ $now == "gpull" ]]; then
                         gitPull 
                 done
         # fi
-exit
 fi
 
 #git push
-if [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]]; then
+if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitPush $1
@@ -593,7 +595,7 @@ if [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]]; then
         #                 done
         #         fi
         # fi
-        if [[ $now == "gpullpush" ]] || [[ $now == "gpush" ]]; then
+        if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
                 #goes through the folders in the list
                 for dir in "${paths[@]}"; do
                         #moves into the directory listed
@@ -621,7 +623,6 @@ if [[ $now == "gpush" ]] || [[ $now == "gpullpush" ]]; then
 # +      +     o        o      +    
 # \n"""
         # fi
-exit
 fi
 
 #commit flag, complicated due to flag and commit message catching
@@ -739,7 +740,6 @@ fi
 #                         fi
 #                 done
 #         fi
-#         exit
 # fi
 
 #catch wipe flag
@@ -775,13 +775,11 @@ fi
 #                         done
 #                 fi
 #         fi
-# exit
 # fi
 
 #add ability to go to goptions but then still read through file
 #maybe [[ $1 != -p, etc etc but would take forver
 #this is why i really should just use setopt
 #error message
-echo "sorry, that command didn't work! Try again"
-printf "\n"
-exit
+# echo "sorry, that command didn't work! Try again"
+# printf "\n"
