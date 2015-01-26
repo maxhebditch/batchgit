@@ -21,14 +21,42 @@ import os, inspect
 import gobject
 
 RCFILENAME = ".batchgitrc"
-
+CONFIGFILENAME = "/.config"
 this_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-AHEAD_ICON = this_dir + "/Icons/" + "upload62_white.svg"
-SYNC_ICON = this_dir + "/Icons/" + "checkmark6_white.svg"
+
+def ReadConfigFile():
+    _file = this_dir + CONFIGFILENAME
+    config = {}
+    with open(_file, "r") as f:
+        for line in f:
+            [key, value] = line.split(":")
+            key = key.replace(" ", "")
+            value = value.replace(" ", "").rstrip("\n")
+            config[key] = value
+    return config
+
+def WriteDefaultConfig():
+    _file = this_dir + CONFIGFILENAME
+    with open(_file, "w+") as f:
+        f.write(
+"""theme : light
+update_period : 100
+""")
+
+def GetIconsNames(config):
+    theme = config['theme']
+    config['ahead_icon'] = this_dir + "/Icons/" + "upload62_{}.svg".format(theme)
+    config['synced_icon'] = this_dir + "/Icons/" + "checkmark6_{}.svg".format(theme)
+    return config
+
 
 class AppIndicator:
-    def __init__(self, dirs):
-        self.dirs = dirs
+    def __init__(self, config):
+
+        self.dirs = config['dirs']
+        self.ahead_icon = config['ahead_icon']
+        self.synced_icon = config['synced_icon']
+
         self.ind = appindicator.Indicator("GitCheck", 
                                      "",
                                      appindicator.CATEGORY_APPLICATION_STATUS)
@@ -85,15 +113,21 @@ class AppIndicator:
     def SetIcon(self):
         Status = self.CheckStatus()
         if Status:
-            self.ind.set_icon(AHEAD_ICON)
+            self.ind.set_icon(self.ahead_icon)
         else:
-            self.ind.set_icon(SYNC_ICON)
+            self.ind.set_icon(self.synced_icon)
         return True
 
     def quit(self, widget, data=None):
         gtk.main_quit()
 
 if __name__ == "__main__":
+
+    if not os.path.isfile(this_dir + CONFIGFILENAME):
+        WriteDefaultConfig()
+    config = ReadConfigFile()
+
+    config = GetIconsNames(config)
 
     rcfile = os.path.expanduser("~") + "/" + RCFILENAME
     if os.path.isfile(rcfile):
@@ -102,7 +136,9 @@ if __name__ == "__main__":
             for line in f:
                 dirs.append(line.rstrip("\n"))
 
-        indicator = AppIndicator(dirs)
+        config['dirs'] = dirs
+
+        indicator = AppIndicator(config)
 
         gtk.main()
     
