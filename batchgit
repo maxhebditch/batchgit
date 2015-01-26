@@ -228,7 +228,7 @@ gitPull () {
 gitPush () {
         git push --porcelain > .batchgitpushmessage 2>&1
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
-        if [[ $gpullpush == "y" ]]; then
+        if [[ $gpullpush ]]; then
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
@@ -286,36 +286,39 @@ quit or exit to stop
 
 checkbatchgit
 
-while getopts sfduprbi?a: OPTION
+while getopts sfduprbin?a: OPTION
 do
         case $OPTION in
                 s)
-                        gstatus=y
+                        gstatus=true
                         ;;
                 f)
-                        gfind=y
+                        gfind=true
                         ;;
                 d)
-                        gpull=y
+                        gpull=true
                         ;;
                 u)
-                        gpullpush=y
+                        gpullpush=true
                         ;;
                 p)
-                        gpush=y
+                        gpush=true
                         ;;
                 r)
-                        wipe=y
+                        wipe=true
                         ;;
                 b)
-                        backup=y
+                        backup=true
                         ;;
                 i)
-                        clone=y
+                        clone=true
                         ;;
                 a)
-                        add=y
+                        add=true
                         addDir=$OPTARG
+                        ;;
+                n)
+                        nyan=true
                         ;;
                 *)
                         gitOptions
@@ -324,7 +327,7 @@ do
 done
 
 #tests for config file, or runs if forced to redo config
-if [[ $gfind == "y" ]]; then
+if [[ $gfind ]]; then
 echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
         findgitrepos
 fi
@@ -345,7 +348,7 @@ for dir in "${paths[@]}"; do
 done
 
 #arguement to backup
-if [[ $backup == "y" ]]; then
+if [[ $backup ]]; then
 echo -e "\n${bold}BACKUP BATCHGIT\n===============${normal}\n"
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
@@ -409,7 +412,7 @@ echo -e "\n${bold}BACKUP BATCHGIT\n===============${normal}\n"
 fi
 
 #if clone flag is used
-if [[ $clone == "y" ]]; then
+if [[ $clone ]]; then
 echo -e "\n${bold}CLONE BATCHGIT${normal}\n"
         #enter if clone flag used
         echo -e "\n${bold}CLONE MODE"
@@ -440,7 +443,7 @@ echo -e "\n${bold}CLONE BATCHGIT${normal}\n"
 fi
 
 #add new repo to config file
-if [[ $add == "y" ]]; then
+if [[ $add ]]; then
 echo -e "\n${bold}ADD REPOS TO BATCHGIT${normal}\n"
         #add individual dir/repo mode
         if [[ ! -z $addDir ]]; then 
@@ -525,7 +528,7 @@ fi
 sed -e '/^$/d' -i ~/.batchgitrc 
 
 #git status
-if [[ $gstatus == "y" ]]; then
+if [[ $gstatus ]]; then
 echo -e "\n${bold}GIT STATUS${normal}\n"
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
@@ -562,7 +565,7 @@ echo -e "\n${bold}GIT STATUS${normal}\n"
 fi
 
 #git pull
-if [[ $gpull == "y" ]]; then
+if [[ $gpull ]]; then
 echo -e "\n${bold}GIT PULL${normal}\n"
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
@@ -594,10 +597,10 @@ echo -e "\n${bold}GIT PULL${normal}\n"
 fi
 
 #git push
-if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
-        if [[ $gpullpush == "y" ]] && [[ -z $gpush ]]; then
+if [[ $gpush ]] || [[ $gpullpush ]]; then
+        if [[ $gpullpush ]] && [[ -z $gpush ]]; then
                 echo -e "\n${bold}GIT PULL & PUSH ${normal}\n"
-        elif [[ $gpush == "y" ]] && [[ -z $gpullpush ]]; then
+        elif [[ $gpush ]] && [[ -z $gpullpush ]]; then
                 echo -e "\n${bold}GIT PUSH${normal}\n"
         fi
         # if [[ $# -gt 1 ]]; then
@@ -626,25 +629,6 @@ if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
                 gitPush $1
         done
         # #not sure what this is doing here
-        # if [[ $1 == "-n" ]]; then
-        #         echo -e "\nAll done for the day!\n"
-        #                 printf """
-# +      o     +              o   
-    # +             o     +       +
-# o          +
-    # o  +           +        +
-# +        o     o       +        o
-# -_-_-_-_-_-_-_,------,      o 
-# _-_-_-_-_-_-_-|   /\_/\  
-# -_-_-_-_-_-_-~|__( ^ .^)  +     +  
-# _-_-_-_-_-_-_-''  ''      
-# +      o         o   +       o
-    # +         +
-# o        o         o      o     +
-    # o           +
-# +      +     o        o      +    
-# \n"""
-        # fi
 fi
 
 #commit flag, complicated due to flag and commit message catching
@@ -805,3 +789,22 @@ fi
 #error message
 # echo "sorry, that command didn't work! Try again"
 # printf "\n"
+
+if [[ $nyan ]]; then
+        printf """
++      o     +              o   
+    +             o     +       +
+o          +
+    o  +           +        +
++        o     o       +        o
+-_-_-_-_-_-_-_,------,      o 
+_-_-_-_-_-_-_-|   /\_/\  
+-_-_-_-_-_-_-~|__( ^ .^)  +     +  
+_-_-_-_-_-_-_-''  ''      
++      o         o   +       o
+    +         +
+o        o         o      o     +
+    o           +
++      +     o        o      +    
+\n"""
+fi
