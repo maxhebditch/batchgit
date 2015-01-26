@@ -270,14 +270,14 @@ quit or exit to stop
         echo "What happens now?"
         read whatnow </dev/tty
         case $whatnow in
-                [1]) gstatus=y;;
-                [2]) gfind=y;;
-                [3]) gpull=y;;
-                [4]) gpullpush=y;;
-                [5]) gpush=y;;
-                [6]) wipe=y;;
-                [7]) backup=y;;
-                [8]) clone=y;;
+                [1]) gstatus=true
+                [2]) gfind=true
+                [3]) gpull=true
+                [4]) gpullpush=true
+                [5]) gpush=true
+                [6]) wipe=true
+                [7]) backup=true
+                [8]) clone=true
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
