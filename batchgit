@@ -421,6 +421,7 @@ askLoop () {
                         echo "$oaddDir does not exist"
                 fi
                 ask=false
+                other="other"
                 add=other
         elif [[ $gaddrec ]]; then
                 echo -n "Enter top directory for recursive search: " 
@@ -516,6 +517,7 @@ echo -e "\n${bold}OPTIONS\n=======${normal}"
 fi
 
 if [[ $ask ]]; then
+        echo "HERE"
         askLoop
 fi
 
