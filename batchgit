@@ -308,6 +308,43 @@ ${bold}Other features:${normal}
         """
 }
 
+askLoop () {
+        if [[ $other ]]; then
+                echo -n "Enter pathname for alternative batchgitrc: "
+                read input
+                eval olog=$input
+                if [[ -f "$olog" ]]; then
+                        echo "using $olog"
+                else
+                        echo "$olog does not exist"
+                fi
+                other="other"
+                logLocation
+                checkbatchgit
+        elif [[ $add ]]; then
+                echo -n "Enter pathname for repo to add to batchgitrc: " 
+                read input
+                eval oaddDir=$input
+                if [[ -d "$oaddDir" ]]; then
+                        echo "adding $oaddDir"
+                        addDir=oaddDir
+                        oadd=true
+                else
+                        echo "$olog does not exist"
+                fi
+        elif [[ $gaddrec ]]; then
+                echo -n "Enter top directory for recursive search: " 
+                read gaddrecDir
+                gaddrec=false
+        elif [[ $grm ]]; then
+                grm=false
+                echo -n "Enter pathname for repo to remove from batchgitrc: " 
+                read rmDir
+        fi
+        ask=false
+        gitOptions
+}
+
 gitOptions () {
         echo -e """
 ${bold}Core git features:${normal}
@@ -437,37 +474,11 @@ checkbatchgit
 if [[ $# == 0 ]]; then
 echo -e "\n${bold}OPTIONS\n=======${normal}"
         gitOptions
-        if [[ $ask ]]; then
-                if [[ $other ]]; then
-                        echo -n "Enter pathname for alternative batchgitrc: "
-                        read input
-                        eval olog=$input
-                        if [[ -f "$olog" ]]; then
-                                echo "using $olog"
-                        else
-                                echo "$olog does not exist"
-                        fi
-                        other="other"
-                        logLocation
-                        checkbatchgit
-                elif [[ $add ]]; then
-                        echo -n "Enter pathname for repo to add from batchgitrc: " 
-                        read addDir
-                        add=false
-                elif [[ $gaddrec ]]; then
-                        echo -n "Enter top directory for recursive search: " 
-                        read gaddrecDir
-                        gaddrec=false
-                elif [[ $grm ]]; then
-                        grm=false
-                        echo -n "Enter pathname for repo to remove from batchgitrc: " 
-                        read rmDir
-                fi
-                ask=false
-                gitOptions
-        fi
 fi
 
+if [[ $ask ]]; then
+        askLoop
+fi
 
 #tests for config file, or runs if forced to redo config
 if [[ $gfind ]]; then
@@ -587,8 +598,11 @@ echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
 fi
 
 #add new repo to config file
-if [[ $add ]]; then
-echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
+if [[ $add ]] || [[ $oadd ]]; then
+        if [[ $oadd ]]; then
+                addDir=$oaddDir
+        fi
+        echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
         #add individual dir/repo mode
         #tidy these up so only one write
         if [[ ! -z $addDir ]]; then 
