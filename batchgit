@@ -599,7 +599,7 @@ if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
         if [[ $gpullpush == "y" ]] && [[ -z $gpush ]]; then
                 echo -e "\n${bold}GIT PULL & PUSH ${normal}\n"
         elif [[ $gpush == "y" ]] && [[ -z $gpullpush ]]; then
-                echo -e "\n${bold}GIT PULL${normal}\n"
+                echo -e "\n${bold}GIT PUSH${normal}\n"
         fi
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
