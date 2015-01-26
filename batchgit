@@ -88,10 +88,11 @@ findgitrepos () {
                                 #option to quit
                                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) exit ;;
                                 #if there is nonsense, then just return to begin
-                                *) findgitrepos ;;
+                                # *) findgitrepos ;;
                         esac
                 echo -e "\n"
         done
+        exit
 }
 
 #function that asks which repos to bootstrap
