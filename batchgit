@@ -519,6 +519,7 @@ echo -e "\n${bold}REMOVE REPOS FROM BATCHGIT\n==========================${normal
 fi
 
 # #recursive addition of repos
+# use this for wildcard above
 # if [[ $1 == "-addrecursive" ]] || [[ $1 == "-ar" ]]; then
 #         if [[ -z $2 ]]; then 
 #                 findrecurgit=( $(find ./ -type d -name .git | xargs -n 1 dirname) )
