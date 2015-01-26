@@ -36,6 +36,28 @@ wipeRepos () {
                 printf "\n"
 }
 
+gitReset () {
+                REPO=${PWD##*/}
+                echo "${bold}Repository: $REPO ${normal}"
+                echo "Repo path: $(pwd)"
+                echo "Reset repository? (Y/N): "
+                read delornay </dev/tty
+                case $resetornay in 
+                        [Yy][eE][sS]|[yY])
+                                #if yes to delete then moves up one and recursively deletes
+                                echo "$PWD"
+                                cd ..
+                                #could have sudo here to save y for write protected file
+                                #but don't want to force sudo
+                                git reset --hard HEAD
+                                echo "Reset!";;
+                        [Nn][Oo]|[Nn]) echo "Not reset" ;;
+                        [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo "quiting" && exit ;;
+                        *) echo "That choice was unclear so untouched";;
+                esac
+                printf "\n"
+}
+
 #function that checks that the ~/.batchgitrc exists or if its empty and 
 #runs find git
 checkbatchgit () {
@@ -312,6 +334,9 @@ do
                 p)
                         gpush=true
                         ;;
+                z)
+                        greset=true
+                        ;;
                 b)
                         backup=true
                         ;;
@@ -352,6 +377,15 @@ fi
 if [[ $gfind ]]; then
 echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
         findgitrepos
+fi
+
+if [[ $greset ]]; then
+echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
+for dir in "${paths[@]}"; do
+        let i+=1
+        cd $dir
+        gitReset
+done
 fi
 
 #Check to ensure all local directories still exist
