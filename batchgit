@@ -149,13 +149,8 @@ confirmClone () {
 #function that checks the git status output for different types of
 #modifications and then echoes them
 gitStatus () {
-        #gives the repo name
-        REPO=${PWD##*/}
-        #returns the branch
-        BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        #prints the repository name and branch to stdout
-        echo -e ${bold}"Repository: $REPO ${normal} $BRANCH"
         #looks for types of modifications that can popup in git status
+        # git status > .batchgitstatusmessage
         untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
         modified=$(git ls-files -m)
         deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
@@ -167,52 +162,66 @@ gitStatus () {
         commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
         commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
         commitDiverge=$(git status | grep "diverged"*)
-        #if there are commited files echoes that
-        if [[ ! -z $committed ]]; then
-                echo -e "Commited: \n\e[1;31m$committed\e[0m"
-        fi
-        #if there are new files, echoes that
-        if [[ ! -z $newfiles ]]; then
-                echo -e "New: \n\e[1;32m$newfiles\e[0m"
-        fi
-        #if there are deleted files, echoes that
-        if [[ ! -z $deleted ]]; then
-                echo -e "Deleted: \n\e[1;31m$deleted\e[0m"
-        fi
-        #if there are untracked files, echoes that
-        if [[ ! -z $untracked ]]; then
-                echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
-        fi
-        #if there are modified files, echoes that
-        if [[ ! -z $modified ]]; then
-                echo -e "Modified: \n\e[1;31m$modified\e[0m"
-        fi
-        #checks status of commit, in front, ahead or diverged. Never seen diverged
-        #happen though so I can't guarantee it works
-        if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
-                if [[ ! -z $commitAhead ]]; then
-                        echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
+        if [[ ! -z $committed ]] || [[ ! -z $newfiles ]] || [[ ! -z $deleted ]] || [[ ! -z $untracked ]] || [[ ! -z $modified ]] || [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]]; then
+                #gives the repo name
+                REPO=${PWD##*/}
+                #returns the branch
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                #prints the repository name and branch to stdout
+                echo -e ${bold}"Repository: $REPO ${normal} $BRANCH"
+                #if there are commited files echoes that
+                if [[ ! -z $committed ]]; then
+                        echo -e "Commited: \n\e[1;31m$committed\e[0m"
                 fi
-                if [[ ! -z $commitBehind ]]; then
-                        echo -e "Commit: \n\e[1;31m$commitBehind, behind\e[0m"
+                #if there are new files, echoes that
+                if [[ ! -z $newfiles ]]; then
+                        echo -e "New: \n\e[1;32m$newfiles\e[0m"
                 fi
-        #look for divergence
-        elif [[ ! -z $commitDiverge ]]; then
-                echo "Divergence has occured"
-        #not sure when this one might pop up
-        elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
-                echo "You are ahead and behind"
+                #if there are deleted files, echoes that
+                if [[ ! -z $deleted ]]; then
+                        echo -e "Deleted: \n\e[1;31m$deleted\e[0m"
+                fi
+                #if there are untracked files, echoes that
+                if [[ ! -z $untracked ]]; then
+                        echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
+                fi
+                #if there are modified files, echoes that
+                if [[ ! -z $modified ]]; then
+                        echo -e "Modified: \n\e[1;31m$modified\e[0m"
+                fi
+                #checks status of commit, in front, ahead or diverged. Never seen diverged
+                #happen though so I can't guarantee it works
+                if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
+                        if [[ ! -z $commitAhead ]]; then
+                                echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
+                        fi
+                        if [[ ! -z $commitBehind ]]; then
+                                echo -e "Commit: \n\e[1;31m$commitBehind, behind\e[0m"
+                        fi
+                #look for divergence
+                elif [[ ! -z $commitDiverge ]]; then
+                        echo "Divergence has occured"
+                #not sure when this one might pop up
+                elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
+                        echo "You are ahead and behind"
+                fi
+                echo ""
         fi
-        echo ""
+        # rm .batchgitstatusmessage
 }
 
 #function that pulls repos
 gitPull () {
-        REPO=${PWD##*/}
-        BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
-		git pull
-        printf "\n"
+        git pull > .batchgitpullmessage
+        pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
+        if [[ -z $pulluptodate ]]; then
+                REPO=${PWD##*/}
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+                cat .batchgitpullmessage
+                printf "\n"
+        fi
+        rm .batchgitpullmessage
 }
 
 #function that pushes repos
