@@ -16,9 +16,9 @@ assignDynamicDir () {
 #function that goes through your list of repos in ~/.batchgitrc and asks which to remove from disk
 wipeRepos () {
                 REPO=${PWD##*/}
-                echo ${bold}"Repository: $REPO ${normal}"
-                echo "on path:$(pwd)"
-                echo "Wipe? (Y/N): "
+                echo "${bold}Repository: $REPO ${normal}"
+                echo "Repo path: $(pwd)"
+                echo "Remove repository? (Y/N): "
                 read delornay </dev/tty
                 case $delornay in 
                         [Yy][eE][sS]|[yY])
@@ -168,7 +168,7 @@ gitStatus () {
                 #returns the branch
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 #prints the repository name and branch to stdout
-                echo -e ${bold}"Repository: $REPO ${normal} $BRANCH"
+                echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
                 #if there are commited files echoes that
                 if [[ ! -z $committed ]]; then
                         echo -e "Commited: \n\e[1;31m$committed\e[0m"
@@ -217,7 +217,7 @@ gitPull () {
         if [[ -z $pulluptodate ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo ${bold}"Repository: $REPO ${normal} $BRANCH ${bold} pulling ${normal}"
+                echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pulling ${normal}"
                 cat .batchgitpullmessage
                 printf "\n"
         fi
@@ -234,7 +234,7 @@ gitPush () {
         if [[ -z $pushuptodate ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo ${bold}"Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
+                echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
                 cat .batchgitpushmessage
                 printf "\n"
         fi
@@ -250,7 +250,7 @@ gitCommit () {
         numTotal=$(($numNew + $numMod + $numUntr + $numDel))
         REPO=${PWD##*/}
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+        echo "${bold}Repository: $REPO ${normal} $BRANCH"
 }
 
 gitOptions () {
@@ -266,18 +266,18 @@ gitOptions () {
 
 quit or exit to stop
 
-        """
+"""
         echo "What happens now?"
         read whatnow </dev/tty
         case $whatnow in
-                [1]) gstatus=true
-                [2]) gfind=true
-                [3]) gpull=true
-                [4]) gpullpush=true
-                [5]) gpush=true
-                [6]) wipe=true
-                [7]) backup=true
-                [8]) clone=true
+                [1]) gstatus=true;;
+                [2]) gfind=true;;
+                [3]) gpull=true;;
+                [4]) gpullpush=true;;
+                [5]) gpush=true;;
+                [6]) wipe=true;;
+                [7]) backup=true;;
+                [8]) clone=true;;
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
@@ -286,7 +286,7 @@ quit or exit to stop
 
 checkbatchgit
 
-while getopts sfduprbin?a: OPTION
+while getopts sfduprbinw?a: OPTION
 do
         case $OPTION in
                 s)
@@ -316,6 +316,9 @@ do
                 a)
                         add=true
                         addDir=$OPTARG
+                        ;;
+                w)
+                        wipe=true
                         ;;
                 n)
                         nyan=true
@@ -747,7 +750,15 @@ fi
 # fi
 
 #catch wipe flag
-# if [[ $now == "wipe" ]]; then
+if [[ $wipe ]]; then
+        echo -e "\n${bold}REMOVE REPOS\n============${normal}\n"
+        let i=1
+        for dir in "${paths[@]}"; do
+                let i+=1
+                cd $dir
+                wipeRepos
+        done
+fi
 #         #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
 #         #dont think i need to set this to $1: change
 #         echo -e "\n${bold}WIPE MODE"
