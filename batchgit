@@ -228,8 +228,6 @@ gitPull () {
 gitPush () {
         git push --porcelain > .batchgitpushmessage
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
-        pushneedsmod=$(grep "modified" .batchgitpushmessage)
-        #if pushonly then only pushes
         if [[ $gpullpush == "y" ]]; then
                 gitPull
         fi
