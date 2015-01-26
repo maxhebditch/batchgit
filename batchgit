@@ -253,6 +253,7 @@ gitOptions () {
 6) \t delete repos from disk
 7) \t create a bootstrap folder for your repositories
 8) \t bootstrap your machine
+9) \t start indicator applet
 
 quit or exit to stop
 
@@ -268,6 +269,7 @@ quit or exit to stop
                 [6]) now=wipe;;
                 [7]) now=backup;;
                 [8]) now=clone;;
+                [9]) now=startIndicatorApplet;;
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
@@ -747,6 +749,11 @@ if [[ $1 == "--wipe" ]] || [[ $now == "wipe" ]]; then
                 fi
         fi
 exit
+fi
+
+if [[ $1 == "--startIndicatorApplet" ]] || [[ $now == "startIndicatorApplet" ]]; then
+        DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+        python $DIR/indicator/indicator.py &
 fi
 
 #add ability to go to goptions but then still read through file
