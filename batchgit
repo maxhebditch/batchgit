@@ -249,9 +249,16 @@ gitCommit () {
         numUntr=$(git status | grep -c "untracked")
         numDel=$(git status | grep -c "deleted")
         numTotal=$(($numNew + $numMod + $numUntr + $numDel))
-        REPO=${PWD##*/}
-        BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo "${bold}Repository: $REPO ${normal} $BRANCH"
+        if [[ $numTotal != "0" ]]; then
+                REPO=${PWD##*/}
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                echo "${bold}Repository: $REPO ${normal} $BRANCH"
+                echo "adding"
+                git add .
+                git add -A
+                echo "commit message $commitMessage "
+                git commit -m "$commitMessage"
+        fi
 }
 
 gitOptions () {
@@ -287,7 +294,7 @@ quit or exit to stop
 
 checkbatchgit
 
-while getopts sfdupbinw?a:r: OPTION
+while getopts sfdupbinw?a:r:c: OPTION
 do
         case $OPTION in
                 s)
@@ -318,6 +325,10 @@ do
                 r)
                         grm=true
                         rmDir=$OPTARG
+                        ;;
+                c)
+                        commit=true
+                        commitMessage="$OPTARG"
                         ;;
                 w)
                         wipe=true
@@ -630,31 +641,12 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
 fi
 
 #commit flag, complicated due to flag and commit message catching
-# if [[ $1 == "-commit" ]] || [[ $1 == "-c" ]] || [[ $1 == "-cp" ]]; then
-#         #if there is only one arguement, it has to be -c so batchcommit with 
-#         #whatthecommit commit message
-#         if [[ $# == "1" ]]; then
-#                 #goes through the folders in the list
-#                 for dir in "${paths[@]}"; do
-#                         #moves into the directory listed
-#                         cd $dir
-#                         gitCommit
-#                         if [[ $numTotal != "0" ]]; then
-#                                 #adds files
-#                                 git add .
-#                                 git add -A
-#                                 #commits
-#                                 commitMessage=$(curl -s http://whatthecommit.com/ | grep -A 1 'id="content"' | sed 's/.*<p>//' | tail -n 1)
-#                                 git commit -m "$commitMessage"
-#                                 printf "\n"
-#                                 #if -cp flag present then it will also push after committing
-#                                 if [[ $1 == "-cp" ]]; then
-#                                         git push
-#                                 fi
-#                                 echo ""
-#                         fi
-#                 done
-#         fi
+if [[ $commit ]]; then
+        for dir in "${paths[@]}"; do
+                cd $dir
+                gitCommit
+        done
+fi
 #         #if there are two arguements, then there are combinations of options
 #         if [[ $# == "2" ]]; then
 #                 #if there are spaces in the second argument, then probably a commit message then batchgit
@@ -711,7 +703,7 @@ fi
 #                         Dir[$numCurArg]=${!numCurArg}
 #                 done
 #                 #if the last arguement looks like a commit message, make it the commit message
-#                 if [[ ${Dir[$#]} =~ ( |\') ]]; then #'
+#                 if [[ ${Dir[$#]} =~ ( |\') ]]; then 
 #                         commitmessage=${Dir[$#]}
 #                         lastVal=$(($#-1))
 #                 #otherwise set it to whathecommit
