@@ -346,7 +346,7 @@ done
 
 #arguement to backup
 if [[ $backup == "y" ]]; then
-echo -e "\n${bold}BACKUP BATCHGIT${normal}\n"
+echo -e "\n${bold}BACKUP BATCHGIT\n===============${normal}\n"
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
         if [[ ! -d ~/batchgit-takeaway ]]; then
@@ -373,8 +373,7 @@ echo -e "\n${bold}BACKUP BATCHGIT${normal}\n"
                 findgitrepos
         fi
         #backup mode begins
-        echo -e "\n${bold}BACKUP MODE"
-        echo -e "===========${normal}\n"
+        echo -e "\n${bold}BACKUP MODE\n===========${normal}\n"
         #cycle through files in the batchgitrc and ask if they should be added to the clone
         while read locdir; do
                 echo -e "Local repository is $locdir"
