@@ -18,6 +18,7 @@ import gtk
 import appindicator
 import subprocess
 import os, inspect
+import gobject
 
 RCFILENAME = ".batchgitrc"
 
@@ -61,8 +62,9 @@ class AppIndicator:
         self.ind.set_menu(menu)
 
         self.SetIcon() # Initialise the icon
-
-        gtk.main()
+        
+        gobject.timeout_add_seconds(10, self.SetIcon)
+        gtk.threads_init()     
 
     def IsAhead(self, path):
         path = path.rstrip("/") + "/"
@@ -86,6 +88,7 @@ class AppIndicator:
             self.ind.set_icon(AHEAD_ICON)
         else:
             self.ind.set_icon(SYNC_ICON)
+        return True
 
     def quit(self, widget, data=None):
         gtk.main_quit()
@@ -100,6 +103,8 @@ if __name__ == "__main__":
                 dirs.append(line.rstrip("\n"))
 
         indicator = AppIndicator(dirs)
+
+        gtk.main()
     
 
 
