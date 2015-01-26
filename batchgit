@@ -286,7 +286,7 @@ quit or exit to stop
 
 checkbatchgit
 
-while getopts sfduprbinw?a: OPTION
+while getopts sfdupbinw?a:r: OPTION
 do
         case $OPTION in
                 s)
@@ -304,9 +304,6 @@ do
                 p)
                         gpush=true
                         ;;
-                r)
-                        wipe=true
-                        ;;
                 b)
                         backup=true
                         ;;
@@ -316,6 +313,10 @@ do
                 a)
                         add=true
                         addDir=$OPTARG
+                        ;;
+                r)
+                        grm=true
+                        rmDir=$OPTARG
                         ;;
                 w)
                         wipe=true
@@ -447,6 +448,7 @@ fi
 if [[ $add ]]; then
 echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
         #add individual dir/repo mode
+        #tidy these up so only one write
         if [[ ! -z $addDir ]]; then 
                 #checks rc exists, think this is / should be a function
                 if [[ ! -f ~/.batchgitrc ]]; then
@@ -456,18 +458,57 @@ echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
                 #think that is isnt actually necessary, anyways, adds current dir if ./ used
                 if [[ $addDir == "./" ]]; then
                         echo $(pwd) >> ~/.batchgitrc
-                        echo "adding $(pwd) to ~/.batchgitrc"
-                #allows adding subdir of current by checking slashes are not used
-                elif [[ $addDir != "*/*" ]]; then
-                        PWD=$(pwd)
-                        #adds based on pwd plus arguement
-                        pwdrepdir=$PWD"/"$addDir
-                        echo "adding $pwdrepdir to ~/.batchgitrc"
-                        echo $pwdrepdir >> ~/.batchgitrc
-                #allows adding full file path
-                else
+                        echo -e "adding $(pwd) to ~/.batchgitrc\n"
+                elif [[ $addDir =~ "home" ]]; then
+                        echo -e "adding $addDir to ~/.batchgitrc\n"
                         echo $addDir >> ~/.batchgitrc
-                        echo -e "Added $addDir to the ~/.batchgitrc file"
+                else
+                        if [[ $addDir != "*/*" ]]; then
+                                PWD=$(pwd)
+                                #adds based on pwd plus arguement
+                                pwdrepdir=$PWD"/"$addDir
+                                echo -e "adding $pwdrepdir to ~/.batchgitrc\n"
+                                echo $pwdrepdir >> ~/.batchgitrc
+                        else
+                                echo $addDir >> ~/.batchgitrc
+                                echo -e "Added $addDir to the ~/.batchgitrc file"
+                        fi
+                fi
+                #removes any duplicates
+                sort -u -o ~/.batchgitrc ~/.batchgitrc
+        else
+                #error if dir not added
+                echo "you need to add the directory after the flag!"
+        fi
+fi
+
+if [[ $grm ]]; then
+echo -e "\n${bold}REMOVE REPOS FROM BATCHGIT\n==========================${normal}\n"
+        #add individual dir/repo mode
+        if [[ ! -z $rmDir ]]; then 
+                #checks rc exists, think this is / should be a function
+                if [[ ! -f ~/.batchgitrc ]]; then
+                        echo "~/.batchgitrc file does not exist \n"
+                        findgitrepos
+                fi
+                if [[ $rmDir == "./" ]]; then
+                        echo -e "removing $(pwd) from ~/.batchgitrc\n"
+                        rmDir=$(pwd)
+                        sed -i "s:$rmDir::g" ~/.batchgitrc 
+                elif [[ $rmDir =~ "home" ]]; then
+                        echo -e "removing $rmDir from ~/.batchgitrc\n"
+                        sed -i "s:$rmDir::g" ~/.batchgitrc 
+                else
+                        if [[ $rmDir != "*/*" ]]; then
+                                PWD=$(pwd)
+                                #adds based on pwd plus arguement
+                                pwdreprmdir=$PWD"/"$rmDir
+                                echo -e "removing $pwdreprmdir from ~/.batchgitrc\n"
+                                sed -i "s:$pwdreprmDir::g" ~/.batchgitrc 
+                        else
+                                echo -e "Removed $rmDir from the ~/.batchgitrc file"
+                                sed -i "s:$pwdreprmDir::g" ~/.batchgitrc 
+                        fi
                 fi
                 #removes any duplicates
                 sort -u -o ~/.batchgitrc ~/.batchgitrc
@@ -800,6 +841,7 @@ fi
 # printf "\n"
 
 if [[ $nyan ]]; then
+echo -e "\n${bold}GIT NYAN\n========${normal}\n"
         printf """
 +      o     +              o   
     +             o     +       +
