@@ -226,7 +226,6 @@ gitPull () {
 
 #function that pushes repos
 gitPush () {
-        #this is noisy
         git push --porcelain > .batchgitpushmessage
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
         if [[ $gpullpush == "y" ]]; then
