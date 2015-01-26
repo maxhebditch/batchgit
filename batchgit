@@ -234,7 +234,7 @@ gitPush () {
         if [[ -z $pushuptodate ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+                echo ${bold}"Repository: $REPO ${normal} $BRANCH pushing"
                 cat .batchgitpushmessage
                 printf "\n"
         fi
