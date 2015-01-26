@@ -282,6 +282,32 @@ gitCommit () {
         fi
 }
 
+batchgitHelp () {
+        echo -e """
+${bold}Core git features:${normal}
+-s \t git status all directories
+-c \t add a commit message for all requiring files
+-d \t git pull all directories
+-p \t git push all directories
+-u \t git pull and then push all repositories
+-z \t git reset --head HARD specific repositories
+
+${bold}Managing batchgitrc:${normal}
+-f \t find git repos on disk and write to batchgitrc
+-a \t add a directory to batchgitrc
+-l \t recursively add repos from a path to batchgitrc
+-r \t remove specific directories from batchgitrc
+
+${bold}Bootstrap and restoring on a new machine:${normal}
+-b \t make a batchgit backup
+-n \t clone repos on a new disk using batchgit backup
+
+${bold}Other features:${normal}
+-w \t remove specific directories from disk
+-h \t display this help file
+        """
+}
+
 gitOptions () {
         echo -e """
 1) \t run git status
@@ -313,9 +339,8 @@ quit or exit to stop
         echo ""
 }
 
-checkbatchgit
 
-while getopts sfdupbinwz?a:r:c:l: OPTION
+while getopts sfndupbwzh?a:r:c:l: OPTION
 do
         case $OPTION in
                 s)
@@ -323,6 +348,9 @@ do
                         ;;
                 f)
                         gfind=true
+                        ;;
+                h)
+                        batchgitHelp
                         ;;
                 d)
                         gpull=true
@@ -339,7 +367,7 @@ do
                 b)
                         backup=true
                         ;;
-                i)
+                n)
                         clone=true
                         ;;
                 a)
@@ -361,14 +389,13 @@ do
                 w)
                         wipe=true
                         ;;
-                n)
-                        nyan=true
-                        ;;
                 *)
                         gitOptions
                         ;;
         esac
 done
+
+checkbatchgit
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]]; then
@@ -639,24 +666,4 @@ if [[ $wipe ]]; then
                 cd $dir
                 wipeRepos
         done
-fi
-
-if [[ $nyan ]]; then
-echo -e "\n${bold}GIT NYAN\n========${normal}\n"
-        printf """
-+      o     +              o   
-    +             o     +       +
-o          +
-    o  +           +        +
-+        o     o       +        o
--_-_-_-_-_-_-_,------,      o 
-_-_-_-_-_-_-_-|   /\_/\  
--_-_-_-_-_-_-~|__( ^ .^)  +     +  
-_-_-_-_-_-_-_-''  ''      
-+      o         o   +       o
-    +         +
-o        o         o      o     +
-    o           +
-+      +     o        o      +    
-\n"""
 fi
