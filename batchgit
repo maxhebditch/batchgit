@@ -226,15 +226,20 @@ gitPull () {
 
 #function that pushes repos
 gitPush () {
-        REPO=${PWD##*/}
-        BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+        git push --porcelain > .batchgitpushmessage
+        pulluptodate=$(grep "up to date" .batchgitpushmessage)
         #if pushonly then only pushes
         if [[ $gpullpush == "y" ]]; then
                 gitPull
         fi
-        git push --porcelain
-        printf "\n"
+        if [[ -z $pushinteresting ]]; then
+                REPO=${PWD##*/}
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+                cat .batchgitpushmessage
+                printf "\n"
+        fi
+        rm .batchgitpushmessage
 }
 
 #function that checks for different types of commits
