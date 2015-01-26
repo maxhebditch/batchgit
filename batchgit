@@ -41,12 +41,11 @@ gitReset () {
                 echo "${bold}Repository: $REPO ${normal}"
                 echo "Repo path: $(pwd)"
                 echo "Reset repository? (Y/N): "
-                read delornay </dev/tty
+                read resetornay </dev/tty
                 case $resetornay in 
                         [Yy][eE][sS]|[yY])
                                 #if yes to delete then moves up one and recursively deletes
                                 echo "$PWD"
-                                cd ..
                                 #could have sudo here to save y for write protected file
                                 #but don't want to force sudo
                                 git reset --hard HEAD
@@ -316,7 +315,7 @@ quit or exit to stop
 
 checkbatchgit
 
-while getopts sfdupbinw?a:r:c: OPTION
+while getopts sfdupbinwz?a:r:c:l: OPTION
 do
         case $OPTION in
                 s)
@@ -355,6 +354,10 @@ do
                         gcommit=true
                         commitMessage="$OPTARG"
                         ;;
+                l)
+                        gaddrec=true
+                        addrecDir="$OPTARG"
+                        ;;
                 w)
                         wipe=true
                         ;;
@@ -369,18 +372,18 @@ done
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]]; then
-echo -e "\n${bold}OPTIONS${normal}\n"
+echo -e "\n${bold}OPTIONS\n=======${normal}\n"
         gitOptions
 fi
 
 #tests for config file, or runs if forced to redo config
 if [[ $gfind ]]; then
-echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
+echo -e "\n${bold}FINDING GIT REPOS\n=================${normal}\n"
         findgitrepos
 fi
 
 if [[ $greset ]]; then
-echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
+echo -e "\n${bold}GIT RESET\n=========${normal}\n"
 for dir in "${paths[@]}"; do
         let i+=1
         cd $dir
@@ -526,6 +529,23 @@ echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
                 #error if dir not added
                 echo "you need to add the directory after the flag!"
         fi
+fi
+
+if [[ $gaddrec ]]; then
+findrecurgit=( $(find $addrecDir -type d -name .git | xargs -n 1 dirname) )
+for dir in "${findrecurgit[@]}"; do
+        repdir=$(echo $dir | cut -c 2-)
+        PWD=$(pwd)
+        pwdrepdir=$PWD$repdir
+        echo -e "$pwdrepdir"
+        read -p "Would you like to watch this repository? (y/n): " -n 1 -r
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo -e "\n$pwdrepdir" >> ~/.batchgitrc
+        fi
+        echo -e "\n"
+        sort -u -o ~/.batchgitrc ~/.batchgitrc
+done
+
 fi
 
 if [[ $grm ]]; then
