@@ -413,10 +413,8 @@ fi
 
 #if clone flag is used
 if [[ $clone ]]; then
-echo -e "\n${bold}CLONE BATCHGIT${normal}\n"
+echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
         #enter if clone flag used
-        echo -e "\n${bold}CLONE MODE"
-        echo -e "==========${normal}\n"
         #checks that repos match paths in number
         checkrepodirmatch
         let i=0
@@ -444,7 +442,7 @@ fi
 
 #add new repo to config file
 if [[ $add ]]; then
-echo -e "\n${bold}ADD REPOS TO BATCHGIT${normal}\n"
+echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
         #add individual dir/repo mode
         if [[ ! -z $addDir ]]; then 
                 #checks rc exists, think this is / should be a function
@@ -529,7 +527,7 @@ sed -e '/^$/d' -i ~/.batchgitrc
 
 #git status
 if [[ $gstatus ]]; then
-echo -e "\n${bold}GIT STATUS${normal}\n"
+echo -e "\n${bold}GIT STATUS\n==========${normal}\n"
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitStatus
@@ -566,7 +564,7 @@ fi
 
 #git pull
 if [[ $gpull ]]; then
-echo -e "\n${bold}GIT PULL${normal}\n"
+echo -e "\n${bold}GIT PULL\n========${normal}\n"
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitPull
@@ -599,9 +597,9 @@ fi
 #git push
 if [[ $gpush ]] || [[ $gpullpush ]]; then
         if [[ $gpullpush ]] && [[ -z $gpush ]]; then
-                echo -e "\n${bold}GIT PULL & PUSH ${normal}\n"
+                echo -e "\n${bold}GIT PULL & PUSH\n===============${normal}\n"
         elif [[ $gpush ]] && [[ -z $gpullpush ]]; then
-                echo -e "\n${bold}GIT PUSH${normal}\n"
+                echo -e "\n${bold}GIT PUSH\n========${normal}\n"
         fi
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
