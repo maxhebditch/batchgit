@@ -4,6 +4,9 @@
 bold=`tput bold`
 normal=`tput sgr0`
 
+# log file location
+log=~/.batchgitrc
+
 #function that assigns n number of command line arguements
 assignDynamicDir () {
         numCurArg=1
@@ -13,7 +16,7 @@ assignDynamicDir () {
         done
 }
 
-#function that goes through your list of repos in ~/.batchgitrc and asks which to remove from disk
+#function that goes through your list of repos in $log and asks which to remove from disk
 wipeRepos () {
                 REPO=${PWD##*/}
                 echo "${bold}Repository: $REPO ${normal}"
@@ -57,23 +60,23 @@ gitReset () {
                 printf "\n"
 }
 
-#function that checks that the ~/.batchgitrc exists or if its empty and 
+#function that checks that the $log exists or if its empty and 
 #runs find git
 checkbatchgit () {
         #checks that batchgitrc exists, if not then goes
         #to function to search for current repos
-        if [[ ! -f ~/.batchgitrc ]]; then
+        if [[ ! -f $log ]]; then
                 findgitrepos
         fi
         #if file does exist, then check how many lines are in it
-        numberInbatchgitrc=$(wc -l < ~/.batchgitrc)
+        numberInbatchgitrc=$(wc -l < $log)
         #if zero lines (i.e. empty) then searches for repos as above
         if [[ $numberInbatchgitrc == "0" ]]; then
                 findgitrepos
         fi
         #if has lines, set paths array to them
-        if [[ -f ~/.batchgitrc ]]; then
-                paths=( $(cat ~/.batchgitrc) )     
+        if [[ -f $log ]]; then
+                paths=( $(cat $log) )     
         fi
 }
 
@@ -87,14 +90,14 @@ findgitrepos () {
         #tells user how many repos they have
         echo -e "There are $numfind git repositories \n"
         #if file doesn't exist, then makes one
-        if [[ ! -f ~/.batchgitrc ]]; then
-                touch ~/.batchgitrc
-                echo -e "making a ~/.batchgitrc file \n"
+        if [[ ! -f $log ]]; then
+                touch $log
+                echo -e "making a $log file \n"
         #if it does exist then it makes a backup
         else
-                mv ~/.batchgitrc ~/.batchgitrc.bak
-                touch ~/.batchgitrc
-                echo -e "making a new ~/.batchgitrc file and backing up old to ~/.batchgitrc.bak \n"
+                mv $log $log.bak
+                touch $log
+                echo -e "making a new $log file and backing up old to $log.bak \n"
         fi
         #runs through all the repos it has found
         for gdir in "${findgit[@]}"; do
@@ -103,7 +106,7 @@ findgitrepos () {
                         read incRepo </dev/tty
                         case $incRepo in 
                                 #Can keep track of repo, and if so writes it to file
-                                [Yy][eE][sS]|[yY]) echo $gdir >> ~/.batchgitrc;;
+                                [Yy][eE][sS]|[yY]) echo $gdir >> $log;;
                                 #no action if not kept
                                 [Nn][Oo]|[Nn]) : ;;
                                 #option to quit
@@ -423,7 +426,7 @@ for dir in "${paths[@]}"; do
         #checks that the directory still exists before running anything
         if [[ ! -d $dir ]]; then
                 echo -e "The $dir directory doesn't exist anymore and has been removed from the config file"
-                sed -e "s|$dir||g" -i  ~/.batchgitrc
+                sed -e "s|$dir||g" -i  $log
         fi
 done
 
@@ -449,8 +452,8 @@ echo -e "\n${bold}BACKUP BATCHGIT\n===============${normal}\n"
                 mv ~/batchgit-takeaway/bootstrapdir ~/batchgit-takeaway/bootstrapdir.bak
         fi
         #check if a batchgitrepo exists, if not then tell them to run it. Or let the function run
-        if [[ ! -f ~/.batchgitrc ]]; then
-                echo "You don't have a ~/.batchgitrc file."
+        if [[ ! -f $log ]]; then
+                echo "You don't have a $log file."
                 echo "This can be created by running batchgit -find"
                 echo "or the following"
                 findgitrepos
@@ -483,7 +486,7 @@ echo -e "\n${bold}BACKUP BATCHGIT\n===============${normal}\n"
                 #run through the multiple choice for bootstrapping
                 bootstrapchoice
                 echo -e "\n"
-        done < ~/.batchgitrc
+        done < $log
         #changes all of the first line to user, this assumes that all directories live in ~
         #something == "y to optimise if anyone beside me actually uses it.
         sed -e 's|^|/home/$USER/|g' -i ~/batchgit-takeaway/bootstrapdir
@@ -527,31 +530,31 @@ echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
         #tidy these up so only one write
         if [[ ! -z $addDir ]]; then 
                 #checks rc exists, think this is / should be a function
-                if [[ ! -f ~/.batchgitrc ]]; then
-                        touch ~/.batchgitrc
-                        echo -e "making ~/.batchgitrc file \n"
+                if [[ ! -f $log ]]; then
+                        touch $log
+                        echo -e "making $log file \n"
                 fi
                 #think that is isnt actually necessary, anyways, adds current dir if ./ used
                 if [[ $addDir == "./" ]]; then
-                        echo $(pwd) >> ~/.batchgitrc
-                        echo -e "adding $(pwd) to ~/.batchgitrc\n"
+                        echo $(pwd) >> $log
+                        echo -e "adding $(pwd) to $log\n"
                 elif [[ $addDir =~ "home" ]]; then
-                        echo -e "adding $addDir to ~/.batchgitrc\n"
-                        echo $addDir >> ~/.batchgitrc
+                        echo -e "adding $addDir to $log\n"
+                        echo $addDir >> $log
                 else
                         if [[ $addDir != "*/*" ]]; then
                                 PWD=$(pwd)
                                 #adds based on pwd plus arguement
                                 pwdrepdir=$PWD"/"$addDir
-                                echo -e "adding $pwdrepdir to ~/.batchgitrc\n"
-                                echo $pwdrepdir >> ~/.batchgitrc
+                                echo -e "adding $pwdrepdir to $log\n"
+                                echo $pwdrepdir >> $log
                         else
-                                echo $addDir >> ~/.batchgitrc
-                                echo -e "Added $addDir to the ~/.batchgitrc file"
+                                echo $addDir >> $log
+                                echo -e "Added $addDir to the $log file"
                         fi
                 fi
                 #removes any duplicates
-                sort -u -o ~/.batchgitrc ~/.batchgitrc
+                sort -u -o $log $log
         else
                 #error if dir not added
                 echo "you need to add the directory after the flag!"
@@ -567,10 +570,10 @@ for dir in "${findrecurgit[@]}"; do
         echo -e "$pwdrepdir"
         read -p "Would you like to watch this repository? (y/n): " -n 1 -r
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-                echo -e "\n$pwdrepdir" >> ~/.batchgitrc
+                echo -e "\n$pwdrepdir" >> $log
         fi
         echo -e "\n"
-        sort -u -o ~/.batchgitrc ~/.batchgitrc
+        sort -u -o $log $log
 done
 
 fi
@@ -580,32 +583,32 @@ echo -e "\n${bold}REMOVE REPOS FROM BATCHGIT\n==========================${normal
         #add individual dir/repo mode
         if [[ ! -z $rmDir ]]; then 
                 #checks rc exists, think this is / should be a function
-                if [[ ! -f ~/.batchgitrc ]]; then
-                        echo "~/.batchgitrc file does not exist \n"
+                if [[ ! -f $log ]]; then
+                        echo "$log file does not exist \n"
                         findgitrepos
                 fi
                 if [[ $rmDir == "./" ]]; then
-                        echo -e "removing $(pwd) from ~/.batchgitrc\n"
+                        echo -e "removing $(pwd) from $log\n"
                         rmDir=$(pwd)
-                        sed -i "s:$rmDir::g" ~/.batchgitrc 
+                        sed -i "s:$rmDir::g" $log 
                 elif [[ $rmDir =~ "home" ]]; then
-                        echo -e "removing $rmDir from ~/.batchgitrc\n"
-                        sed -i "s:$rmDir::g" ~/.batchgitrc 
+                        echo -e "removing $rmDir from $log\n"
+                        sed -i "s:$rmDir::g" $log 
                 else
                         if [[ $rmDir != "*/*" ]]; then
                                 # PWD=$(pwd)
                                 #adds based on pwd plus arguement
                                 # pwdreprmdir=$PWD"/"$rmDir
-                                # echo -e "removing $pwdreprmdir from ~/.batchgitrc\n"
-                                echo -e "removing $rmDir from ~/.batchgitrc\n"
-                                sed -i "s:$rmDir::g" ~/.batchgitrc 
+                                # echo -e "removing $pwdreprmdir from $log\n"
+                                echo -e "removing $rmDir from $log\n"
+                                sed -i "s:$rmDir::g" $log 
                         else
-                                echo -e "Removed $rmDir from the ~/.batchgitrc file"
-                                sed -i "s:$pwdreprmDir::g" ~/.batchgitrc 
+                                echo -e "Removed $rmDir from the $log file"
+                                sed -i "s:$pwdreprmDir::g" $log 
                         fi
                 fi
                 #removes any duplicates
-                sort -u -o ~/.batchgitrc ~/.batchgitrc
+                sort -u -o $log $log
         else
                 #error if dir not added
                 echo "you need to add the directory after the flag!"
@@ -614,7 +617,7 @@ fi
 
 #deletes blank lines from the batchgitrc file
 #could potentially be moved into the loop above
-sed -e '/^$/d' -i ~/.batchgitrc 
+sed -e '/^$/d' -i $log 
 
 #git status
 if [[ $gstatus ]]; then
