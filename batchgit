@@ -500,11 +500,12 @@ echo -e "\n${bold}REMOVE REPOS FROM BATCHGIT\n==========================${normal
                         sed -i "s:$rmDir::g" ~/.batchgitrc 
                 else
                         if [[ $rmDir != "*/*" ]]; then
-                                PWD=$(pwd)
+                                # PWD=$(pwd)
                                 #adds based on pwd plus arguement
-                                pwdreprmdir=$PWD"/"$rmDir
-                                echo -e "removing $pwdreprmdir from ~/.batchgitrc\n"
-                                sed -i "s:$pwdreprmDir::g" ~/.batchgitrc 
+                                # pwdreprmdir=$PWD"/"$rmDir
+                                # echo -e "removing $pwdreprmdir from ~/.batchgitrc\n"
+                                echo -e "removing $rmDir from ~/.batchgitrc\n"
+                                sed -i "s:$rmDir::g" ~/.batchgitrc 
                         else
                                 echo -e "Removed $rmDir from the ~/.batchgitrc file"
                                 sed -i "s:$pwdreprmDir::g" ~/.batchgitrc 
