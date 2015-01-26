@@ -4,9 +4,6 @@
 bold=`tput bold`
 normal=`tput sgr0`
 
-# log file location
-log=~/.batchgitrc
-
 #function that assigns n number of command line arguements
 assignDynamicDir () {
         numCurArg=1
@@ -286,8 +283,7 @@ gitCommit () {
 }
 
 batchgitHelp () {
-        echo -e """
-${bold}Core git features:${normal}
+        echo -e """${bold}Core git features:${normal}
 -s \t git status all directories
 -c \t add a commit message for all requiring files
 -d \t git pull all directories
@@ -296,6 +292,7 @@ ${bold}Core git features:${normal}
 -z \t git reset --head HARD specific repositories
 
 ${bold}Managing batchgitrc:${normal}
+-o \t use an alternative rc file for batchgit
 -f \t find git repos on disk and write to batchgitrc
 -a \t add a directory to batchgitrc
 -l \t recursively add repos from a path to batchgitrc
@@ -313,37 +310,67 @@ ${bold}Other features:${normal}
 
 gitOptions () {
         echo -e """
-1) \t run git status
-2) \t find git repos
-3) \t pull git repositories
-4) \t pull and then push git repositories
-5) \t push git repos only
-6) \t delete repos from disk
-7) \t create a bootstrap folder for your repositories
-8) \t bootstrap your machine
+${bold}Core git features:${normal}
+1) \t git status all directories
+2) \t add a commit message for all requiring files
+3) \t git pull all directories
+4) \t git push all directories
+5) \t git pull and then push all repositories
+6) \t git reset --head HARD specific repositories
+
+${bold}Managing batchgitrc:${normal}
+7) \t use an alternative rc file for batchgit
+8) \t find git repos on disk and write to batchgitrc
+9) \t add a directory to batchgitrc
+10)\t recursively add repos from a path to batchgitrc
+11)\t remove specific directories from batchgitrc
+
+${bold}Bootstrap and restoring on a new machine:${normal}
+12)\t make a batchgit backup
+13)\t clone repos on a new disk using batchgit backup
+
+${bold}Other features:${normal}
+14)\t remove specific directories from disk
+15)\t display this help file
 
 quit or exit to stop
-
 """
         echo "What happens now?"
         read whatnow </dev/tty
         case $whatnow in
                 [1]) gstatus=true;;
-                [2]) gfind=true;;
+                [2]) gcommit=true;;
                 [3]) gpull=true;;
-                [4]) gpullpush=true;;
-                [5]) gpush=true;;
-                [6]) wipe=true;;
-                [7]) backup=true;;
-                [8]) clone=true;;
+                [4]) gpush=true;;
+                [5]) gpullpush=true;;
+                [6]) greset=true;;
+                [7]) other=true;ask=true;;
+                [8]) gfind=true;;
+                [9]) add=true;ask=true;;
+                [10]) gaddrec=true;ask=true;;
+                [11]) grm=true;ask=true;;
+                [12]) backup=true;;
+                [13]) clone=true;;
+                [14]) wipe=true;ask=true;;
+                [15]) batchgitHelp;;
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
         echo ""
+
 }
 
+logLocation () {
+        if [[ $other == "true" ]]; then
+                log=$altLog
+        elif [[ $other == "other" ]]; then
+                log=$olog
+        else
+                log=~/.batchgitrc
+        fi
+}
 
-while getopts sfndupbwzh?a:r:c:l: OPTION
+while getopts sfndupbwzh?a:r:c:l:o: OPTION
 do
         case $OPTION in
                 s)
@@ -392,19 +419,55 @@ do
                 w)
                         wipe=true
                         ;;
+                o)
+                        other=true
+                        altLog="$OPTARG"
+                        ;;
                 *)
                         gitOptions
                         ;;
         esac
 done
 
+logLocation
+
 checkbatchgit
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]]; then
-echo -e "\n${bold}OPTIONS\n=======${normal}\n"
+echo -e "\n${bold}OPTIONS\n=======${normal}"
         gitOptions
+        if [[ $ask ]]; then
+                if [[ $other ]]; then
+                        echo -n "Enter pathname for alternative batchgitrc: "
+                        read input
+                        eval olog=$input
+                        if [[ -f "$olog" ]]; then
+                                echo "using $olog"
+                        else
+                                echo "$olog does not exist"
+                        fi
+                        other="other"
+                        logLocation
+                        checkbatchgit
+                elif [[ $add ]]; then
+                        echo -n "Enter pathname for repo to add from batchgitrc: " 
+                        read addDir
+                        add=false
+                elif [[ $gaddrec ]]; then
+                        echo -n "Enter top directory for recursive search: " 
+                        read gaddrecDir
+                        gaddrec=false
+                elif [[ $grm ]]; then
+                        grm=false
+                        echo -n "Enter pathname for repo to remove from batchgitrc: " 
+                        read rmDir
+                fi
+                ask=false
+                gitOptions
+        fi
 fi
+
 
 #tests for config file, or runs if forced to redo config
 if [[ $gfind ]]; then
