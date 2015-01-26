@@ -217,7 +217,7 @@ gitPull () {
         if [[ -z $pulluptodate ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo ${bold}"Repository: $REPO ${normal} $BRANCH"
+                echo ${bold}"Repository: $REPO ${normal} $BRANCH ${bold}pulling${normal}"
                 cat .batchgitpullmessage
                 printf "\n"
         fi
@@ -234,7 +234,7 @@ gitPush () {
         if [[ -z $pushuptodate ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo ${bold}"Repository: $REPO ${normal} $BRANCH pushing"
+                echo ${bold}"Repository: $REPO ${normal} $BRANCH ${bold}pushing${normal}"
                 cat .batchgitpushmessage
                 printf "\n"
         fi
