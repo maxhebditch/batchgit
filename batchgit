@@ -308,41 +308,40 @@ ${bold}Other features:${normal}
         """
 }
 
-askLoop () {
-        if [[ $other ]]; then
-                echo -n "Enter pathname for alternative batchgitrc: "
-                read input
-                eval olog=$input
-                if [[ -f "$olog" ]]; then
-                        echo "using $olog"
-                else
-                        echo "$olog does not exist"
+gitAdd () {
+        if [[ ! -z $addDir ]]; then 
+                #checks rc exists, think this is / should be a function
+                if [[ ! -f $log ]]; then
+                        touch $log
+                        echo -e "making $log file \n"
                 fi
-                other="other"
-                logLocation
-                checkbatchgit
-        elif [[ $add ]]; then
-                echo -n "Enter pathname for repo to add to batchgitrc: " 
-                read input
-                eval oaddDir=$input
-                if [[ -d "$oaddDir" ]]; then
-                        echo "adding $oaddDir"
-                        addDir=oaddDir
-                        oadd=true
+                #think that is isnt actually necessary, anyways, adds current dir if ./ used
+                if [[ $addDir == "./" ]]; then
+                        echo $(pwd) >> $log
+                        echo -e "adding $(pwd) to $log\n"
+                elif [[ $addDir =~ "home" ]]; then
+                        echo -e "adding $addDir to $log\n"
+                        echo $addDir >> $log
                 else
-                        echo "$olog does not exist"
+                        if [[ $addDir != "*/*" ]]; then
+                                PWD=$(pwd)
+                                #adds based on pwd plus arguement
+                                pwdrepdir=$PWD"/"$addDir
+                                echo -e "adding $pwdrepdir to $log\n"
+                                echo $pwdrepdir >> $log
+                        else
+                                echo $addDir >> $log
+                                echo -e "Added $addDir to the $log file"
+                        fi
                 fi
-        elif [[ $gaddrec ]]; then
-                echo -n "Enter top directory for recursive search: " 
-                read gaddrecDir
-                gaddrec=false
-        elif [[ $grm ]]; then
-                grm=false
-                echo -n "Enter pathname for repo to remove from batchgitrc: " 
-                read rmDir
+                        #removes any duplicates
+                        sort -u -o $log $log
+        else
+                #error if dir not added
+                echo "you need to add the directory after the flag!"
         fi
-        ask=false
-        gitOptions
+        logLocation
+        checkbatchgit
 }
 
 gitOptions () {
@@ -395,6 +394,46 @@ quit or exit to stop
         esac
         echo ""
 
+}
+
+askLoop () {
+        if [[ $other ]]; then
+                echo -n "Enter pathname for alternative batchgitrc: "
+                read input
+                eval olog=$input
+                if [[ -f "$olog" ]]; then
+                        echo "using $olog"
+                else
+                        echo "$olog does not exist"
+                fi
+                other="other"
+                logLocation
+                checkbatchgit
+                ask=false
+        elif [[ $add ]]; then
+                echo -n "Enter pathname for repo to add to batchgitrc: " 
+                read input
+                eval oaddDir=$input
+                if [[ -d "$oaddDir" ]]; then
+                        echo "adding $oaddDir"
+                        oadd=true
+                else
+                        echo "$oaddDir does not exist"
+                fi
+                ask=false
+                add=other
+        elif [[ $gaddrec ]]; then
+                echo -n "Enter top directory for recursive search: " 
+                read gaddrecDir
+                gaddrec=false
+                ask=false
+        elif [[ $grm ]]; then
+                grm=false
+                echo -n "Enter pathname for repo to remove from batchgitrc: " 
+                read rmDir
+                ask=false
+        fi
+        gitOptions
 }
 
 logLocation () {
@@ -598,44 +637,17 @@ echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
 fi
 
 #add new repo to config file
+# if [[ $add ]]; then
 if [[ $add ]] || [[ $oadd ]]; then
-        if [[ $oadd ]]; then
+        if [[ $oadd == "true" ]]; then
                 addDir=$oaddDir
+                echo $addDir
         fi
+        checkbatchgit
         echo -e "\n${bold}ADD REPOS TO BATCHGIT\n=====================${normal}\n"
         #add individual dir/repo mode
         #tidy these up so only one write
-        if [[ ! -z $addDir ]]; then 
-                #checks rc exists, think this is / should be a function
-                if [[ ! -f $log ]]; then
-                        touch $log
-                        echo -e "making $log file \n"
-                fi
-                #think that is isnt actually necessary, anyways, adds current dir if ./ used
-                if [[ $addDir == "./" ]]; then
-                        echo $(pwd) >> $log
-                        echo -e "adding $(pwd) to $log\n"
-                elif [[ $addDir =~ "home" ]]; then
-                        echo -e "adding $addDir to $log\n"
-                        echo $addDir >> $log
-                else
-                        if [[ $addDir != "*/*" ]]; then
-                                PWD=$(pwd)
-                                #adds based on pwd plus arguement
-                                pwdrepdir=$PWD"/"$addDir
-                                echo -e "adding $pwdrepdir to $log\n"
-                                echo $pwdrepdir >> $log
-                        else
-                                echo $addDir >> $log
-                                echo -e "Added $addDir to the $log file"
-                        fi
-                fi
-                #removes any duplicates
-                sort -u -o $log $log
-        else
-                #error if dir not added
-                echo "you need to add the directory after the flag!"
-        fi
+        gitAdd
 fi
 
 if [[ $gaddrec ]]; then
