@@ -548,26 +548,6 @@ fi
 #         sort -u -o ~/.batchgitrc ~/.batchgitrc
 # fi
 
-# #removes single repo manually
-# if [[ $1 == "-rm" ]] || [[ $1 == "-r" ]] || [[ $1 == "-remove" ]]; then
-#         if [[ ! -z $2 ]]; then 
-#                 if [[ $2 == "./" ]]; then
-#                         echo "removing $(pwd)"
-#                         sed -e "s|$(pwd)||g" -i  ~/.batchgitrc
-#                 elif [[ $2 != "*/*" ]]; then
-#                         PWD=$(pwd)
-#                         pwdrepdir=$PWD"/"$2
-#                         echo "removing $pwdrepdir"
-#                         sed -e "s|$pwdrepdir||g" -i  ~/.batchgitrc
-#                 else
-#                         sed -e "s|$2||g" -i  ~/.batchgitrc
-#                 fi
-#         else
-#                 echo "you need to add the directory after the flag!"
-#         fi
-#         sort -u -o ~/.batchgitrc ~/.batchgitrc
-# fi
-
 #deletes blank lines from the batchgitrc file
 #could potentially be moved into the loop above
 sed -e '/^$/d' -i ~/.batchgitrc 
@@ -575,33 +555,6 @@ sed -e '/^$/d' -i ~/.batchgitrc
 #git status
 if [[ $gstatus ]]; then
 echo -e "\n${bold}GIT STATUS\n==========${normal}\n"
-        # if [[ $# -gt 1 ]]; then
-        #         if [[ $2 == "./" ]]; then
-        #                 gitStatus
-        #         else
-        #         assignDynamicDir $@
-        #         for dynamicDir in ${Dir[@]}; do
-        #                 echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-        #                 inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-        #                 if [[ ! -z $inRc ]]; then
-        #                         cd $inRc
-        #                         gitStatus
-        #                 fi
-        #                 if [[ -z $inRc ]]; then
-        #                         echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
-        #                         echo ""
-        #                 fi
-        #         done
-        #         fi
-        # fi
-        # if [[ $# == "1" ]] || [[ $now == "gstatus" ]]; then
-        #         #goes through the folders in the list
-        #         for dir in "${paths[@]}"; do
-        #                 #moves into the directory listed
-        #                 cd $dir
-        #                 gitStatus 
-        #         done
-        # fi
         for dir in "${paths[@]}"; do
                 #moves into the directory listed
                 cd $dir
@@ -803,38 +756,6 @@ if [[ $wipe ]]; then
                 wipeRepos
         done
 fi
-#         #sets func1 to $1 and passes this to checkbatchgit, then will come back to cycle through wipeRepos
-#         #dont think i need to set this to $1: change
-#         echo -e "\n${bold}WIPE MODE"
-#         echo -e "==========${normal}\n"
-#         #cycles through dirs in file
-#         if [[ $# == "1" ]]; then
-#                 let i=1
-#                 for dir in "${paths[@]}"; do
-#                         let i+=1
-#                         cd $dir
-#                         wipeRepos
-#                 done
-#         elif [[ $# -gt 1 ]]; then
-#                 if [[ $2 == "./" ]]; then
-#                         wipeRepos
-#                 else
-#                         assignDynamicDir $@
-#                         for dynamicDir in ${Dir[@]}; do
-#                                 echo "Checking specific named repositories: ${bold}$dynamicDir${normal}"
-#                                 inRc=$(grep "$dynamicDir" ~/.batchgitrc)
-#                                 if [[ ! -z $inRc ]]; then
-#                                         cd $inRc
-#                                         wipeRepos
-#                                 fi
-#                                 if [[ -z $inRc ]]; then
-#                                         echo "No repository named $dynamicDir exists in your ~/.batchgitrc file"
-#                                         echo ""
-#                                 fi
-#                         done
-#                 fi
-#         fi
-# fi
 
 #add ability to go to goptions but then still read through file
 #maybe [[ $1 != -p, etc etc but would take forver
