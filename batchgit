@@ -231,7 +231,7 @@ gitPush () {
         echo ${bold}"Repository: $REPO ${normal} $BRANCH"
         #if pushonly then only pushes
         if [[ $gpullpush == "y" ]]; then
-                git pull
+                gitPull
         fi
         git push
         printf "\n"
