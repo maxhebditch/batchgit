@@ -326,16 +326,16 @@ do
         esac
 done
 
-#tests for config file, or runs if forced to redo config
-if [[ $gfind ]]; then
-echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
-        findgitrepos
-fi
-
 #multiple choice for no option or post config
 if [[ $# == 0 ]]; then
 echo -e "\n${bold}OPTIONS${normal}\n"
         gitOptions
+fi
+
+#tests for config file, or runs if forced to redo config
+if [[ $gfind ]]; then
+echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
+        findgitrepos
 fi
 
 #Check to ensure all local directories still exist
