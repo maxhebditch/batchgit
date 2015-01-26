@@ -227,12 +227,13 @@ gitPull () {
 #function that pushes repos
 gitPush () {
         git push --porcelain > .batchgitpushmessage
-        pulluptodate=$(grep "up to date" .batchgitpushmessage)
+        pushuptodate=$(grep "up to date" .batchgitpushmessage)
+        pushneedsmod=$(grep "modified" .batchgitpushmessage)
         #if pushonly then only pushes
         if [[ $gpullpush == "y" ]]; then
                 gitPull
         fi
-        if [[ -z $pushinteresting ]]; then
+        if [[ -z $pushuptodate ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 echo ${bold}"Repository: $REPO ${normal} $BRANCH"
@@ -326,11 +327,13 @@ done
 
 #tests for config file, or runs if forced to redo config
 if [[ $gfind == "y" ]]; then
+echo -e "\n${bold}FINDING GIT REPOS${normal}\n"
         findgitrepos
 fi
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]]; then
+echo -e "\n${bold}OPTIONS${normal}\n"
         gitOptions
 fi
 
@@ -345,6 +348,7 @@ done
 
 #arguement to backup
 if [[ $backup == "y" ]]; then
+echo -e "\n${bold}BACKUP BATCHGIT${normal}\n"
         #if the flag for backup mode has been used
         #check if the takeaway directory doesn't already exists
         if [[ ! -d ~/batchgit-takeaway ]]; then
@@ -409,6 +413,7 @@ fi
 
 #if clone flag is used
 if [[ $clone == "y" ]]; then
+echo -e "\n${bold}CLONE BATCHGIT${normal}\n"
         #enter if clone flag used
         echo -e "\n${bold}CLONE MODE"
         echo -e "==========${normal}\n"
@@ -439,6 +444,7 @@ fi
 
 #add new repo to config file
 if [[ $add == "y" ]]; then
+echo -e "\n${bold}ADD REPOS TO BATCHGIT${normal}\n"
         #add individual dir/repo mode
         if [[ ! -z $addDir ]]; then 
                 #checks rc exists, think this is / should be a function
@@ -523,6 +529,7 @@ sed -e '/^$/d' -i ~/.batchgitrc
 
 #git status
 if [[ $gstatus == "y" ]]; then
+echo -e "\n${bold}GIT STATUS${normal}\n"
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitStatus
@@ -559,6 +566,7 @@ fi
 
 #git pull
 if [[ $gpull == "y" ]]; then
+echo -e "\n${bold}GIT PULL${normal}\n"
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitPull
@@ -590,6 +598,11 @@ fi
 
 #git push
 if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
+        if [[ $gpullpush == "y" ]] && [[ -z $gpush ]]; then
+                echo -e "\n${bold}GIT PULL & PUSH ${normal}\n"
+        elif [[ $gpush == "y" ]] && [[ -z $gpullpush ]]; then
+                echo -e "\n${bold}GIT PULL${normal}\n"
+        fi
         # if [[ $# -gt 1 ]]; then
         #         if [[ $2 == "./" ]]; then
         #                 gitPush $1
@@ -609,14 +622,12 @@ if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
         #                 done
         #         fi
         # fi
-        if [[ $gpush == "y" ]] || [[ $gpullpush == "y" ]]; then
                 #goes through the folders in the list
-                for dir in "${paths[@]}"; do
-                        #moves into the directory listed
-                        cd $dir
-                        gitPush $1
-                done
-        fi
+        for dir in "${paths[@]}"; do
+                #moves into the directory listed
+                cd $dir
+                gitPush $1
+        done
         # #not sure what this is doing here
         # if [[ $1 == "-n" ]]; then
         #         echo -e "\nAll done for the day!\n"
