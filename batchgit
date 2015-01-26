@@ -233,7 +233,7 @@ gitPush () {
         if [[ $gpullpush == "y" ]]; then
                 gitPull
         fi
-        git push
+        git push --porcelain
         printf "\n"
 }
 
