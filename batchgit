@@ -27,7 +27,7 @@ wipeRepos () {
                                 cd ..
                                 #could have sudo here to save y for write protected file
                                 #but don't want to force sudo
-                                rm -r $REPO
+                                rm -rf $REPO
                                 echo "Wiped";;
                         [Nn][Oo]|[Nn]) echo "Not wiped" ;;
                         [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo "quiting" && exit ;;
