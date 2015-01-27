@@ -128,6 +128,7 @@ and a new rc file will be written. To then use this rc file, combine it with the
 When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-g` or use the add recursively function. 
 
 ##TODO
+26. Git checkout master for all repos
 25. Add support for specific repos by path for pushing pulling statusing etc
 13. `rm` all untracked files
 14. Alphabetical printing of repo
