@@ -30,9 +30,6 @@ h2 {
 h3 {
         color:#585858;
 }
-h3:hover {
-        color:#2F32FE;
-}
 h4 {
         color:#585858;
 }
@@ -54,10 +51,4 @@ code {
 input {
         float:right;
         clear:both;
-}
-
-/* TABLE FOR PHOTOGRAPHY PAGE */
-table.photography {
-        margin-left:auto;
-        margin-right:auto;
 }
