@@ -13,6 +13,7 @@
 <p>A shell script for maintaining git repositories system wide. The script maintains a list of git repositories on your disk, allowing you to run git status, git pull or git push in each folder at once. On initial run the script searches for all <code>.git</code> folders and asks which you want to add to the list. New repos can be added manually as they are created, repos can be deleted manually from the list manually or will be automatically deleted if they no longer exist.</p>
 <h2 id="configuration">Configuration</h2>
 <p>When the script is first run it looks for a dot file called <code>~/.batchgitrc</code>. If this doesn't exist, as it won't the first time you run this script, it will search for all of the git repos on the disk and ask if you want to add them to the file or not. Repos added will be monitored, others will not be. This is useful if you used git clone to get a program or script but don't want to monitor it every time.</p>
+<script type="text/javascript" src="https://asciinema.org/a/15786.js" id="asciicast-15786" async></script>
 <h2 id="how-to-run">How to run</h2>
 <h3 id="initial-run">Initial run</h3>
 <p>The configuration file won't exist so the script will search for git repos across the disk. It will list each one it finds and ask if you want to track it. You can add them using Y/y, or ignore them using N/n.</p>
@@ -22,6 +23,7 @@
 <p>Allows checking all of your git directories at once </p>
 <h3 id="multiple-choice">Multiple choice</h3>
 <pre><code>    $ batchgit</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15789.js" id="asciicast-15789" async></script>
 <p>This will offer a multiple choice for different options which can be selected using the numbers.</p>
 <h3 id="resetting-configuration-file">Resetting configuration file</h3>
 <pre><code>    $ batchgit -f
@@ -31,6 +33,7 @@
 <pre><code>    $ batchgit -a ~/path/to/repo
     $ batchgit -a ./
     $ batchgit -a repo </code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15790.js" id="asciicast-15790" async></script>
 <p>The use of the <code>-a</code> flag will append the directory to the configuration file. This option will make the configuration file if it doesn't already exist, allowing you to manually add dirs rather than go through the setup.</p>
 <p>Using <code>./</code> for either of the add flags will add the current directory to the configuration file. Otherwise you can specify the sub directory using the last command, or use the entire path.</p>
 <p>It will also check to see if the folders in the configuration file still exist, if not it will remove them to avoid issues.</p>
@@ -43,33 +46,38 @@
 <pre><code>    $ batchgit -r ~/path/to/repo
     $ batchgit -r ./
     $ batchgit -r repo</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15791.js" id="asciicast-15791" async></script>
 <p>This flag works exactly the opposite to the adding one. Instead of adding single directories it will remove them. Either the whole path can be specified, the current folder, or using the last flag, a sub directory of the current folder (useful as can use autocomplete).</p>
-<h3 id="git-status">git status</h3>
-<pre><code>    $ batchgit -s</code></pre>
-<p>The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red.</p>
 <h3 id="git-pull">git pull</h3>
 <pre><code>    $ batchgit -d</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15793.js" id="asciicast-15793" async></script>
 <p>Script will loop through git repositories and pull from remote source.</p>
 <h3 id="git-push">git push</h3>
 <pre><code>    $ batchgit -u</code></pre>
 <p>Script will loop through git repositories, pull first to avoid conflicts and then push to remote source.</p>
+<script type="text/javascript" src="https://asciinema.org/a/15794.js" id="asciicast-15794" async></script>
 <pre><code>    $ batchgit -p</code></pre>
 <p>Script will only push only rather than pull then push.</p>
+<script type="text/javascript" src="https://asciinema.org/a/15795.js" id="asciicast-15795" async></script>
 <h3 id="git-commits">git commits</h3>
 <pre><code>    $ batchgit -c &quot;updated readme&quot;</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15796.js" id="asciicast-15796" async></script>
 <p>You can commit changes using <code>-c</code> and a commit message in quotes. This will apply to all files that are untracked, modified and added in all directories so it can be messy.</p>
 <h2 id="bootstrapping">Bootstrapping</h2>
 <h3 id="backup">backup</h3>
 <p>The script can be used to make a backup list of all the current <code>git</code> repos on the disk.</p>
 <pre><code>    $ batchgit -b</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15797.js" id="asciicast-15797" async></script>
 <p>This will go through each repo asking if they should be backed up or not. At the moment the script only works with the first remote repo, if you have many you may have to change this amnually, see below. Once completed the script will create a folder at <code>~/batchgit-takeaway</code>. This should then be copied to the new machine with a copy of the <code>batchgit</code> shell script.</p>
 <h3 id="clone">clone</h3>
 <p>Once in the new machine the script should be run as follows</p>
 <pre><code>    $ batchgit -n</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15801.js" id="asciicast-15801" async></script>
 <p>This will then go through the files in the <code>~/batchgit-takeaway</code> folder and ask if each repo should be cloned. The way the script works is to directly mirror the filepaths the repos were in on the old system. If you want to change this you can look at the filepaths in <code>~/batchgit-takeaway/bootstrapdir</code> and adjust accordingly. The first filepath will be used for the first remote repo in <code>~/batchgit-takeaway/bootstraprepo</code>.</p>
 <h3 id="wipe">wipe</h3>
 <p>The script can now also be used to wipe multiple repos from the disk</p>
 <pre><code>    $ batchgit -w</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15802.js" id="asciicast-15802" async></script>
 <p>As usual, it will find the repos and ask you one at a time which you want to keep.</p>
 <h2 id="alternative-batchgitrc-file">Alternative batchgitrc file</h2>
 <p>An alternative rc file can be used as so</p>
@@ -81,6 +89,7 @@
     $ batchgit -u -o /dir/to/path
     $ batchgit -d -o /dir/to/path
     $ batchgit -p -o /dir/to/path</code></pre>
+<script type="text/javascript" src="https://asciinema.org/a/15803.js" id="asciicast-15803" async></script>
 <h2 id="faqs">FAQs</h2>
 <h3 id="why-are-some-of-my-repos-not-being-found">Why are some of my repos not being found?</h3>
 <p>When initially run, or using the <code>-f</code> flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the <code>-g</code> or use the add recursively function.</p>
