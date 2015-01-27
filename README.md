@@ -128,6 +128,11 @@ and a new rc file will be written. To then use this rc file, combine it with the
 When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-g` or use the add recursively function. 
 
 ##TODO
+24. Think about nomenclature
+25. Add support for specific repos by path for pushing pulling statusing etc
+13. `rm` all untracked files
+14. Alphabetical printing of repo
+23. Bring back arguements after the flags, hard with getopts
 2. ~~Tidy up output.~~ [ga7go8]
 3. ~~Add generic commit message.~~
 5. ~~Strip out # you sometimes see in git~~
@@ -142,11 +147,5 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 19. ~~Turn git status into a function~~
 20. ~~Batchgit push single directories~~
 22. ~~Update README with specific folder pushing~~
-23. Add multiple repos to batchgit -remove
-21. Offer alternative to whatthecommit message
-24. Think about nomenclature
-25. Add support for specific repos by path for pushing pulling statusing etc
 7. ~~Add a secondary, larger list for less frequent monitoring or maybe just pulling~~
-13. `rm` all untracked files
-14. Alphabetical printing of repo
 18. ~~Loop for checking batchgitrc presence~~
