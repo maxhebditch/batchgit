@@ -1,0 +1,94 @@
+<h1 id="batchgit">batchgit</h1>
+<p>A shell script for maintaining git repositories system wide. The script maintains a list of git repositories on your disk, allowing you to run git status, git pull or git push in each folder at once. On initial run the script searches for all <code>.git</code> folders and asks which you want to add to the list. New repos can be added manually as they are created, repos can be deleted manually from the list manually or will be automatically deleted if they no longer exist.</p>
+<h2 id="configuration">Configuration</h2>
+<p>When the script is first run it looks for a dot file called <code>~/.batchgitrc</code>. If this doesn't exist, as it won't the first time you run this script, it will search for all of the git repos on the disk and ask if you want to add them to the file or not. Repos added will be monitored, others will not be. This is useful if you used git clone to get a program or script but don't want to monitor it every time.</p>
+<h2 id="how-to-run">How to run</h2>
+<h3 id="initial-run">Initial run</h3>
+<p>The configuration file won't exist so the script will search for git repos across the disk. It will list each one it finds and ask if you want to track it. You can add them using Y/y, or ignore them using N/n.</p>
+<h3 id="multiple-choice">Multiple choice</h3>
+<pre><code>    $ batchgit</code></pre>
+<p>This will offer a multiple choice for different options which can be selected using the numbers.</p>
+<h3 id="resetting-configuration-file">Resetting configuration file</h3>
+<pre><code>    $ batchgit -f
+    $ batchgit -g /media/</code></pre>
+<p>These will search for git repos across the whole disk. It will rewrite the configuration file, but it will save a backup to <code>~/.batchgitrc.bak</code>. By default it searches <code>~</code>, otherwise you can specify the location using <code>-g</code>.</p>
+<h3 id="adding-single-directores-manually">Adding single directores manually</h3>
+<pre><code>    $ batchgit -a ~/path/to/repo
+    $ batchgit -a ./
+    $ batchgit -a repo </code></pre>
+<p>The use of the <code>-a</code> flag will append the directory to the configuration file. This option will make the configuration file if it doesn't already exist, allowing you to manually add dirs rather than go through the setup.</p>
+<p>Using <code>./</code> for either of the add flags will add the current directory to the configuration file. Otherwise you can specify the sub directory using the last command, or use the entire path.</p>
+<p>It will also check to see if the folders in the configuration file still exist, if not it will remove them to avoid issues.</p>
+<h3 id="adding-directories-recursively">Adding directories recursively</h3>
+<pre><code>    $ batchgit -l
+    $ batchgit -l ./
+    $ batchgit -l /path/to/master/directory</code></pre>
+<p>If all your repos live under one master directory, you might just want to only add subdirectories. If you <code>cd</code> into the correct master directory and then run the command alone or with <code>./</code> the script will ask you what subdirectories from the current folder you want to add. Alternatively, the last command lets you set the master directory from anywhere.</p>
+<h3 id="removing-single-directores-manually">Removing single directores manually</h3>
+<pre><code>    $ batchgit -r ~/path/to/repo
+    $ batchgit -r ./
+    $ batchgit -r repo</code></pre>
+<p>This flag works exactly the opposite to the adding one. Instead of adding single directories it will remove them. Either the whole path can be specified, the current folder, or using the last flag, a sub directory of the current folder (useful as can use autocomplete).</p>
+<h3 id="git-status">git status</h3>
+<pre><code>    $ batchgit -s</code></pre>
+<p>The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red.</p>
+<h3 id="git-pull">git pull</h3>
+<pre><code>    $ batchgit -d</code></pre>
+<p>Script will loop through git repositories and pull from remote source.</p>
+<h3 id="git-push">git push</h3>
+<pre><code>    $ batchgit -u</code></pre>
+<p>Script will loop through git repositories, pull first to avoid conflicts and then push to remote source.</p>
+<pre><code>    $ batchgit -p</code></pre>
+<p>Script will only push only rather than pull then push.</p>
+<h3 id="git-commits">git commits</h3>
+<pre><code>    $ batchgit -c &quot;updated readme&quot;</code></pre>
+<p>You can commit changes using <code>-c</code> and a commit message in quotes. This will apply to all files that are untracked, modified and added in all directories so it can be messy.</p>
+<h2 id="bootstrapping">Bootstrapping</h2>
+<h3 id="backup">backup</h3>
+<p>The script can be used to make a backup list of all the current <code>git</code> repos on the disk.</p>
+<pre><code>    $ batchgit -b</code></pre>
+<p>This will go through each repo asking if they should be backed up or not. At the moment the script only works with the first remote repo, if you have many you may have to change this amnually, see below. Once completed the script will create a folder at <code>~/batchgit-takeaway</code>. This should then be copied to the new machine with a copy of the <code>batchgit</code> shell script.</p>
+<h3 id="clone">clone</h3>
+<p>Once in the new machine the script should be run as follows</p>
+<pre><code>    $ batchgit -n</code></pre>
+<p>This will then go through the files in the <code>~/batchgit-takeaway</code> folder and ask if each repo should be cloned. The way the script works is to directly mirror the filepaths the repos were in on the old system. If you want to change this you can look at the filepaths in <code>~/batchgit-takeaway/bootstrapdir</code> and adjust accordingly. The first filepath will be used for the first remote repo in <code>~/batchgit-takeaway/bootstraprepo</code>.</p>
+<h3 id="wipe">wipe</h3>
+<p>The script can now also be used to wipe multiple repos from the disk</p>
+<pre><code>    $ batchgit -w</code></pre>
+<p>As usual, it will find the repos and ask you one at a time which you want to keep.</p>
+<h2 id="alternative-batchgitrc-file">Alternative batchgitrc file</h2>
+<p>An alternative rc file can be used as so</p>
+<pre><code>    $ batchgit -o /dir/to/path</code></pre>
+<p>This allows having multiple different sets of files. For example, work related repos, coding related repos, game related repos, or just a small subset of fast and slow repos can be made. To write this file you need to combined the <code>-o</code> and <code>-f</code> flags</p>
+<pre><code>    $ batchgit -f -o /dir/to/path</code></pre>
+<p>and a new rc file will be written. To then use this rc file, combine it with the above flags, for example.</p>
+<pre><code>    $ batchgit -s -o /dir/to/path
+    $ batchgit -u -o /dir/to/path
+    $ batchgit -d -o /dir/to/path
+    $ batchgit -p -o /dir/to/path</code></pre>
+<h2 id="faqs">FAQs</h2>
+<h3 id="why-are-some-of-my-repos-not-being-found">Why are some of my repos not being found?</h3>
+<p>When initially run, or using the <code>-f</code> flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the <code>-g</code> or use the add recursively function.</p>
+<h2 id="todo">TODO</h2>
+<ol start="25" style="list-style-type: decimal">
+<li>Add support for specific repos by path for pushing pulling statusing etc</li>
+<li><code>rm</code> all untracked files</li>
+<li>Alphabetical printing of repo</li>
+<li>Bring back arguements after the flags, hard with getopts</li>
+<li><del>Tidy up output.</del> [ga7go8]</li>
+<li><del>Add generic commit message.</del></li>
+<li><del>Strip out # you sometimes see in git</del></li>
+<li><del>Add a <code>-d</code> flag for removing directory</del></li>
+<li><del>Add folders recursively from current location to configuration file.</del></li>
+<li><del>Handle directories that have been deleted since config file wrote</del></li>
+<li><del>Say whether one commit ahead or behind rather than just different</del></li>
+<li><del>Remove <code>./</code> as its not needed</del></li>
+<li><del><code>git clone</code> using <code>~/.batchgitrc</code> file</del></li>
+<li><del>multiple wipes</del></li>
+<li><del>Optimise loops</del></li>
+<li><del>Turn git status into a function</del></li>
+<li><del>Batchgit push single directories</del></li>
+<li><del>Update README with specific folder pushing</del></li>
+<li><del>Add a secondary, larger list for less frequent monitoring or maybe just pulling</del></li>
+<li><del>Loop for checking batchgitrc presence</del></li>
+</ol>
