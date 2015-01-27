@@ -62,9 +62,11 @@ gitReset () {
 checkbatchgit () {
         #checks that batchgitrc exists, if not then goes
         #to function to search for current repos
-        if [[ ! -f $log ]]; then
-                findgitrepos
-        fi
+	if [[ $clone == "false" ]]; then
+		if [[ ! -f $log ]]; then
+			findgitrepos
+		fi
+	fi
         #if file does exist, then check how many lines are in it
         numberInbatchgitrc=$(wc -l < $log)
         #if zero lines (i.e. empty) then searches for repos as above
@@ -239,7 +241,7 @@ gitStatus () {
 
 #function that pulls repos
 gitPull () {
-        git pull > .batchgitpullmessage
+        git pull > .batchgitpullmessage 2>&1
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
                 REPO=${PWD##*/}
@@ -515,6 +517,35 @@ do
         esac
 done
 
+#if clone flag is used
+if [[ $clone ]]; then
+echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
+        #enter if clone flag used
+        #checks that repos match paths in number
+        checkrepodirmatch
+        let i=0
+        for dir in ${localRepo[@]}; do
+                #if directory not present then it makes it
+                if [[ ! -d ${localRepo[$i]} ]]; then
+                        if [ "${localRepo[$i]}" != '/home/$USER/' ]; then
+                                echo "Making the directory ${localRepo[$i]}"
+                                eval mkdir -p "${localRepo[$i]}"
+                        fi
+                fi
+                #moves to the dir in question
+                eval cd ${localRepo[$i]}
+                #tells you where you are
+                echo "this dir is ${bold}$(pwd)${normal}"
+                #tells you what it should match
+                echo "which should match ${localRepo[$i]}"
+                #tells you what its going to put there
+                echo "for cloning ${bold}${clones[$i]}${normal}"
+                confirmClone
+                let i+=1
+                echo -e "\n"
+        done 
+fi
+
 logLocation
 
 checkbatchgit
@@ -618,34 +649,6 @@ echo -e "\n${bold}BACKUP BATCHGIT\n===============${normal}\n"
         checkrepodirmatch
 fi
 
-#if clone flag is used
-if [[ $clone ]]; then
-echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
-        #enter if clone flag used
-        #checks that repos match paths in number
-        checkrepodirmatch
-        let i=0
-        for dir in ${localRepo[@]}; do
-                #if directory not present then it makes it
-                if [[ ! -d ${localRepo[$i]} ]]; then
-                        if [ "${localRepo[$i]}" != '/home/$USER/' ]; then
-                                echo "Making the directory ${localRepo[$i]}"
-                                eval mkdir -p "${localRepo[$i]}"
-                        fi
-                fi
-                #moves to the dir in question
-                eval cd ${localRepo[$i]}
-                #tells you where you are
-                echo "this dir is ${bold}$(pwd)${normal}"
-                #tells you what it should match
-                echo "which should match ${localRepo[$i]}"
-                #tells you what its going to put there
-                echo "for cloning ${bold}${clones[$i]}${normal}"
-                confirmClone
-                let i+=1
-                echo -e "\n"
-        done 
-fi
 
 #add new repo to config file
 # if [[ $add ]]; then
