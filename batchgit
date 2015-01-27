@@ -81,7 +81,12 @@ checkbatchgit () {
 findgitrepos () {
         echo "Looking for repos, please wait"
         #Runs a find to look for repos
-        findgit=( $(find ~ -type d -name .git | xargs -n 1 dirname) )
+        if [[ $searchdir ]]; then
+                location=$searchdir
+        else
+                location=/home/$USER
+        fi
+        findgit=( $(find $location -type d -name .git | xargs -n 1 dirname) )
         #counts how many are inside
         numfind=${#findgit[@]}
         #tells user how many repos they have
@@ -447,7 +452,7 @@ logLocation () {
         fi
 }
 
-while getopts sfndupbwzh?a:r:c:l:o: OPTION
+while getopts sfndupbwzh?a:r:c:l:o:g: OPTION
 do
         case $OPTION in
                 s)
@@ -455,6 +460,10 @@ do
                         ;;
                 f)
                         gfind=true
+                        ;;
+                g)
+                        gfind=true
+                        searchdir="$OPTARG"
                         ;;
                 h)
                         batchgitHelp
