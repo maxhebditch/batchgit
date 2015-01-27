@@ -21,15 +21,13 @@ This will offer a multiple choice for different options which can be selected us
 ###Resetting configuration file
 
         $ batchgit -f
-        $ batchgit -find
-        $ batchgit -f /var
+        $ batchgit -g /media/
 
-These will search for git repos across the whole disk. It will rewrite the configuration file, but it will save a backup to `~/.batchgitrc.bak`. By default it searches `~`, otherwise you can specify the location.
+These will search for git repos across the whole disk. It will rewrite the configuration file, but it will save a backup to `~/.batchgitrc.bak`. By default it searches `~`, otherwise you can specify the location using `-g`.
 
 ###Adding single directores manually
 
         $ batchgit -a ~/path/to/repo
-        $ batchgit -add ~/path/to/repo
         $ batchgit -a ./
         $ batchgit -a repo 
 
@@ -41,91 +39,89 @@ It will also check to see if the folders in the configuration file still exist, 
 
 ###Adding directories recursively
 
-        $ batchgit -ar
-        $ batchgit -addrecursive
-        $ batchgit -ar ./
-        $ batchgit -ar /path/to/master/directory
+        $ batchgit -l
+        $ batchgit -l ./
+        $ batchgit -l /path/to/master/directory
 
 If all your repos live under one master directory, you might just want to only add subdirectories. If you `cd` into the correct master directory and then run the command alone or with `./` the script will ask you what subdirectories from the current folder you want to add. Alternatively, the last command lets you set the master directory from anywhere.
 
 ###Removing single directores manually
 
         $ batchgit -r ~/path/to/repo
-        $ batchgit -rm ~/path/to/repo
-        $ batchgit -remove ~/path/to/repo
         $ batchgit -r ./
         $ batchgit -r repo
 
-This flag works exactly the opposite to the previous one. Instead of adding single directories it will remove them. Either the whole path can be specified, the current folder, or using the last flag, a sub directory of the current folder (useful as can use autocomplete).
+This flag works exactly the opposite to the adding one. Instead of adding single directories it will remove them. Either the whole path can be specified, the current folder, or using the last flag, a sub directory of the current folder (useful as can use autocomplete).
 
 ###git status
 
-        $ batchgit -status
         $ batchgit -s
-        $ batchgit -s ./
-        $ batchgit -s repo1 repo2 repo3
 
-The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red. Alternatively just current or a list of specific ones. The specific repos, `repo1`, `repo2`, and `repo3` in the above example, have to be in your `~/.batchgitrc` file.
+The script will pull the list of git repos it's tracking from the configuration file and will list any modified, untracked or commited files in red.
 
 ###git pull
 
-        $ batchgit -pull
         $ batchgit -d
-        $ batchgit -d ./
-        $ batchgit -d repo1 repo2 repo3
 
-Script will loop through git repositories and pull from remote source. Or just specific ones or current.
+Script will loop through git repositories and pull from remote source.
 
 ###git push
 
-        $ batchgit -push
         $ batchgit -u
-        $ batchgit -u ./
-        $ batchgit -u repo1 repo2 repo3
 
-Script will loop through git repositories, pull first to avoid conflicts and then push to remote source. Can be done on all repos or just specific pnes.
+Script will loop through git repositories, pull first to avoid conflicts and then push to remote source.
 
-        $ batchgit -pushonly
-        $ batchgit -po
-        $ batchgit -po ./
-        $ batchgit -po repo1 repo2 repo3
+        $ batchgit -p
 
-Script will only push rather than pull then push.
+Script will only push only rather than pull then push.
 
 ###git commits
 
         $ batchgit -c "updated readme"
-        $ batchgit -commit
-        $ batchgit -cp
 
-You can commit changes using `-c` or `-commit` and a commit message in quotes. If you don't provide a message, I don't massively recommend it, but if you are in a hurry you can use a generic message from [what the commit](http://whatthecommit.com/) because it is more fun than a static message. The `-cp` flag will push as well after writing a commit message.
+You can commit changes using `-c` and a commit message in quotes. This will apply to all files that are untracked, modified and added in all directories so it can be messy.
 
 ##Bootstrapping
 
 ###backup
 The script can be used to make a backup list of all the current `git` repos on the disk. 
 
-        $ batchgit --backup
+        $ batchgit -b
 
 This will go through each repo asking if they should be backed up or not. At the moment the script only works with the first remote repo, if you have many you may have to change this amnually, see below. Once completed the script will create a folder at `~/batchgit-takeaway`. This should then be copied to the new machine with a copy of the `batchgit` shell script. 
 
 ###clone
 Once in the new machine the script should be run as follows
 
-        $ batchgit --clone
+        $ batchgit -n
 
 This will then go through the files in the `~/batchgit-takeaway` folder and ask if each repo should be cloned. The way the script works is to directly mirror the filepaths the repos were in on the old system. If you want to change this you can look at the filepaths in `~/batchgit-takeaway/bootstrapdir` and adjust accordingly. The first filepath will be used for the first remote repo in `~/batchgit-takeaway/bootstraprepo`.
 
 ###wipe
 
-The script can now also be used to wipe multiple repos at once using
+The script can now also be used to wipe multiple repos from the disk
 
-        $ batchgit --wipe
+        $ batchgit -w
 
-As usual, it will find the repos and ask you one at a time which you want to keep. Or singular repos as so
+As usual, it will find the repos and ask you one at a time which you want to keep.
 
-        $ batchgit --wipe ./
-        $ batchgit --wipe repo1 repo2 repo3
+##Alternative batchgitrc file
+
+An alternative rc file can be used as so
+
+        $ batchgit -o /dir/to/path
+
+This allows having multiple different sets of files. For example, work related repos, coding related repos, game related repos, or just a small subset of fast and slow repos can be made.
+To write this file you need to combined the `-o` and `-f` flags
+
+        $ batchgit -f -o /dir/to/path
+
+and a new rc file will be written. To then use this rc file, combine it with the above flags, for example.
+
+        $ batchgit -s -o /dir/to/path
+        $ batchgit -u -o /dir/to/path
+        $ batchgit -d -o /dir/to/path
+        $ batchgit -p -o /dir/to/path
 
 ##FAQs
 ###Why are some of my repos not being found?
@@ -150,7 +146,7 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 21. Offer alternative to whatthecommit message
 24. Think about nomenclature
 25. Add support for specific repos by path for pushing pulling statusing etc
-7. Add a secondary, larger list for less frequent monitoring or maybe just pulling
+7. ~~Add a secondary, larger list for less frequent monitoring or maybe just pulling~~
 13. `rm` all untracked files
 14. Alphabetical printing of repo
-18. Loop for checking batchgitrc presence
+18. ~~Loop for checking batchgitrc presence~~
