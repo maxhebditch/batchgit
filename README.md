@@ -125,7 +125,7 @@ and a new rc file will be written. To then use this rc file, combine it with the
 
 ##FAQs
 ###Why are some of my repos not being found?
-When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-f` or use the add recursively function. 
+When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-g` or use the add recursively function. 
 
 ##TODO
 2. ~~Tidy up output.~~ [ga7go8]
