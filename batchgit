@@ -311,6 +311,7 @@ ${bold}Bootstrap and restoring on a new machine:${normal}
 
 ${bold}Other features:${normal}
 -w \t remove specific directories from disk
+-i \t start the indicator applet 
 -h \t display this help file
         """
 }
@@ -374,7 +375,8 @@ ${bold}Bootstrap and restoring on a new machine:${normal}
 
 ${bold}Other features:${normal}
 14)\t remove specific directories from disk
-15)\t display this help file
+15) \t start the indicator applet 
+16)\t display this help file
 
 quit or exit to stop
 """
@@ -395,7 +397,8 @@ quit or exit to stop
                 [12]) backup=true;;
                 [13]) clone=true;;
                 [14]) wipe=true;ask=true;;
-                [15]) batchgitHelp;;
+                [15]) indicator=true;;
+                [16]) batchgitHelp;;
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
@@ -454,7 +457,7 @@ logLocation () {
         fi
 }
 
-while getopts sfndupbwzh?a:r:c:l:o:g: OPTION
+while getopts sfndupbwzh?ia:r:c:l:o:g: OPTION
 do
         case $OPTION in
                 s)
@@ -511,9 +514,13 @@ do
                         other=true
                         altLog="$OPTARG"
                         ;;
+                i) 
+                        indicator=true
+                        ;;
                 *)
                         gitOptions
                         ;;
+
         esac
 done
 
@@ -772,4 +779,10 @@ if [[ $wipe ]]; then
                 cd $dir
                 wipeRepos
         done
+fi
+
+#start indicator 
+if [[ $indicator ]]; then
+        DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+        python $DIR/indicator/indicator.py &
 fi
