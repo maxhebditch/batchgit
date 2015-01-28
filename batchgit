@@ -3,6 +3,7 @@
 # Define some useful variables for printing
 bold=`tput bold`
 normal=`tput sgr0`
+log="/home/$USER/.batchgitrc"
 
 #function that assigns n number of command line arguements
 assignDynamicDir () {
@@ -63,9 +64,9 @@ checkbatchgit () {
         #checks that batchgitrc exists, if not then goes
         #to function to search for current repos
 	if [[ $clone == "false" ]]; then
-		if [[ ! -f $log ]]; then
+		#if [[ ! -f $log ]]; then
 			findgitrepos
-		fi
+		#fi
 	fi
         #if file does exist, then check how many lines are in it
         numberInbatchgitrc=$(wc -l < $log)
@@ -553,9 +554,13 @@ echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
         done 
 fi
 
-logLocation
+if [[ ! -f $log ]]; then
+	findgitrepos
+fi
 
 checkbatchgit
+logLocation
+
 
 #multiple choice for no option or post config
 if [[ $# == 0 ]]; then
