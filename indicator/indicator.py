@@ -12,13 +12,38 @@ Icons provided by
 
 """
 
-import pygtk
-pygtk.require('2.0')
-import gtk
-import appindicator
+# Python 2.7.x standard library imports
 import subprocess
-import os, inspect
-import gobject
+import os
+import sys
+import inspect
+
+sys.tracebacklimit=0
+
+try:
+    import pygtk
+    pygtk.require('2.0')
+    import gobject
+    import gtk
+except ImportError:
+    raise ImportError(
+    "The python package gobject required for the batchgit indicator\n"
+    "is not installed. To install you may use\n\n"
+    "    apt-get install python-gobject\n")
+except AssertionError:
+    raise ImportError(
+    "The python package gtk2 required for the batchgit indicator\n"
+    "is not installed. To install you may use\n\n"
+    "    apt-get install python-gtk2\n")
+
+try:
+    import appindicator
+except ImportError:
+    raise ImportError(
+    "The python package appindicator required for the batchgit indicator\n"
+    "is not installed. To install you may use\n\n"
+    "    apt-get install python-appindicator\n")
+
 
 RCFILENAME = ".batchgitrc"
 CONFIGFILENAME = "/.config"
