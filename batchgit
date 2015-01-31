@@ -71,7 +71,7 @@ progressLoop () {
         else
                 tput cup 9 $offset
                 echo "[$bargraphDone] Done!"
-                sleep 1
+                # sleep 1
                 tput clear
         fi
 }
@@ -320,7 +320,7 @@ gitPull () {
                 tput cup 11 0
                 cat .batchgitpullmessage
                 printf "\n"
-                sleep 2s
+                # sleep 2s
                 tput clear
         fi
         cleanpwdEcho
@@ -345,7 +345,7 @@ gitPush () {
                 tput cup 11 0
                 cat .batchgitpushmessage
                 printf "\n"
-                sleep 2s
+                # sleep 2s
                 tput clear
         fi
         cleanpwdEcho
