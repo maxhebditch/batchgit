@@ -7,7 +7,7 @@ log="/home/$USER/.batchgitrc"
 batchgitChanges="/home/$USER/.batchgitChanges"
 totalNum=$(wc -l < $log)
 
-#Progress bar stuff
+#Size of progress bar
 bar() {
         str=$1
         num=$2
@@ -15,10 +15,8 @@ bar() {
         echo "${v// /$str}"
 }
 
+#dynamic underlining of mode
 modeEcho () {
-        # if [[ $changed sign to legpush ]] || [[ $gpull ]] || [[ $gpullpush ]]; then
-                # tput cup 0 0
-        # fi
         clear
         titleLen=${#MODE}
         titleSpaces=$(bar "=" $titleLen)
@@ -26,6 +24,7 @@ modeEcho () {
         echo -e "\n${bold}$MODE\n$titleSpaces${normal}\n"
 }
 
+#sets details for batchgit action
 pwdEcho () {
         REPO=${PWD##*/}
         #returns the branch
@@ -39,6 +38,7 @@ pwdEcho () {
         echo -e "${normal}Mode:${bold} $action${normal}"
 }
 
+#tidies pwdecho for another round
 cleanpwdEcho () {
         cleanREPO=$(bar " " ${#REPO})
         cleanBRANCH=$(bar " " ${#BRANCH})
@@ -51,6 +51,7 @@ cleanpwdEcho () {
         echo -e "${normal}Mode:${bold} $cleanaction${normal}"
 }
 
+#checks size of terminal and determines where to place bar
 termSize () {
         terminalSize=$(stty size | sed 's|.* ||g')
         centre=$(echo $(stty size | sed 's|.* ||g') / 2 | bc)
@@ -62,6 +63,7 @@ termSize () {
         lastSize=$terminalSize
 }
 
+#progress bar for action
 progressLoop () {
         termSize
         modeEcho
@@ -109,6 +111,7 @@ wipeRepos () {
                 printf "\n"
 }
 
+#git reset HARD --head
 gitReset () {
                 REPO=${PWD##*/}
                 echo "${bold}Repository: $REPO ${normal}"
@@ -309,7 +312,6 @@ gitStatus () {
                 fi
                 echo ""
         fi
-        # rm .batchgitstatusmessage
 }
 
 #function that pulls repos
@@ -320,7 +322,6 @@ gitPull () {
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
                 echo -e "$REPO \t $action" >> $batchgitChanges
-                # sleep 3s
         fi
         cleanpwdEcho
         tput cup 3 0
@@ -340,7 +341,6 @@ gitPush () {
         fi
         if [[ -z $pushuptodate ]]; then
                 echo -e "$REPO \t $action" >> $batchgitChanges
-                # sleep 3s
         fi
         cleanpwdEcho
         rm .batchgitpushmessage
@@ -365,6 +365,7 @@ gitCommit () {
         fi
 }
 
+#returns help
 batchgitHelp () {
         echo -e """${bold}Core git features:${normal}
 -s \t git status all directories
@@ -392,6 +393,7 @@ ${bold}Other features:${normal}
         """
 }
 
+#add git repos
 gitAdd () {
         if [[ ! -z $addDir ]]; then 
                 #checks rc exists, think this is / should be a function
@@ -428,6 +430,7 @@ gitAdd () {
         checkbatchgit
 }
 
+#options for script if no arguements
 gitOptions () {
         echo -e """
 ${bold}Core git features:${normal}
@@ -482,6 +485,7 @@ quit or exit to stop
 
 }
 
+#ask loop if options are used
 askLoop () {
         if [[ $other ]]; then
                 echo -n "Enter pathname for alternative batchgitrc: "
@@ -523,6 +527,7 @@ askLoop () {
         gitOptions
 }
 
+#determines which log to use
 logLocation () {
         if [[ $other == "true" ]]; then
                 log=$altLog
@@ -533,6 +538,7 @@ logLocation () {
         fi
 }
 
+#parses arguments
 while getopts sfndupbwzh?ia:r:c:l:o:g: OPTION
 do
         case $OPTION in
@@ -629,11 +635,12 @@ echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
         done 
 fi
 
+#if log file not present then runs findgit
 if [[ ! -f $log ]]; then
 	findgitrepos
 fi
 
-# tput clear
+#housekeeping to check batchgit is there and repos there
 checkbatchgit
 logLocation
 
@@ -644,6 +651,7 @@ echo -e "\n${bold}OPTIONS\n=======${normal}"
         gitOptions
 fi
 
+#enter ask loop 
 if [[ $ask ]]; then
         echo "HERE"
         askLoop
@@ -655,6 +663,7 @@ echo -e "\n${bold}FINDING GIT REPOS\n=================${normal}\n"
         findgitrepos
 fi
 
+#reset all repos to remote
 if [[ $greset ]]; then
 echo -e "\n${bold}GIT RESET\n=========${normal}\n"
 for dir in "${paths[@]}"; do
@@ -756,6 +765,7 @@ if [[ $add ]] || [[ $oadd ]]; then
         gitAdd
 fi
 
+#add repos recursively
 if [[ $gaddrec ]]; then
 findrecurgit=( $(find $addrecDir -type d -name .git | xargs -n 1 dirname) )
 for dir in "${findrecurgit[@]}"; do
@@ -773,8 +783,8 @@ done
 
 fi
 
+#remove repos from batchgitrc not disk
 if [[ $grm ]]; then
-# echo -e "\n${bold}REMOVE REPOS FROM BATCHGIT\n==========================${normal}\n"
         MODE="REMOVE REPOS FROM BATCHGIT"        
         modeEcho
         #add individual dir/repo mode
@@ -818,7 +828,6 @@ sed -e '/^$/d' -i $log
 
 #git status
 if [[ $gstatus ]]; then
-# echo -e "\n${bold}GIT STATUS\n==========${normal}\n"
         MODE="GIT STATUS"
         modeEcho
         for dir in "${paths[@]}"; do
@@ -864,7 +873,6 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 gitPush 
                 cleanpwdEcho
         done
-        # tput clear
         clear
 fi
 
@@ -878,7 +886,6 @@ fi
 
 #catch wipe flag
 if [[ $wipe ]]; then
-        # echo -e "\n${bold}REMOVE REPOS\n============${normal}\n"
         MODE="REMOVE REPOS"
         modeEcho
         let i=1
@@ -895,6 +902,7 @@ if [[ $indicator ]]; then
         python $DIR/indicator/indicator.py &
 fi
 
+#if changes file exists, cat it then rm it
 if [[ -f $batchgitChanges ]]; then
         echo -e "\n"
         echo "The following directories were changed"
