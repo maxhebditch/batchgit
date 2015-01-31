@@ -321,7 +321,10 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                echo -e "$REPO\t$action" > $batchgitChanges
+                echo -e "\n" >> $batchgitChanges
+                echo -e "$REPO" >> $batchgitChanges
+                echo -e "\t" >> $batchgitChanges
+                echo -e "$action" >> $batchgitChanges
                 sleep 3s
         fi
         cleanpwdEcho
@@ -341,7 +344,10 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                echo "$dir \t $action" > $batchgitChanges
+                echo -e "\n" >> $batchgitChanges
+                echo -e "$REPO" >> $batchgitChanges
+                echo -e "\t" >> $batchgitChanges
+                echo -e "$action" >> $batchgitChanges
                 sleep 3s
         fi
         cleanpwdEcho
@@ -899,6 +905,6 @@ fi
 
 if [[ -f $batchgitChanges ]]; then
         echo "The following directories were changed"
-        cat -eT $batchgitChanges
+        cat -eT "$batchgitChanges"
         rm $batchgitChanges
 fi
