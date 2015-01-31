@@ -4,6 +4,7 @@
 bold=`tput bold`
 normal=`tput sgr0`
 log="/home/$USER/.batchgitrc"
+batchgitChanges="/home/$USER/.batchgitChanges"
 totalNum=$(wc -l < $log)
 
 #Progress bar stuff
@@ -320,6 +321,7 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
+                echo "$dir \t $action" > $batchgitChanges
                 sleep 3s
         fi
         cleanpwdEcho
@@ -339,7 +341,8 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                sleep 2s
+                echo "$dir \t $action" > $batchgitChanges
+                sleep 3s
         fi
         cleanpwdEcho
         rm .batchgitpushmessage
@@ -892,4 +895,10 @@ fi
 if [[ $indicator ]]; then
         DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
         python $DIR/indicator/indicator.py &
+fi
+
+if [[ -f $batchgitChanges ]]; then
+        echo "The following directories were changed"
+        cat $batchgitChanges
+        rm $batchgitChanges
 fi
