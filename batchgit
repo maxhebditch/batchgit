@@ -830,6 +830,7 @@ if [[ $gpull ]] || [[ $gpullpush ]]; then
                 gitPull
                 tput cup 8 0
         done
+        clear
 fi
 
 #git push
@@ -847,6 +848,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 gitPush $1
                 tput cup 8 0
         done
+        clear
 fi
 
 #commit flag, complicated due to flag and commit message catching
