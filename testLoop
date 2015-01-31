@@ -37,9 +37,18 @@ checkbatchgit () {
         fi
 }
 
+bar() {
+        str=$1
+        num=$2
+        v=$(printf "%-${num}s" "$str")
+        echo "${v// /$str}"
+}
+
 modeEcho () {
         tput cup 0 0
-        echo -e "\n${bold}$MODE\n==========${normal}\n"
+        titleLen=${#MODE}
+        titleSpaces=$(bar "=" $titleLen)
+        echo -e "\n${bold}$MODE\n$titleSpaces${normal}\n"
 }
 
 pwdEcho () {
@@ -62,13 +71,6 @@ termSize () {
         lastSize=$terminalSize
 }
 
-bar() {
-        str=$1
-        num=$2
-        v=$(printf "%-${num}s" "$str")
-        echo "${v// /$str}"
-}
-
 progressLoop () {
         termSize
         modeEcho
@@ -82,8 +84,8 @@ progressLoop () {
                 tput cup 5 $offset
                 echo "[$bargraphDone] Done!"
         fi
-        pwdEcho
-        sleep 1s
+        # pwdEcho
+        # sleep 1
         # tput clear
 }
 
@@ -142,31 +144,126 @@ gitStatus () {
                         echo "You are ahead and behind"
                 fi
                 echo ""
+                sleep 3
+                tput clear
         fi
         tput cup 3 0
         echo -e "                                                                  "
         # rm .batchgitstatusmessage
 }
 
+gitPull () {
+        git pull > .batchgitpullmessage 2>&1
+        pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
+        if [[ -z $pulluptodate ]]; then
+                REPO=${PWD##*/}
+                BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pulling ${normal}"
+                cat .batchgitpullmessage
+                printf "\n"
+        fi
+        rm .batchgitpullmessage
+}
+
+while getopts sfndupbwzh?ia:r:c:l:o:g: OPTION
+do
+        case $OPTION in
+                s)
+                        gstatus=true
+                        ;;
+                f)
+                        gfind=true
+                        ;;
+                g)
+                        gfind=true
+                        searchdir="$OPTARG"
+                        ;;
+                h)
+                        batchgitHelp
+                        ;;
+                d)
+                        gpull=true
+                        ;;
+                u)
+                        gpullpush=true
+                        ;;
+                p)
+                        gpush=true
+                        ;;
+                z)
+                        greset=true
+                        ;;
+                b)
+                        backup=true
+                        ;;
+                n)
+                        clone=true
+                        ;;
+                a)
+                        add=true
+                        addDir=$OPTARG
+                        ;;
+                r)
+                        grm=true
+                        rmDir=$OPTARG
+                        ;;
+                c)
+                        gcommit=true
+                        commitMessage="$OPTARG"
+                        ;;
+                l)
+                        gaddrec=true
+                        addrecDir="$OPTARG"
+                        ;;
+                w)
+                        wipe=true
+                        ;;
+                o)
+                        other=true
+                        altLog="$OPTARG"
+                        ;;
+                i) 
+                        indicator=true
+                        ;;
+                *)
+                        gitOptions
+                        ;;
+
+        esac
+done
+
 tput clear
 checkbatchgit
 logLocation
 
-MODE="GIT STATUS"
-modeEcho
-progNum=0
-for dir in "${paths[@]}"; do
-        #moves into the directory listed
-        j=$(($progNum+1))
-        progNum=$j
-        cd $dir
-        gitStatus 
-        progressLoop $progNum $totalNum
-        tput cup 8 0
-        sleep 1
-        # gitStatus 
-        # tput clear
+if [[ $gstatus ]]; then
+        MODE="GIT STATUS"
+        modeEcho
+        progNum=0
+        for dir in "${paths[@]}"; do
+                #moves into the directory listed
+                j=$(($progNum+1))
+                progNum=$j
+                cd $dir
+                pwdEcho
+                gitStatus 
+                progressLoop $progNum $totalNum
+                tput cup 8 0
+                # gitStatus 
+                # tput clear
+        done
+fi
+
+if [[ $gpull ]]; then
+        MODE="GIT PULL"
+        modeEcho
+        progNum=0
+        for dir in "${paths[@]}"; do
+                #moves into the directory listed
+                cd $dir
+                gitPull 
 done
+fi
 
 tput clear
 clear
