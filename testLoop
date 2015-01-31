@@ -84,15 +84,9 @@ progressLoop () {
                 tput cup 5 $offset
                 echo "[$bargraphDone] Done!"
         fi
-        # pwdEcho
-        # sleep 1
-        # tput clear
 }
 
 gitStatus () {
-        # touch $batchgitChanges
-        # progressLoop $progNum $totalNum
-        #looks for types of modifications that can popup in git status
         # git status > .batchgitstatusmessage
         untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
         modified=$(git ls-files -m)
@@ -153,15 +147,17 @@ gitStatus () {
 }
 
 gitPull () {
+        pwdEcho
         git pull > .batchgitpullmessage 2>&1
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                REPO=${PWD##*/}
-                BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pulling ${normal}"
+                tput cup 10 0
                 cat .batchgitpullmessage
                 printf "\n"
+                tput clear
         fi
+        tput cup 3 0
+        echo -e "                                                                  "
         rm .batchgitpullmessage
 }
 
@@ -246,11 +242,9 @@ if [[ $gstatus ]]; then
                 progNum=$j
                 cd $dir
                 pwdEcho
-                gitStatus 
                 progressLoop $progNum $totalNum
+                gitStatus 
                 tput cup 8 0
-                # gitStatus 
-                # tput clear
         done
 fi
 
@@ -260,9 +254,14 @@ if [[ $gpull ]]; then
         progNum=0
         for dir in "${paths[@]}"; do
                 #moves into the directory listed
+                j=$(($progNum+1))
+                progNum=$j
                 cd $dir
-                gitPull 
-done
+                pwdEcho
+                progressLoop $progNum $totalNum
+                gitPull
+                tput cup 8 0
+        done
 fi
 
 tput clear
