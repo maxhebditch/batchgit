@@ -335,6 +335,7 @@ gitPull () {
 #function that pushes repos
 gitPush () {
         pwdEcho
+        tcup 15 0
         git push --porcelain > .batchgitpushmessage 
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
         if [[ $gpullpush ]]; then
