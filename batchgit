@@ -343,7 +343,7 @@ gitPush () {
                 # REPO=${PWD##*/}
                 # BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 # echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
-                tput cup 11 0
+                tput cup 15 0
                 cat .batchgitpushmessage
                 printf "\n"
                 sleep 2s
