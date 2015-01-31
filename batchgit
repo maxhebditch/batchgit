@@ -899,6 +899,6 @@ fi
 
 if [[ -f $batchgitChanges ]]; then
         echo "The following directories were changed"
-        cat $batchgitChanges
+        cat $batchgitChanges | expand -t4
         rm $batchgitChanges
 fi
