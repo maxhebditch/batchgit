@@ -55,6 +55,8 @@ progressLoop () {
         else
                 tput cup 5 $offset
                 echo "[$bargraphDone] Done!"
+                sleep 1
+                tput clear
         fi
 }
 
@@ -320,6 +322,7 @@ gitPush () {
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
+                tput cup 10 0
                 cat .batchgitpushmessage
                 printf "\n"
                 tput clear
