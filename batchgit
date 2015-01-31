@@ -343,7 +343,7 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                printf "\n"
+                # printf "\n"
                 sleep 2s
         fi
         cleanpwdEcho
