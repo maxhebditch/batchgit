@@ -342,7 +342,7 @@ gitPush () {
         fi
         if [[ -z $pushuptodate ]]; then
                 tput cup 15 0
-                $(cat .batchgitpushmessage)
+                cat .batchgitpushmessage
                 printf "\n"
                 sleep 2s
                 # tput clear
