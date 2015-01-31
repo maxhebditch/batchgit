@@ -65,7 +65,7 @@ progressLoop () {
         modeEcho
         spaces=$(($totalNum-$progNum))
         bargraphDone=$(bar "=" $progNum)
-        if [[ $j != $totalNum ]]; then
+        if [[ $j > $totalNum ]]; then
                 bargraphSpaces=$(bar " " $spaces)
                 tput cup 9 $offset
                 echo "[$bargraphDone$bargraphSpaces] $progNum/$totalNum"
