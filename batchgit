@@ -868,7 +868,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 cleanpwdEcho
         done
         # tput clear
-        # clear
+        clear
 fi
 
 #commit flag, complicated due to flag and commit message catching
