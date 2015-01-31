@@ -28,8 +28,24 @@ pwdEcho () {
         #returns the branch
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         #prints the repository name and branch to stdout
-        tput cup 3 0
-        echo -e "${normal}Repository:\n${bold}$REPO\n${normal}Branch:\n${bold}$BRANCH\n${normal}Mode:\n${bold}$action"
+        tput cup 3 
+        echo -e "${normal}Repository:${bold} $REPO"
+        tput cup 4 0
+        echo -e "${normal}Branch:${bold} $BRANCH"
+        tput cup 5 0 
+        echo -e "${normal}Mode:${bold} $action"
+}
+
+cleanpwdEcho () {
+        cleanREPO=$(bar " " ${#REPO})
+        cleanBRANCH=$(bar " " ${#BRANCH})
+        cleanaction=$(bar " " ${#action})
+        tput cup 3 
+        echo -e "${normal}Repository:${bold} $cleanREPO"
+        tput cup 4 0
+        echo -e "${normal}Branch:${bold} $cleanBRANCH"
+        tput cup 5 0 
+        echo -e "${normal}Mode:${bold} $cleanaction"
 }
 
 termSize () {
@@ -50,10 +66,10 @@ progressLoop () {
         bargraphDone=$(bar "=" $progNum)
         if [[ $j != $totalNum ]]; then
                 bargraphSpaces=$(bar " " $spaces)
-                tput cup 5 $offset
+                tput cup 9 $offset
                 echo "[$bargraphDone$bargraphSpaces] $progNum/$totalNum"
         else
-                tput cup 5 $offset
+                tput cup 9 $offset
                 echo "[$bargraphDone] Done!"
                 sleep 1
                 tput clear
@@ -307,6 +323,7 @@ gitPull () {
                 sleep 2s
                 tput clear
         fi
+        cleanpwdEcho
         tput cup 3 0
         echo -e "                                                                  "
         rm .batchgitpullmessage
@@ -831,6 +848,7 @@ if [[ $gpull ]] || [[ $gpullpush ]]; then
                 progressLoop $progNum $totalNum
                 gitPull
                 tput cup 8 0
+                cleanpwdEcho
         done
         clear
 fi
@@ -849,6 +867,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 progressLoop $progNum $totalNum
                 gitPush $1
                 tput cup 8 0
+                cleanpwdEcho
         done
         clear
 fi
