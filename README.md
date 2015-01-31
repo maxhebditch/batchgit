@@ -136,6 +136,7 @@ When initially run, or using the `-f` flag alone, it will only search from your 
 14. Alphabetical printing of repo
 23. Bring back arguements after the flags, hard with getopts
 27. Add git fetch
+28. Add commit messages to Changes
 2. ~~Tidy up output.~~ [ga7go8]
 3. ~~Add generic commit message.~~
 5. ~~Strip out # you sometimes see in git~~
