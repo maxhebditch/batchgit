@@ -347,7 +347,7 @@ gitPush () {
                 cat .batchgitpushmessage
                 printf "\n"
                 sleep 2s
-                tput clear
+                # tput clear
         fi
         cleanpwdEcho
         tput cup 3 0
