@@ -346,8 +346,8 @@ gitPush () {
                 tput cup 15 0
                 cat .batchgitpushmessage
                 printf "\n"
-                sleep 2s
-                # tput clear
+                # sleep 2s
+                tput clear
         fi
         cleanpwdEcho
         tput cup 3 0
@@ -829,6 +829,7 @@ sed -e '/^$/d' -i $log
 #git status
 if [[ $gstatus ]]; then
 # echo -e "\n${bold}GIT STATUS\n==========${normal}\n"
+        echo -e "\n"
         MODE="GIT STATUS"
         modeEcho
         for dir in "${paths[@]}"; do
