@@ -906,7 +906,7 @@ fi
 if [[ -f $batchgitChanges ]]; then
         echo -e "\n"
         echo "The following directories were changed"
-        awk '{ FS = "\t" } ; { print $1, $2 }'
+        awk -v '{ FS = "\t" } ; { print $1, $2 }'
         echo -e "\n"
         rm $batchgitChanges
 fi
