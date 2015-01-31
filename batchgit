@@ -317,7 +317,7 @@ gitPull () {
         git pull > .batchgitpullmessage 2>&1
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                tput cup 10 0
+                tput cup 11 0
                 cat .batchgitpullmessage
                 printf "\n"
                 sleep 2s
@@ -342,7 +342,7 @@ gitPush () {
                 # REPO=${PWD##*/}
                 # BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 # echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
-                tput cup 10 0
+                tput cup 11 0
                 cat .batchgitpushmessage
                 printf "\n"
                 sleep 2s
