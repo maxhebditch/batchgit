@@ -341,11 +341,11 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                tput cup 15 0
+                tput cup 11 0
                 cat .batchgitpushmessage
                 printf "\n"
-                # sleep 2s
-                tput clear
+                sleep 2s
+                # tput clear
         fi
         cleanpwdEcho
         tput cup 3 0
