@@ -343,7 +343,6 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                # printf "\n"
                 sleep 2s
         fi
         cleanpwdEcho
@@ -866,7 +865,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 pwdEcho
                 progressLoop $progNum $totalNum
                 gitPush $1
-                tput cup 8 0
+                # tput cup 8 0
                 cleanpwdEcho
         done
         tput clear
