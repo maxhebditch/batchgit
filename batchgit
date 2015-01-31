@@ -29,7 +29,7 @@ pwdEcho () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         #prints the repository name and branch to stdout
         tput cup 3 0
-        echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
+        echo -e "${bold}Repository: $REPO ${normal} $BRANCH Mode: $action"
 }
 
 termSize () {
@@ -842,6 +842,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 j=$(($progNum+1))
                 progNum=$j
                 cd $dir
+                action="pushing"
                 pwdEcho
                 progressLoop $progNum $totalNum
                 gitPush $1
