@@ -902,7 +902,7 @@ if [[ $indicator ]]; then
         python $DIR/indicator/indicator.py &
 fi
 
-#if changes file exists, cat it then rm it
+#if changes file exists, awk the two columns then rm it
 if [[ -f $batchgitChanges ]]; then
         echo -e "\n"
         echo "The following directories were changed"
