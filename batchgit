@@ -349,8 +349,8 @@ gitPush () {
                 # tput clear
         fi
         cleanpwdEcho
-        tput cup 3 0
-        echo -e "                                                                  "
+        # tput cup 3 0
+        # echo -e "                                                                  "
         rm .batchgitpushmessage
         tput clear
 }
