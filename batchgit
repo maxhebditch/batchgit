@@ -864,8 +864,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 modeEcho
                 pwdEcho
                 progressLoop $progNum $totalNum
-                gitPush $1
-                # tput cup 8 0
+                gitPush 
                 cleanpwdEcho
         done
         tput clear
