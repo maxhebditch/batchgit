@@ -321,7 +321,7 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                printf "$dir\t$action" > $batchgitChanges
+                echo -e "$REPO\t$action" > $batchgitChanges
                 sleep 3s
         fi
         cleanpwdEcho
@@ -840,7 +840,7 @@ if [[ $gpull ]] || [[ $gpullpush ]]; then
                 j=$(($progNum+1))
                 progNum=$j
                 cd $dir
-                action="pulled"
+                action="pull"
                 pwdEcho
                 progressLoop $progNum $totalNum
                 gitPull
@@ -858,7 +858,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 j=$(($progNum+1))
                 progNum=$j
                 cd $dir
-                action="pushed"
+                action="push"
                 MODE="GIT PUSH"
                 modeEcho
                 pwdEcho
