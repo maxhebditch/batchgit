@@ -32,11 +32,11 @@ pwdEcho () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         #prints the repository name and branch to stdout
         tput cup 3 0
-        echo -e "${normal}Repository:${bold} $REPO"
+        echo -e "${normal}Repository:${bold} $REPO${normal}"
         tput cup 4 0
-        echo -e "${normal}Branch:${bold} $BRANCH"
+        echo -e "${normal}Branch:${bold} $BRANCH${normal}"
         tput cup 5 0 
-        echo -e "${normal}Mode:${bold} $action"
+        echo -e "${normal}Mode:${bold} $action${normal}"
 }
 
 cleanpwdEcho () {
@@ -44,11 +44,11 @@ cleanpwdEcho () {
         cleanBRANCH=$(bar " " ${#BRANCH})
         cleanaction=$(bar " " ${#action})
         tput cup 3 0
-        echo -e "${normal}Repository:${bold} $cleanREPO"
+        echo -e "${normal}Repository:${bold} $cleanREPO${normal}"
         tput cup 4 0
-        echo -e "${normal}Branch:${bold} $cleanBRANCH"
+        echo -e "${normal}Branch:${bold} $cleanBRANCH${normal}"
         tput cup 5 0 
-        echo -e "${normal}Mode:${bold} $cleanaction"
+        echo -e "${normal}Mode:${bold} $cleanaction${normal}"
 }
 
 termSize () {
@@ -321,7 +321,7 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                echo "$dir \t $action" > $batchgitChanges
+                echo -e "$dir \t $action" > $batchgitChanges
                 sleep 3s
         fi
         cleanpwdEcho
