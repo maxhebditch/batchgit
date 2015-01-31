@@ -898,6 +898,7 @@ if [[ $indicator ]]; then
 fi
 
 if [[ -f $batchgitChanges ]]; then
+        echo -e "\n"
         echo "The following directories were changed"
         cat $batchgitChanges
         echo -e "\n"
