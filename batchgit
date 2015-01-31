@@ -316,14 +316,15 @@ gitStatus () {
 #function that pulls repos
 gitPull () {
         pwdEcho
-        git pull > .batchgitpullmessage 2>&1
+        tput cup 15 0
+        git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                tput cup 11 0
-                cat .batchgitpullmessage
-                printf "\n"
+                # tput cup 11 0
+                # cat .batchgitpullmessage
+                # printf "\n"
                 sleep 2s
-                tput clear
+                # tput clear
         fi
         cleanpwdEcho
         tput cup 3 0
@@ -342,17 +343,11 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                # tput cup 15 0
-                # cat .batchgitpushmessage
                 printf "\n"
                 sleep 2s
-                # tput clear
         fi
         cleanpwdEcho
-        # tput cup 3 0
-        # echo -e "                                                                  "
         rm .batchgitpushmessage
-        # tput clear
 }
 
 #function that checks for different types of commits
