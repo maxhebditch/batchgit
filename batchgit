@@ -335,7 +335,7 @@ gitPull () {
 #function that pushes repos
 gitPush () {
         pwdEcho
-        git push --porcelain > .batchgitpushmessage 2>&1
+        git push --porcelain > .batchgitpushmessage 
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
         if [[ $gpullpush ]]; then
                 gitPull
