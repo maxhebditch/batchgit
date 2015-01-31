@@ -15,7 +15,7 @@ bar() {
 }
 
 modeEcho () {
-        # if [[ $gpush ]] || [[ $gpull ]] || [[ $gpullpush ]]; then
+        # if [[ $changed sign to legpush ]] || [[ $gpull ]] || [[ $gpullpush ]]; then
                 # tput cup 0 0
         # fi
         titleLen=${#MODE}
@@ -321,7 +321,7 @@ gitPull () {
                 tput cup 11 0
                 cat .batchgitpullmessage
                 printf "\n"
-                # sleep 2s
+                sleep 2s
                 tput clear
         fi
         cleanpwdEcho
@@ -346,7 +346,7 @@ gitPush () {
                 tput cup 11 0
                 cat .batchgitpushmessage
                 printf "\n"
-                # sleep 2s
+                sleep 2s
                 tput clear
         fi
         cleanpwdEcho
