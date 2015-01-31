@@ -335,15 +335,15 @@ gitPull () {
 #function that pushes repos
 gitPush () {
         pwdEcho
-        tcup 15 0
+        tput cup 15 0
         git push --porcelain > .batchgitpushmessage 
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
         if [[ $gpullpush ]]; then
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                tput cup 15 0
-                cat .batchgitpushmessage
+                # tput cup 15 0
+                # cat .batchgitpushmessage
                 printf "\n"
                 sleep 2s
                 # tput clear
