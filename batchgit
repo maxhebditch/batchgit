@@ -74,8 +74,6 @@ progressLoop () {
         else
                 tput cup 9 $offset
                 echo "[$bargraphDone] Done!"
-                # sleep 1
-                # tput clear
         fi
 }
 
@@ -322,7 +320,7 @@ gitPull () {
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
                 echo -e "$REPO \t $action" >> $batchgitChanges
-                sleep 3s
+                # sleep 3s
         fi
         cleanpwdEcho
         tput cup 3 0
@@ -342,7 +340,7 @@ gitPush () {
         fi
         if [[ -z $pushuptodate ]]; then
                 echo -e "$REPO \t $action" >> $batchgitChanges
-                sleep 3s
+                # sleep 3s
         fi
         cleanpwdEcho
         rm .batchgitpushmessage
