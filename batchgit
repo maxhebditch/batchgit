@@ -20,6 +20,7 @@ modeEcho () {
         # fi
         titleLen=${#MODE}
         titleSpaces=$(bar "=" $titleLen)
+        tput cup 0 0
         echo -e "\n${bold}$MODE\n$titleSpaces${normal}\n"
 }
 
