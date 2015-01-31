@@ -18,6 +18,7 @@ modeEcho () {
         # if [[ $changed sign to legpush ]] || [[ $gpull ]] || [[ $gpullpush ]]; then
                 # tput cup 0 0
         # fi
+        clear
         titleLen=${#MODE}
         titleSpaces=$(bar "=" $titleLen)
         tput cup 0 0
@@ -829,7 +830,6 @@ sed -e '/^$/d' -i $log
 #git status
 if [[ $gstatus ]]; then
 # echo -e "\n${bold}GIT STATUS\n==========${normal}\n"
-        echo -e "\n"
         MODE="GIT STATUS"
         modeEcho
         for dir in "${paths[@]}"; do
