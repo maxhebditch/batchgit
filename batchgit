@@ -854,6 +854,7 @@ if [[ $gpull ]] || [[ $gpullpush ]]; then
                 tput cup 8 0
                 cleanpwdEcho
         done
+        tput clear
         clear
 fi
 
@@ -873,6 +874,7 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 tput cup 8 0
                 cleanpwdEcho
         done
+        tput clear
         clear
 fi
 
