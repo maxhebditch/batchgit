@@ -336,7 +336,7 @@ gitPull () {
 gitPush () {
         pwdEcho
         tput cup 15 0
-        git push --porcelain #> .batchgitpushmessage 
+        git push --porcelain > .batchgitpushmessage 
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
         if [[ $gpullpush ]]; then
                 gitPull
@@ -351,7 +351,7 @@ gitPush () {
         cleanpwdEcho
         tput cup 3 0
         echo -e "                                                                  "
-        # rm .batchgitpushmessage
+        rm .batchgitpushmessage
         tput clear
 }
 
