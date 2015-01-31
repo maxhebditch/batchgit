@@ -320,11 +320,7 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                # tput cup 11 0
-                # cat .batchgitpullmessage
-                # printf "\n"
-                sleep 2s
-                # tput clear
+                sleep 3s
         fi
         cleanpwdEcho
         tput cup 3 0
