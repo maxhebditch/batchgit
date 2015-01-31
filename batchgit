@@ -15,9 +15,9 @@ bar() {
 }
 
 modeEcho () {
-        if [[ $gpush ]] || [[ $gpull ]] || [[ $gpullpush ]]; then
-                tput cup 0 0
-        fi
+        # if [[ $gpush ]] || [[ $gpull ]] || [[ $gpullpush ]]; then
+                # tput cup 0 0
+        # fi
         titleLen=${#MODE}
         titleSpaces=$(bar "=" $titleLen)
         echo -e "\n${bold}$MODE\n$titleSpaces${normal}\n"
@@ -861,13 +861,13 @@ fi
 #git push
 if [[ $gpush ]] || [[ $gpullpush ]]; then
         progNum=0
-        MODE="GIT PUSH"
-        modeEcho
         for dir in "${paths[@]}"; do
                 j=$(($progNum+1))
                 progNum=$j
                 cd $dir
                 action="pushing"
+                MODE="GIT PUSH"
+                modeEcho
                 pwdEcho
                 progressLoop $progNum $totalNum
                 gitPush $1
