@@ -341,9 +341,6 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                # REPO=${PWD##*/}
-                # BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                # echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
                 tput cup 15 0
                 cat .batchgitpushmessage
                 printf "\n"
