@@ -1,7 +1,7 @@
 batchgit
 ========
 
-Check out the [io for terminal recordings](http://maxhebditch.github.io/batchgit/).
+Check out the [io for terminal recordings](http://maxhebditch.github.io/batchgit/) as well as the [indicator project](https://github.com/ga7g08/GitCheck).
 
 A shell script for maintaining git repositories system wide. The script maintains a list of git repositories on your disk, allowing you to run git status, git pull or git push in each folder at once. On initial run the script searches for all `.git` folders and asks which you want to add to the list. New repos can be added manually as they are created, repos can be deleted manually from the list manually or will be automatically deleted if they no longer exist.
 
