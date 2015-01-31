@@ -832,13 +832,8 @@ fi
 #git push
 if [[ $gpush ]] || [[ $gpullpush ]]; then
         progNum=0
-        if [[ $gpullpush ]] && [[ -z $gpush ]]; then
-                MODE="GIT PULL & PUSH"
-                modeEcho
-        elif [[ $gpush ]] && [[ -z $gpullpush ]]; then
-                MODE="GIT PUSH"
-                modeEcho
-        fi
+        MODE="GIT PUSH"
+        modeEcho
         for dir in "${paths[@]}"; do
                 j=$(($progNum+1))
                 progNum=$j
