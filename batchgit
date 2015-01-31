@@ -29,7 +29,7 @@ pwdEcho () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         #prints the repository name and branch to stdout
         tput cup 3 0
-        echo -e "${normal}Repository:\t${bold}$REPO\t${normal}Branch:\t${bold}$BRANCH\t${normal}Mode:\t${bold}$action"
+        echo -e "${normal}Repository:\t\t${bold}$REPO\t\t${normal}Branch:\t\t${bold}$BRANCH\t\t${normal}Mode:\t\t${bold}$action"
 }
 
 termSize () {
