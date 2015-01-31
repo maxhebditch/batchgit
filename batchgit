@@ -812,7 +812,7 @@ if [[ $gstatus ]]; then
 fi
 
 #git pull
-if [[ $gpull ]]; then
+if [[ $gpull ]] || [[ $gpullpush ]]; then
         MODE="GIT PULL"
         modeEcho
         progNum=0
@@ -821,6 +821,7 @@ if [[ $gpull ]]; then
                 j=$(($progNum+1))
                 progNum=$j
                 cd $dir
+                action="pulling"
                 pwdEcho
                 progressLoop $progNum $totalNum
                 gitPull
