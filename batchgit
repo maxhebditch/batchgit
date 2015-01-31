@@ -321,7 +321,7 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                echo -e "$dir\t$action" > $batchgitChanges
+                printf "$dir\t$action" > $batchgitChanges
                 sleep 3s
         fi
         cleanpwdEcho
