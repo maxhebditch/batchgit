@@ -29,7 +29,7 @@ pwdEcho () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         #prints the repository name and branch to stdout
         tput cup 3 0
-        echo -e "${bold}Repository: $REPO ${normal} $BRANCH Mode: $action"
+        echo -e "${normal}Repository:\t${bold}$REPO\t${normal}Branch:\t${bold}$BRANCH\t${normal}Mode:\t${bold}$action"
 }
 
 termSize () {
@@ -304,6 +304,7 @@ gitPull () {
                 tput cup 10 0
                 cat .batchgitpullmessage
                 printf "\n"
+                sleep 2s
                 tput clear
         fi
         tput cup 3 0
@@ -325,6 +326,7 @@ gitPush () {
                 tput cup 10 0
                 cat .batchgitpushmessage
                 printf "\n"
+                sleep 2s
                 tput clear
         fi
         tput cup 3 0
