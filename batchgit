@@ -322,7 +322,10 @@ gitPush () {
                 echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
                 cat .batchgitpushmessage
                 printf "\n"
+                tput clear
         fi
+        tput cup 3 0
+        echo -e "                                                                  "
         rm .batchgitpushmessage
 }
 
