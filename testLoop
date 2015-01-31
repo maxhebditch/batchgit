@@ -1,0 +1,177 @@
+#!/bin/bash
+
+bold=`tput bold`
+normal=`tput sgr0`
+log="/home/$USER/.batchgitrc"
+# batchgitChanges="/home/$USER/.batchgitChanges"
+totalNum=$(wc -l < $log)
+
+
+logLocation () {
+        if [[ $other == "true" ]]; then
+                log=$altLog
+        elif [[ $other == "other" ]]; then
+                log=$olog
+        else
+                log=~/.batchgitrc
+        fi
+}
+
+checkbatchgit () {
+        #checks that batchgitrc exists, if not then goes
+        #to function to search for current repos
+	if [[ $clone == "false" ]]; then
+		#if [[ ! -f $log ]]; then
+			findgitrepos
+		#fi
+	fi
+        #if file does exist, then check how many lines are in it
+        numberInbatchgitrc=$(wc -l < $log)
+        #if zero lines (i.e. empty) then searches for repos as above
+        if [[ $numberInbatchgitrc == "0" ]]; then
+                findgitrepos
+        fi
+        #if has lines, set paths array to them
+        if [[ -f $log ]]; then
+                paths=( $(cat $log) )     
+        fi
+}
+
+modeEcho () {
+        tput cup 0 0
+        echo -e "\n${bold}$MODE\n==========${normal}\n"
+}
+
+pwdEcho () {
+        REPO=${PWD##*/}
+        #returns the branch
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        #prints the repository name and branch to stdout
+        tput cup 3 0
+        echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
+}
+
+termSize () {
+        terminalSize=$(stty size | sed 's|.* ||g')
+        centre=$(echo $(stty size | sed 's|.* ||g') / 2 | bc)
+        offsetby=$(echo $totalNum / 2 | bc)
+        offset=$(($centre - $offsetby)) 
+        if [[ "$lastSize" != "$terminalSize" ]]; then
+                tput clear
+        fi
+        lastSize=$terminalSize
+}
+
+bar() {
+        str=$1
+        num=$2
+        v=$(printf "%-${num}s" "$str")
+        echo "${v// /$str}"
+}
+
+progressLoop () {
+        termSize
+        modeEcho
+        spaces=$(($totalNum-$progNum))
+        bargraphDone=$(bar "=" $progNum)
+        if [[ $j != $totalNum ]]; then
+                bargraphSpaces=$(bar " " $spaces)
+                tput cup 5 $offset
+                echo "[$bargraphDone$bargraphSpaces] $progNum/$totalNum"
+        else
+                tput cup 5 $offset
+                echo "[$bargraphDone] Done!"
+        fi
+        pwdEcho
+        sleep 1s
+        # tput clear
+}
+
+gitStatus () {
+        # touch $batchgitChanges
+        # progressLoop $progNum $totalNum
+        #looks for types of modifications that can popup in git status
+        # git status > .batchgitstatusmessage
+        untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
+        modified=$(git ls-files -m)
+        deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
+        commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
+        committed=$(git status | sed -n -e '/committed:/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
+        newfiles=$(git status | sed -n -e '/committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
+        #status of commit
+        commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
+        commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
+        commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
+        commitDiverge=$(git status | grep "diverged"*)
+        if [[ ! -z $committed ]] || [[ ! -z $newfiles ]] || [[ ! -z $deleted ]] || [[ ! -z $untracked ]] || [[ ! -z $modified ]] || [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]]; then
+                tput cup 10 0
+                #if there are commited files echoes that
+                if [[ ! -z $committed ]]; then
+                        echo -e "Commited: \n\e[1;31m$committed\e[0m"
+                fi
+                #if there are new files, echoes that
+                if [[ ! -z $newfiles ]]; then
+                        echo -e "New: \n\e[1;32m$newfiles\e[0m"
+                fi
+                #if there are deleted files, echoes that
+                if [[ ! -z $deleted ]]; then
+                        echo -e "Deleted: \n\e[1;31m$deleted\e[0m"
+                fi
+                #if there are untracked files, echoes that
+                if [[ ! -z $untracked ]]; then
+                        echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
+                fi
+                #if there are modified files, echoes that
+                if [[ ! -z $modified ]]; then
+                        echo -e "Modified: \n\e[1;31m$modified\e[0m"
+                fi
+                #checks status of commit, in front, ahead or diverged. Never seen diverged
+                #happen though so I can't guarantee it works
+                if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
+                        if [[ ! -z $commitAhead ]]; then
+                                echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
+                        fi
+                        if [[ ! -z $commitBehind ]]; then
+                                echo -e "Commit: \n\e[1;31m$commitBehind, behind\e[0m"
+                        fi
+                #look for divergence
+                elif [[ ! -z $commitDiverge ]]; then
+                        echo "Divergence has occured"
+                #not sure when this one might pop up
+                elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
+                        echo "You are ahead and behind"
+                fi
+                echo ""
+        fi
+        tput cup 3 0
+        echo -e "                                                                  "
+        # rm .batchgitstatusmessage
+}
+
+tput clear
+checkbatchgit
+logLocation
+
+MODE="GIT STATUS"
+modeEcho
+progNum=0
+for dir in "${paths[@]}"; do
+        #moves into the directory listed
+        j=$(($progNum+1))
+        progNum=$j
+        cd $dir
+        gitStatus 
+        progressLoop $progNum $totalNum
+        tput cup 8 0
+        sleep 1
+        # gitStatus 
+        # tput clear
+done
+
+tput clear
+clear
+
+# if [[ -f $batchgitChanges ]]; then
+#         cat $batchgitChanges
+#         # rm $batchgitChanges
+# fi
