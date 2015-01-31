@@ -352,7 +352,7 @@ gitPush () {
         # tput cup 3 0
         # echo -e "                                                                  "
         rm .batchgitpushmessage
-        tput clear
+        # tput clear
 }
 
 #function that checks for different types of commits
