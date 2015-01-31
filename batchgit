@@ -327,25 +327,28 @@ gitPull () {
         tput cup 3 0
         echo -e "                                                                  "
         rm .batchgitpullmessage
+        tput clear
 }
 
 #function that pushes repos
 gitPush () {
+        pwdEcho
         git push --porcelain > .batchgitpushmessage 2>&1
         pushuptodate=$(grep "up to date" .batchgitpushmessage)
         if [[ $gpullpush ]]; then
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                REPO=${PWD##*/}
-                BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
+                # REPO=${PWD##*/}
+                # BRANCH=$(git rev-parse --abbrev-ref HEAD)
+                # echo "${bold}Repository: $REPO ${normal} $BRANCH ${bold} pushing ${normal}"
                 tput cup 10 0
                 cat .batchgitpushmessage
                 printf "\n"
                 sleep 2s
                 tput clear
         fi
+        cleanpwdEcho
         tput cup 3 0
         echo -e "                                                                  "
         rm .batchgitpushmessage
