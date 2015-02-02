@@ -322,6 +322,7 @@ gitPull () {
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
                 echo -e "$REPO\t$action" >> $batchgitChanges
+                cat $batchgitChanges .batchgitpullmessage >> $batchgitChanges
         fi
         cleanpwdEcho
         tput cup 3 0
@@ -341,6 +342,7 @@ gitPush () {
         fi
         if [[ -z $pushuptodate ]]; then
                 echo -e "$REPO\t$action" >> $batchgitChanges
+                cat $batchgitChanges .batchgitpushmessage >> $batchgitChanges
         fi
         cleanpwdEcho
         rm .batchgitpushmessage
