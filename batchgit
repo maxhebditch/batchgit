@@ -3,9 +3,6 @@
 # Define some useful variables for printing
 bold=`tput bold`
 normal=`tput sgr0`
-log="/home/$USER/.batchgitrc"
-batchgitChanges="/home/$USER/.batchgitChanges"
-totalNum=$(wc -l < $log)
 
 #Size of progress bar
 bar() {
@@ -533,6 +530,7 @@ askLoop () {
 
 #determines which log to use
 logLocation () {
+        log="/home/$USER/.batchgitrc"
         if [[ $other == "true" ]]; then
                 log=$altLog
         elif [[ $other == "other" ]]; then
@@ -540,6 +538,8 @@ logLocation () {
         else
                 log=~/.batchgitrc
         fi
+        batchgitChanges="/home/$USER/.batchgitChanges"
+        totalNum=$(wc -l < $log)
 }
 
 #parses arguments
@@ -639,14 +639,18 @@ echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
         done 
 fi
 
+
+logLocation
+checkbatchgit
+
 #if log file not present then runs findgit
 if [[ ! -f $log ]]; then
-	findgitrepos
+        findgitrepos
 fi
 
 #housekeeping to check batchgit is there and repos there
-checkbatchgit
-logLocation
+# checkbatchgit
+# logLocation
 
 
 #multiple choice for no option or post config
