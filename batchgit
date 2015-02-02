@@ -911,6 +911,6 @@ if [[ -f $batchgitChanges ]]; then
         echo -e "\n"
         echo "The following directories were changed"
         echo -e "\n"
-        awk -F "\t" '{ printf("%s %15s\n", $1, $2)}' $batchgitChanges
+        awk -F "\t" '{ printf ${bold}("%s %20s\n", $1, $2)${normal}}' $batchgitChanges
         rm $batchgitChanges
 fi
