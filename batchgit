@@ -918,6 +918,6 @@ if [[ -f $batchgitChanges ]]; then
         # awk -F "\t" '{ printf ("\033[1m%s", $4)}' $batchgitChanges
         # awk -F "\t" '{ printf ("%20s\033[0m \n", $5)}' $batchgitChanges
         # awk -F "\t" '{ printf ("%s", $1)}' $batchgitChanges
-        awk -F "\t" '{ printf ("%s %20s" \n %s", $4 $5 $1)}' $batchgitChanges
+        awk -F "\t" '{ printf ("%s %20s \n %s", $4 $5 $1)}' $batchgitChanges
         rm $batchgitChanges
 fi
