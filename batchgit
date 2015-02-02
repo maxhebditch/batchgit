@@ -904,7 +904,7 @@ if [[ $wipe ]]; then
         done
 fi
 
-#start indicator 
+#start indicator https://github.com/ga7g08/GitCheck
 if [[ $indicator ]]; then
         DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
         python $DIR/indicator/indicator.py &
