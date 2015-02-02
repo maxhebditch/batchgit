@@ -318,7 +318,7 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                echo -e "$REPO\t$action" >> $batchgitChanges
+                echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpullmessage >> $batchgitChanges
                 echo -e "\n" >> $batchgitChanges
         fi
@@ -339,7 +339,7 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                echo -e "$REPO\t$action" >> $batchgitChanges
+                echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpushmessage >> $batchgitChanges
                 echo -e "\n" >> $batchgitChanges
         fi
@@ -838,7 +838,7 @@ sed -e '/^$/d' -i $log
 if [[ $gstatus ]]; then
         MODE="GIT STATUS"
         modeEcho
-        for dir in "${paths[@]}"; do
+        for dir in "${paths[@]}"; dStop commiting before checking!o
                 #moves into the directory listed
                 cd $dir
                 gitStatus 
@@ -915,7 +915,7 @@ if [[ -f $batchgitChanges ]]; then
         echo -e "\n"
         echo "The following directories were changed"
         echo -e "\n"
-        awk -F "\t" '{ printf ("\033[1m%s", $1)}' $batchgitChanges
-        awk -F "\t" '{ printf ("%20s\033[0m \n", $2)}' $batchgitChanges
+        awk -F "\t" '{ printf ("\033[1m%s", $4)}' $batchgitChanges
+        awk -F "\t" '{ printf ("%20s\033[0m \n", $5)}' $batchgitChanges
         rm $batchgitChanges
 fi
