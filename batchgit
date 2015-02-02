@@ -838,7 +838,7 @@ sed -e '/^$/d' -i $log
 if [[ $gstatus ]]; then
         MODE="GIT STATUS"
         modeEcho
-        for dir in "${paths[@]}"; dStop commiting before checking!o
+        for dir in "${paths[@]}"; do
                 #moves into the directory listed
                 cd $dir
                 gitStatus 
