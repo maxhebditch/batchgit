@@ -912,7 +912,7 @@ fi
 
 #if changes file exists, awk the two columns to show changes and then rm it
 if [[ -f $batchgitChanges ]]; then
-        echo -e "\n"
+        # echo -e "\n"
         echo "The following directories were changed"
         #makes output pretty
         awk -F "\t" '{ printf ("%-40s %50s \n %-200s", $4, $5, $1)}' $batchgitChanges
