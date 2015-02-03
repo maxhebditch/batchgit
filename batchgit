@@ -163,6 +163,7 @@ findgitrepos () {
                 location="$searchdir"
         else
                 location="$HOME"
+                echo $location
         fi
         findgit=( $(find $location -type d -name .git | xargs -n 1 dirname) )
         #counts how many are inside
