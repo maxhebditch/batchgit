@@ -323,7 +323,9 @@ gitPull () {
         git pull > .batchgitpullmessage
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
-                echo -e "$REPO\t$action" >> $batchgitChanges
+                echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
+                cat $batchgitChanges .batchgitpullmessage >> $batchgitChanges
+                echo -e "\n" >> $batchgitChanges
         fi
         cleanpwdEcho
         tput cup 3 0
@@ -342,7 +344,9 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                echo -e "$REPO\t$action" >> $batchgitChanges
+                echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
+                cat $batchgitChanges .batchgitpushmessage >> $batchgitChanges
+                echo -e "\n" >> $batchgitChanges
         fi
         cleanpwdEcho
         rm .batchgitpushmessage
@@ -531,6 +535,7 @@ askLoop () {
 
 #determines which log to use
 logLocation () {
+        log="/home/$USER/.batchgitrc"
         if [[ $other == "true" ]]; then
                 log=$altLog
         elif [[ $other == "other" ]]; then
@@ -538,6 +543,8 @@ logLocation () {
         else
                 log="$HOME/.batchgitrc"
         fi
+        batchgitChanges="/home/$USER/.batchgitChanges"
+        totalNum=$(wc -l < $log)
 }
 
 #parses arguments
@@ -637,14 +644,18 @@ echo -e "\n${bold}CLONE BATCHGIT\n==============${normal}\n"
         done 
 fi
 
+
+logLocation
+checkbatchgit
+
 #if log file not present then runs findgit
 if [[ ! -f $log ]]; then
-	findgitrepos
+        findgitrepos
 fi
 
 #housekeeping to check batchgit is there and repos there
-checkbatchgit
-logLocation
+# checkbatchgit
+# logLocation
 
 
 #multiple choice for no option or post config
@@ -898,7 +909,7 @@ if [[ $wipe ]]; then
         done
 fi
 
-#start indicator 
+#start indicator https://github.com/ga7g08/GitCheck
 if [[ $indicator ]]; then
         DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
         python $DIR/indicator/indicator.py &
@@ -908,7 +919,7 @@ fi
 if [[ -f $batchgitChanges ]]; then
         echo -e "\n"
         echo "The following directories were changed"
-        awk -F "\t" '{ print $1, "\t", $2 }' $batchgitChanges
-        echo -e "\n"
+        #makes output pretty
+        awk -F "\t" '{ printf ("%-40s %50s \n %-200s", $4, $5, $1)}' $batchgitChanges
         rm $batchgitChanges
 fi
