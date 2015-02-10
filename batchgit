@@ -324,7 +324,7 @@ gitPull () {
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
                 # echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
-                echo -e "Repo:$REPO\nAction:$action" >> $batchgitChanges
+                echo -e "Repo:$REPO\nAction:$action\n" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpullmessage >> $batchgitChanges
                 echo -e "\n" >> $batchgitChanges
         fi
@@ -346,7 +346,7 @@ gitPush () {
         fi
         if [[ -z $pushuptodate ]]; then
                 # echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
-                echo -e "Repo:$REPO\nAction:$action" >> $batchgitChanges
+                echo -e "Repo:$REPO\nAction:$action\n" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpushmessage >> $batchgitChanges
                 echo -e "\n" >> $batchgitChanges
         fi
