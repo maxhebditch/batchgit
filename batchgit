@@ -839,6 +839,14 @@ fi
 #could potentially be moved into the loop above
 sed -e '/^$/d' -i $log 
 
+#commit flag, complicated due to flag and commit message catching
+if [[ $gcommit ]]; then
+        for dir in "${paths[@]}"; do
+                cd $dir
+                gitCommit
+        done
+fi
+
 #git status
 if [[ $gstatus ]]; then
         MODE="GIT STATUS"
@@ -887,14 +895,6 @@ if [[ $gpush ]] || [[ $gpullpush ]]; then
                 cleanpwdEcho
         done
         clear
-fi
-
-#commit flag, complicated due to flag and commit message catching
-if [[ $gcommit ]]; then
-        for dir in "${paths[@]}"; do
-                cd $dir
-                gitCommit
-        done
 fi
 
 #catch wipe flag
