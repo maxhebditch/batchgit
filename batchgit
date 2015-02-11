@@ -548,7 +548,7 @@ logLocation () {
         else
                 log="$HOME/.batchgitrc"
         fi
-        batchgitChanges="/home/$USER/.batchgitChanges"
+        batchgitChanges="$HOME/.batchgitChanges"
         totalNum=$(wc -l < $log)
 }
 
