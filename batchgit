@@ -260,16 +260,6 @@ gitStatus () {
         action="status"
         pwdEcho
         tput cup 15 0
-        #looks for types of modifications that can popup in git status
-        # git status > .batchgitstatusmessage
-        # untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
-        # modified=$(git ls-files -m)
-        # deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
-        # commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
-        # committed=$(git status | sed -n -e '/committed:/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
-        # notStaged=$(git status | sed -n -e '/not staged/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
-        # newfiles=$(git status | sed -n -e '/to be committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
-        # #status of commit
         commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
         commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
         commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
@@ -311,31 +301,6 @@ gitStatus () {
                 if [[ ! -z $gsumerged ]]; then
                         echo "Updated but unmergerd:$gsunmerged" >> $batchgitChanges
                 fi
-                #if there are commited files echoes that
-                # if [[ ! -z $notStaged ]]; then
-                #         echo -e "Not Staged:\n$notStaged" >> $batchgitChanges
-                # fi
-                # if [[ ! -z $committed ]]; then
-                #         echo -e "To be commited:\n$committed" >> $batchgitChanges
-                # fi
-                # #if there are new files, echoes that
-                # if [[ ! -z $newfiles ]]; then
-                #         echo -e "New:\n$newfiles" >> $batchgitChanges
-                # fi
-                # #if there are deleted files, echoes that
-                # if [[ ! -z $deleted ]]; then
-                #         echo -e "Deleted:\n$deleted" >> $batchgitChanges
-                # fi
-                # #if there are untracked files, echoes that
-                # if [[ ! -z $untracked ]]; then
-                #         echo -e "Untracked:\n$untracked" >> $batchgitChanges
-                # fi
-                # #if there are modified files, echoes that
-                # if [[ ! -z $modified ]]; then
-                #         echo -e "Modified:\n$modified" >> $batchgitChanges
-                # fi
-                # #checks status of commit, in front, ahead or diverged. Never seen diverged
-                # #happen though so I can't guarantee it works
                 if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
                         if [[ ! -z $commitAhead ]]; then
                                 echo -e "Commit: $commitAhead ahead" >> $batchgitChanges
