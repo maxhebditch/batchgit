@@ -272,6 +272,13 @@ gitStatus () {
         commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
         commitDiverge=$(git status | grep "diverged"*)
         statusResult=$(git status --porcelain)
+        modified=$(echo $statusResult | grep -w "M" | sed 's:M::g')
+        commUncomm=$(echo $statusResult | grep -w "MM" | sed 's:MM::g')
+        gsadded=$(echo $statusResult | grep -w "A" | sed 's:A::g')
+        gsdeleted=$(echo $statusResult | grep -w "D" | sed 's:D::g')
+        gsrenamed=$(echo $statusResult | grep -w "R" | sed 's:R::g')
+        gscopied=$(echo $statusResult | grep -w "C" | sed 's:C::g')
+        gsunmerged=$(echo $statusResult | grep -w "U" | sed 's:U::g')
         if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]] || [[ ! -z $notStaged ]] || [[ ! -z $statusResult ]]; then
                 #gives the repo name
                 REPO=${PWD##*/}
@@ -280,13 +287,26 @@ gitStatus () {
                 #prints the repository name and branch to stdout
                 # echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
                 echo -e "\nRepository: $REPO branch: $BRANCH" >> $batchgitChanges
-                modified=$(echo $statusResult | grep -w "M" | sed 's:M::g')
-                commUncomm=$(echo $statusResult | grep -w "MM" | sed 's:MM::g')
                 if [[ ! -z $modified ]]; then
                         echo "To be commited:$modified" >> $batchgitChanges
                 fi
                 if [[ ! -z $commUncomm ]]; then
                         echo "To be commited and not staged for commit:$commUncomm" >> $batchgitChanges
+                fi
+                if [[ ! -z $gsadded ]]; then
+                        echo "Added:$gsadded" >> $batchgitChanges
+                fi
+                if [[ ! -z $gsdeleted ]]; then
+                        echo "Deleted:$gsdeleted" >> $batchgitChanges
+                fi
+                if [[ ! -z $gsrenamed ]]; then
+                        echo "Renamed:$gsrenamed" >> $batchgitChanges
+                fi
+                if [[ ! -z $gscopied ]]; then
+                        echo "Copied:$gscopied" >> $batchgitChanges
+                fi
+                if [[ ! -z $gsumerged ]]; then
+                        echo "Updated but unmergerd:$gsunmerged" >> $batchgitChanges
                 fi
                 #if there are commited files echoes that
                 # if [[ ! -z $notStaged ]]; then
