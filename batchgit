@@ -257,6 +257,9 @@ confirmClone () {
 #modifications and then echoes them
 #HERE I need to tidy up and work out which are depreciated
 gitStatus () {
+        action="status"
+        pwdEcho
+        tput cup 15 0
         #looks for types of modifications that can popup in git status
         # git status > .batchgitstatusmessage
         # untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
@@ -349,6 +352,7 @@ gitStatus () {
                 fi
                 echo ""
         fi
+        cleanpwdEcho
 }
 
 #function that pulls repos
