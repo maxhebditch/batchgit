@@ -258,61 +258,76 @@ confirmClone () {
 gitStatus () {
         #looks for types of modifications that can popup in git status
         # git status > .batchgitstatusmessage
-        untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
-        modified=$(git ls-files -m)
-        deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
-        commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
-        committed=$(git status | sed -n -e '/committed:/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
-        newfiles=$(git status | sed -n -e '/committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
-        #status of commit
-        commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
-        commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
-        commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
-        commitDiverge=$(git status | grep "diverged"*)
-        if [[ ! -z $committed ]] || [[ ! -z $newfiles ]] || [[ ! -z $deleted ]] || [[ ! -z $untracked ]] || [[ ! -z $modified ]] || [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]]; then
+        # untracked=$(git status | sed -n -e '/Untracked/,$p' | tail -n +4 | sed '/^$/,$d' | sed 's/^[ \t]*//g')
+        # modified=$(git ls-files -m)
+        # deleted=$(git status | sed -n -e '/deleted:/,$p' | grep "deleted" | sed -e 's/.*deleted://g' -e 's/^[ \t]*//g')
+        # commit=$(git status | grep -w "commit" | sed -e 's/.*by //g' -e 's/\.//g' -e 's/#//g' | head -n 1)
+        # committed=$(git status | sed -n -e '/committed:/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
+        # notStaged=$(git status | sed -n -e '/not staged/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
+        # newfiles=$(git status | sed -n -e '/to be committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
+        # #status of commit
+        # commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
+        # commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
+        # commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
+        # commitDiverge=$(git status | grep "diverged"*)
+        statusResult=$(git status --porcelain)
+        # if [[ ! -z $committed ]] || [[ ! -z $newfiles ]] || [[ ! -z $deleted ]] || [[ ! -z $untracked ]] || [[ ! -z $modified ]] || [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]] || [[ ! -z $notStaged ]]; then
+        if [[ ! -z $statusResult ]]; then
                 #gives the repo name
                 REPO=${PWD##*/}
                 #returns the branch
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 #prints the repository name and branch to stdout
-                echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
-                #if there are commited files echoes that
-                if [[ ! -z $committed ]]; then
-                        echo -e "Commited: \n\e[1;31m$committed\e[0m"
-                fi
-                #if there are new files, echoes that
-                if [[ ! -z $newfiles ]]; then
-                        echo -e "New: \n\e[1;32m$newfiles\e[0m"
-                fi
-                #if there are deleted files, echoes that
-                if [[ ! -z $deleted ]]; then
-                        echo -e "Deleted: \n\e[1;31m$deleted\e[0m"
-                fi
-                #if there are untracked files, echoes that
-                if [[ ! -z $untracked ]]; then
-                        echo -e "Untracked: \n\e[1;31m$untracked\e[0m"
-                fi
-                #if there are modified files, echoes that
+                # echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
+                echo -e "\nRepository: $REPO\nBranch: $BRANCH" >> $batchgitChanges
+                modified=$(echo $statusResult | grep -w "M" | sed 's:M::g')
+                commUncomm=$(echo $statusResult | grep -w "MM" | sed 's:MM::g')
                 if [[ ! -z $modified ]]; then
-                        echo -e "Modified: \n\e[1;31m$modified\e[0m"
+                        echo "To be commited:$modified" >> $batchgitChanges
                 fi
-                #checks status of commit, in front, ahead or diverged. Never seen diverged
-                #happen though so I can't guarantee it works
-                if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
-                        if [[ ! -z $commitAhead ]]; then
-                                echo -e "Commit: \n\e[1;31m$commitAhead ahead\e[0m"
-                        fi
-                        if [[ ! -z $commitBehind ]]; then
-                                echo -e "Commit: \n\e[1;31m$commitBehind, behind\e[0m"
-                        fi
-                #look for divergence
-                elif [[ ! -z $commitDiverge ]]; then
-                        echo "Divergence has occured"
-                #not sure when this one might pop up
-                elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
-                        echo "You are ahead and behind"
+                if [[ ! -z $commUncomm ]]; then
+                        echo "To be commited and not staged for commit:$commUncomm" >> $batchgitChanges
                 fi
-                echo ""
+                #if there are commited files echoes that
+                # if [[ ! -z $notStaged ]]; then
+                #         echo -e "Not Staged:\n$notStaged" >> $batchgitChanges
+                # fi
+                # if [[ ! -z $committed ]]; then
+                #         echo -e "To be commited:\n$committed" >> $batchgitChanges
+                # fi
+                # #if there are new files, echoes that
+                # if [[ ! -z $newfiles ]]; then
+                #         echo -e "New:\n$newfiles" >> $batchgitChanges
+                # fi
+                # #if there are deleted files, echoes that
+                # if [[ ! -z $deleted ]]; then
+                #         echo -e "Deleted:\n$deleted" >> $batchgitChanges
+                # fi
+                # #if there are untracked files, echoes that
+                # if [[ ! -z $untracked ]]; then
+                #         echo -e "Untracked:\n$untracked" >> $batchgitChanges
+                # fi
+                # #if there are modified files, echoes that
+                # if [[ ! -z $modified ]]; then
+                #         echo -e "Modified:\n$modified" >> $batchgitChanges
+                # fi
+                # #checks status of commit, in front, ahead or diverged. Never seen diverged
+                # #happen though so I can't guarantee it works
+                # if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
+                #         if [[ ! -z $commitAhead ]]; then
+                #                 echo -e "Commit:\n$commitAhead, ahead" >> $batchgitChanges
+                #         fi
+                #         if [[ ! -z $commitBehind ]]; then
+                #                 echo -e "Commit:\n$commitBehind, behind" >> $batchgitChanges
+                #         fi
+                # #look for divergence
+                # elif [[ ! -z $commitDiverge ]]; then
+                #         echo "Divergence has occured" >> $batchgitChanges
+                # #not sure when this one might pop up
+                # elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
+                #         echo "You are ahead and behind" >> $batchgitChanges
+                # fi
+                # echo ""
         fi
 }
 
@@ -855,7 +870,10 @@ if [[ $gstatus ]]; then
         modeEcho
         for dir in "${paths[@]}"; do
                 #moves into the directory listed
+                j=$(($progNum+1))
+                progNum=$j
                 cd $dir
+                progressLoop $progNum $totalNum
                 gitStatus 
         done
 fi
@@ -919,10 +937,11 @@ fi
 
 #if changes file exists, awk the two columns to show changes and then rm it
 if [[ -f $batchgitChanges ]]; then
-        # echo -e "\n"
+        echo ""
         echo "The following directories were changed"
         #makes output pretty
         # awk -F "\t" '{ printf ("%-40s %50s \n %-200s", $4, $5, $1)}' $batchgitChanges
         cat $batchgitChanges
+        echo ""
         rm $batchgitChanges
 fi
