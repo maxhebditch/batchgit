@@ -315,10 +315,10 @@ gitStatus () {
                 # #happen though so I can't guarantee it works
                 if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
                         if [[ ! -z $commitAhead ]]; then
-                                echo -e "Commit: $commitAhead, ahead" >> $batchgitChanges
+                                echo -e "Commit: $commitAhead ahead" >> $batchgitChanges
                         fi
                         if [[ ! -z $commitBehind ]]; then
-                                echo -e "Commit: $commitBehind, behind" >> $batchgitChanges
+                                echo -e "Commit: $commitBehind behind" >> $batchgitChanges
                         fi
                 #look for divergence
                 elif [[ ! -z $commitDiverge ]]; then
