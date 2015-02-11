@@ -266,20 +266,19 @@ gitStatus () {
         # notStaged=$(git status | sed -n -e '/not staged/,$p' | grep "modified:" | sed -e 's/.*modified://g' -e 's/^[ \t]*//g')
         # newfiles=$(git status | sed -n -e '/to be committed:/,$p' | grep "new file" | sed -e 's/.*new file://g' -e 's/^[ \t]*//g')
         # #status of commit
-        # commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
-        # commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
-        # commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
-        # commitDiverge=$(git status | grep "diverged"*)
+        commitStatus=$(git status | sed -n -e '/commit/,$p' | grep -w "commit" | sed -e 's/.* is //g' -e 's/ of.*//g')
+        commitAhead=$(git status | grep "ahead" | sed -e 's/.*by //g' -e 's/ commit.//g' -e 's/\.//g')
+        commitBehind=$(git status | grep "behind" | sed -e 's/.*by //g' -e 's/ commit.//g')
+        commitDiverge=$(git status | grep "diverged"*)
         statusResult=$(git status --porcelain)
-        # if [[ ! -z $committed ]] || [[ ! -z $newfiles ]] || [[ ! -z $deleted ]] || [[ ! -z $untracked ]] || [[ ! -z $modified ]] || [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]] || [[ ! -z $notStaged ]]; then
-        if [[ ! -z $statusResult ]]; then
+        if [[ ! -z $committed ]] || [[ ! -z $newfiles ]] || [[ ! -z $deleted ]] || [[ ! -z $untracked ]] || [[ ! -z $modified ]] || [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]] || [[ ! -z $notStaged ]] || [[ ! -z $statusResult ]]; then
                 #gives the repo name
                 REPO=${PWD##*/}
                 #returns the branch
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 #prints the repository name and branch to stdout
                 # echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
-                echo -e "\nRepository: $REPO\nBranch: $BRANCH" >> $batchgitChanges
+                echo -e "\nRepository: $REPO branch: $BRANCH" >> $batchgitChanges
                 modified=$(echo $statusResult | grep -w "M" | sed 's:M::g')
                 commUncomm=$(echo $statusResult | grep -w "MM" | sed 's:MM::g')
                 if [[ ! -z $modified ]]; then
@@ -313,21 +312,21 @@ gitStatus () {
                 # fi
                 # #checks status of commit, in front, ahead or diverged. Never seen diverged
                 # #happen though so I can't guarantee it works
-                # if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
-                #         if [[ ! -z $commitAhead ]]; then
-                #                 echo -e "Commit:\n$commitAhead, ahead" >> $batchgitChanges
-                #         fi
-                #         if [[ ! -z $commitBehind ]]; then
-                #                 echo -e "Commit:\n$commitBehind, behind" >> $batchgitChanges
-                #         fi
-                # #look for divergence
-                # elif [[ ! -z $commitDiverge ]]; then
-                #         echo "Divergence has occured" >> $batchgitChanges
-                # #not sure when this one might pop up
-                # elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
-                #         echo "You are ahead and behind" >> $batchgitChanges
-                # fi
-                # echo ""
+                if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
+                        if [[ ! -z $commitAhead ]]; then
+                                echo -e "Commit: $commitAhead, ahead" >> $batchgitChanges
+                        fi
+                        if [[ ! -z $commitBehind ]]; then
+                                echo -e "Commit: $commitBehind, behind" >> $batchgitChanges
+                        fi
+                #look for divergence
+                elif [[ ! -z $commitDiverge ]]; then
+                        echo "Divergence has occured" >> $batchgitChanges
+                #not sure when this one might pop up
+                elif [[ ! -z $commitAhead ]] && [[ ! -z $commitBehind ]]; then
+                        echo "You are ahead and behind" >> $batchgitChanges
+                fi
+                echo ""
         fi
 }
 
