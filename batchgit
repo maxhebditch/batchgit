@@ -864,6 +864,7 @@ if [[ $gstatus ]]; then
                 progressLoop $progNum $totalNum
                 gitStatus 
         done
+        clear
 fi
 
 #git pull
@@ -883,7 +884,7 @@ if [[ $gpull ]] || [[ $gpullpush ]]; then
                 tput cup 8 0
                 cleanpwdEcho
         done
-        tput clear
+        # tput clear
         clear
 fi
 
