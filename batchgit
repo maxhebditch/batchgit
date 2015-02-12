@@ -930,7 +930,7 @@ if [[ -f $batchgitChanges ]]; then
         echo ""
         echo "The following directories were changed"
         if [[ $colourscheme == "dark" ]]; then
-                cat $batchgitChanges | sed -e 's:Repo.*:\o033[37;1m&\o033[0m:' | sed -e 's:-:\o033[31m&\o033[0m:' | sed -e 's:+:\o033[32m&\o033[0m:' | sed -e 's:Branch.*:\o033[37m&\o033[0m:' | sed -e 's:Action.*:\o033[37;1m&o033[0m:'
+                cat $batchgitChanges | sed -e 's:Repo.*:\o033[37;1m&\o033[0m:' | sed -e 's:-:\o033[31m&\o033[0m:' | sed -e 's:+:\o033[32m&\o033[0m:' | sed -e 's:Branch.*:\o033[37m&\o033[0m:' | sed -e 's:Action.*:\o033[37;1m&\o033[0m:'
         elif [[ $colourscheme == "light" ]]; then
                 cat $batchgitChanges | sed -e 's:Repo.*:\o033[30;1m&\o033[0m:' | sed -e 's:-:\o033[31m&\o033[0m:' | sed -e 's:+:\o033[32m&\o033[0m:' | sed -e 's:Branch.*:\o033[30m&\o033[0m:' | sed -e 's:Action.*:\o033[30;1m&\o033[0m:'
         fi
