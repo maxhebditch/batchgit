@@ -8,6 +8,7 @@ batchgitChanges="$HOME/.batchgitChanges"
 totalNum=$(wc -l < $log)
 colourscheme=dark
 # colourscheme=light
+# colourscheme=none
 
 #Size of progress bar
 bar() {
@@ -959,6 +960,8 @@ if [[ -f $batchgitChanges ]]; then
                         -e 's|unmerged:*.|\o033[31;1m&\o033[0m|' \
                         -e 's|Divergence has occured|\o033[31;1m&\o033[0m|' \
                         -e 's|You are ahead and behind|\o033[31;1m&\o033[0m|'
+        elif [[ $colourscheme == "none" ]]; then
+                cat $batchgitChanges
         fi
         echo ""
         rm $batchgitChanges
