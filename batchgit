@@ -33,11 +33,11 @@ pwdEcho () {
         BRANCH=$(git rev-parse --abbrev-ref HEAD)
         #prints the repository name and branch to stdout
         tput cup 3 0
-        echo -e "${normal}Repository:${bold} $REPO${normal}"
+        echo -e "${normal}Repository${bold} $REPO${normal}"
         tput cup 4 0
-        echo -e "${normal}Branch:${bold} $BRANCH${normal}"
+        echo -e "${normal}Branch${bold} $BRANCH${normal}"
         tput cup 5 0 
-        echo -e "${normal}Mode:${bold} $action${normal}"
+        echo -e "${normal}Mode${bold} $action${normal}"
 }
 
 #tidies pwdecho for another round
@@ -46,11 +46,11 @@ cleanpwdEcho () {
         cleanBRANCH=$(bar " " ${#BRANCH})
         cleanaction=$(bar " " ${#action})
         tput cup 3 0
-        echo -e "${normal}Repository:${bold} $cleanREPO${normal}"
+        echo -e "${normal}Repository${bold} $cleanREPO${normal}"
         tput cup 4 0
-        echo -e "${normal}Branch:${bold} $cleanBRANCH${normal}"
+        echo -e "${normal}Branch${bold} $cleanBRANCH${normal}"
         tput cup 5 0 
-        echo -e "${normal}Mode:${bold} $cleanaction${normal}"
+        echo -e "${normal}Mode${bold} $cleanaction${normal}"
 }
 
 #checks size of terminal and determines where to place bar
@@ -93,8 +93,8 @@ assignDynamicDir () {
 #function that goes through your list of repos in $log and asks which to remove from disk
 wipeRepos () {
                 REPO=${PWD##*/}
-                echo "${bold}Repository: $REPO ${normal}"
-                echo "Repo path: $(pwd)"
+                echo "${bold}Repository $REPO ${normal}"
+                echo "Repo path $(pwd)"
                 echo "Remove repository? (Y/N): "
                 read delornay </dev/tty
                 case $delornay in 
@@ -116,8 +116,8 @@ wipeRepos () {
 #git reset HARD --head
 gitReset () {
                 REPO=${PWD##*/}
-                echo "${bold}Repository: $REPO ${normal}"
-                echo "Repo path: $(pwd)"
+                echo "${bold}Repository $REPO ${normal}"
+                echo "Repo path $(pwd)"
                 echo "Reset repository? (Y/N): "
                 read resetornay </dev/tty
                 case $resetornay in 
@@ -280,8 +280,8 @@ gitStatus () {
                 #returns the branch
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 #prints the repository name and branch to stdout
-                # echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
-                echo -e "\nRepository: $REPO \nBranch: $BRANCH" >> $batchgitChanges
+                # echo -e "${bold}Repository $REPO ${normal} $BRANCH"
+                echo -e "\nRepository $REPO \nBranch $BRANCH" >> $batchgitChanges
                 if [[ ! -z $modified ]]; then
                         echo "To be commited:$modified" >> $batchgitChanges
                 fi
@@ -301,7 +301,7 @@ gitStatus () {
                         echo "Copied:$gscopied" >> $batchgitChanges
                 fi
                 if [[ ! -z $gsumerged ]]; then
-                        echo "Updated but unmergerd:$gsunmerged" >> $batchgitChanges
+                        echo "Updated but unmerged:$gsunmerged" >> $batchgitChanges
                 fi
                 if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
                         if [[ ! -z $commitAhead ]]; then
@@ -330,7 +330,7 @@ gitPull () {
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
                 # echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
-                echo -e "Repo:$REPO\nBranch:$BRANCH\nAction:$action\n" >> $batchgitChanges
+                echo -e "Repository $REPO\nBranch $BRANCH\nAction $action\n" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpullmessage >> $batchgitChanges
                 echo -e "\n" >> $batchgitChanges
         fi
@@ -351,7 +351,7 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                echo -e "Repo:$REPO\nBranch:$BRANCH\nAction:$action\n" >> $batchgitChanges
+                echo -e "Repository $REPO\nBranch $BRANCH\nAction $action\n" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpushmessage >> $batchgitChanges
         fi
         cleanpwdEcho
@@ -368,7 +368,7 @@ gitCommit () {
         if [[ $numTotal != "0" ]]; then
                 REPO=${PWD##*/}
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-                echo "${bold}Repository: $REPO ${normal} $BRANCH"
+                echo "${bold}Repository $REPO ${normal} $BRANCH"
                 echo "adding"
                 git add .
                 git add -A
@@ -379,7 +379,7 @@ gitCommit () {
 
 #returns help
 batchgitHelp () {
-        echo -e """${bold}Core git features:${normal}
+        echo -e """${bold}Core git features${normal}
 -s \t git status all directories
 -c \t add a commit message for all requiring files
 -d \t git pull all directories
@@ -387,18 +387,18 @@ batchgitHelp () {
 -u \t git pull and then push all repositories
 -z \t git reset --head HARD specific repositories
 
-${bold}Managing batchgitrc:${normal}
+${bold}Managing batchgitrc${normal}
 -o \t use an alternative rc file for batchgit
 -f \t find git repos on disk and write to batchgitrc
 -a \t add a directory to batchgitrc
 -l \t recursively add repos from a path to batchgitrc
 -r \t remove specific directories from batchgitrc
 
-${bold}Bootstrap and restoring on a new machine:${normal}
+${bold}Bootstrap and restoring on a new machine${normal}
 -b \t make a batchgit backup
 -n \t clone repos on a new disk using batchgit backup
 
-${bold}Other features:${normal}
+${bold}Other features${normal}
 -w \t remove specific directories from disk
 -i \t start the indicator applet 
 -h \t display this help file
@@ -445,7 +445,7 @@ gitAdd () {
 #options for script if no arguements
 gitOptions () {
         echo -e """
-${bold}Core git features:${normal}
+${bold}Core git features${normal}
 1) \t git status all directories
 2) \t add a commit message for all requiring files
 3) \t git pull all directories
@@ -453,18 +453,18 @@ ${bold}Core git features:${normal}
 5) \t git pull and then push all repositories
 6) \t git reset --head HARD specific repositories
 
-${bold}Managing batchgitrc:${normal}
+${bold}Managing batchgitrc${normal}
 7) \t use an alternative rc file for batchgit
 8) \t find git repos on disk and write to batchgitrc
 9) \t add a directory to batchgitrc
 10)\t recursively add repos from a path to batchgitrc
 11)\t remove specific directories from batchgitrc
 
-${bold}Bootstrap and restoring on a new machine:${normal}
+${bold}Bootstrap and restoring on a new machine${normal}
 12)\t make a batchgit backup
 13)\t clone repos on a new disk using batchgit backup
 
-${bold}Other features:${normal}
+${bold}Other features${normal}
 14)\t remove specific directories from disk
 15) \t start the indicator applet 
 16)\t display this help file
@@ -754,7 +754,7 @@ echo -e "\n${bold}BACKUP BATCHGIT\n===============${normal}\n"
                 else
                         #echo the remote
                         echo "There is only one remote branch"
-                        echo -e "Which is:${bold}$remotesClean${normal}"
+                        echo -e "Which is ${bold}$remotesClean${normal}"
                 fi
                 #run through the multiple choice for bootstrapping
                 bootstrapchoice
@@ -930,9 +930,35 @@ if [[ -f $batchgitChanges ]]; then
         echo ""
         echo "The following directories were changed"
         if [[ $colourscheme == "dark" ]]; then
-                cat $batchgitChanges | sed -e 's:Repo.*:\o033[37;1m&\o033[0m:' -e 's:-:\o033[31m&\o033[0m:' -e 's:+:\o033[32m&\o033[0m:' -e 's:Branch.*:\o033[37m&\o033[0m:' -e 's:Action.*:\o033[37;1m&\o033[0m:'
+                cat $batchgitChanges |\
+                        sed -e 's:Repository.*:\o033[37;1m&\o033[0m:' \
+                        -e 's:Branch.*:\o033[37m&\o033[0m:' \
+                        -e 's:Action.*:\o033[37;1m&\o033[0m:' \
+                        -e 's|Added:*.|\o033[32;1m&\o033[0m|' \
+                        -e 's|Deleted:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|To be commited:.*|\o033[33;1m&\o033[0m|' \
+                        -e 's|.* ahead|\o033[36;1m&\o033[0m|' \
+                        -e 's|.* behind|\o033[34;1m&\o033[0m|' \
+                        -e 's|Renamed:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|Copied:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|unmerged:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|Divergence has occured|\o033[31;1m&\o033[0m|' \
+                        -e 's|You are ahead and behind|\o033[31;1m&\o033[0m|'
         elif [[ $colourscheme == "light" ]]; then
-                cat $batchgitChanges | sed -e 's:Repo.*:\o033[30;1m&\o033[0m:' -e 's:-:\o033[31m&\o033[0m:' -e 's:+:\o033[32m&\o033[0m:' -e 's:Branch.*:\o033[30m&\o033[0m:' -e 's:Action.*:\o033[30;1m&\o033[0m:'
+                cat $batchgitChanges |\
+                        sed -e 's:Repository.*:\o033[30;1m&\o033[0m:' \
+                        -e 's:Branch.*:\o033[30m&\o033[0m:' \
+                        -e 's:Action.*:\o033[30;1m&\o033[0m:' \
+                        -e 's|Added:*.|\o033[32;1m&\o033[0m|' \
+                        -e 's|Deleted:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|To be commited:.*|\o033[33;1m&\o033[0m|' \
+                        -e 's|.* ahead|\o033[36;1m&\o033[0m|' \
+                        -e 's|.* behind|\o033[34;1m&\o033[0m|' \
+                        -e 's|Renamed:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|Copied:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|unmerged:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|Divergence has occured|\o033[31;1m&\o033[0m|' \
+                        -e 's|You are ahead and behind|\o033[31;1m&\o033[0m|'
         fi
         echo ""
         rm $batchgitChanges
