@@ -937,8 +937,8 @@ if [[ -f $batchgitChanges ]]; then
                         -e 's:Action.*:\o033[37;1m&\o033[0m:' \
                         -e 's|Added:*.|\o033[32;1m&\o033[0m|' \
                         -e 's|Deleted:*.|\o033[31;1m&\o033[0m|' \
-                        -e 's|+|\o033[32;1m&\o033[0m|' \
-                        -e 's|-|\o033[31;1m&\o033[0m|' \
+                        -e 's:|*+*:\o033[32;1m&\o033[0m:' \
+                        -e 's:|*-*:\o033[31;1m&\o033[0m:' \
                         -e 's|To be commited:.*|\o033[33;1m&\o033[0m|' \
                         -e 's|.* ahead|\o033[36;1m&\o033[0m|' \
                         -e 's|.* behind|\o033[34;1m&\o033[0m|' \
@@ -954,8 +954,6 @@ if [[ -f $batchgitChanges ]]; then
                         -e 's:Action.*:\o033[30;1m&\o033[0m:' \
                         -e 's|Added:*.|\o033[32;1m&\o033[0m|' \
                         -e 's|Deleted:*.|\o033[31;1m&\o033[0m|' \
-                        -e 's|+|\o033[32;1m&\o033[0m|' \
-                        -e 's|-|\o033[31;1m&\o033[0m|' \
                         -e 's|To be commited:.*|\o033[33;1m&\o033[0m|' \
                         -e 's|.* ahead|\o033[36;1m&\o033[0m|' \
                         -e 's|.* behind|\o033[34;1m&\o033[0m|' \
