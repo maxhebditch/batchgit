@@ -930,7 +930,7 @@ if [[ -f $batchgitChanges ]]; then
         echo "The following directories were changed"
         #makes output pretty
         # awk -F "\t" '{ printf ("%-40s %50s \n %-200s", $4, $5, $1)}' $batchgitChanges
-        cat $batchgitChanges
+        cat $batchgitChanges | sed -E 's:Repo.*:\o037[31m&\o033[0m:'
         echo ""
         rm $batchgitChanges
 fi
