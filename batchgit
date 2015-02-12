@@ -281,7 +281,7 @@ gitStatus () {
                 BRANCH=$(git rev-parse --abbrev-ref HEAD)
                 #prints the repository name and branch to stdout
                 # echo -e "${bold}Repository: $REPO ${normal} $BRANCH"
-                echo -e "\nRepository: $REPO branch: $BRANCH" >> $batchgitChanges
+                echo -e "\nRepository: $REPO \nBranch: $BRANCH" >> $batchgitChanges
                 if [[ ! -z $modified ]]; then
                         echo "To be commited:$modified" >> $batchgitChanges
                 fi
@@ -330,7 +330,7 @@ gitPull () {
         pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
         if [[ -z $pulluptodate ]]; then
                 # echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
-                echo -e "Repo:$REPO\nAction:$action\n" >> $batchgitChanges
+                echo -e "Repo:$REPO\nBranch:$BRANCH\nAction:$action\n" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpullmessage >> $batchgitChanges
                 echo -e "\n" >> $batchgitChanges
         fi
@@ -351,8 +351,7 @@ gitPush () {
                 gitPull
         fi
         if [[ -z $pushuptodate ]]; then
-                # echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
-                echo -e "Repo:$REPO\nAction:$action\n" >> $batchgitChanges
+                echo -e "Repo:$REPO\nBranch:$BRANCH\nAction:$action\n" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpushmessage >> $batchgitChanges
         fi
         cleanpwdEcho
