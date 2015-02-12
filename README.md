@@ -127,7 +127,13 @@ and a new rc file will be written. To then use this rc file, combine it with the
 
 ##FAQs
 ###Why are some of my repos not being found?
-When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-g` or use the add recursively function. 
+When initially run, or using the `-f` flag alone, it will only search from your home folder. To find repos in other locations you need to use a location after the `-g` or use the add recursively function.
+
+###I can't see some of the text
+The default mode for this script assumes you use a dark coloured terminal. You can change the script to a light colourscheme, i.e. dark text, by editing the colourscheme variable at the top from 
+
+        colourscheme=light
+        colourscheme=dark
 
 ##TODO
 26. Git checkout master for all repos
