@@ -6,6 +6,8 @@ normal=`tput sgr0`
 log="$HOME/.batchgitrc"
 batchgitChanges="$HOME/.batchgitChanges"
 totalNum=$(wc -l < $log)
+colourscheme=dark
+# colourscheme=light
 
 #Size of progress bar
 bar() {
@@ -928,9 +930,11 @@ fi
 if [[ -f $batchgitChanges ]]; then
         echo ""
         echo "The following directories were changed"
-        #makes output pretty
-        # awk -F "\t" '{ printf ("%-40s %50s \n %-200s", $4, $5, $1)}' $batchgitChanges
-        cat $batchgitChanges | sed -e 's:Repo.*:\o033[37;1m&\o033[0m:' | sed -e 's:-:\o033[31m&\o033[0m:' | sed -e 's:+:\o033[32m&\o033[0m:' | sed -e 's:Branch.*:\o033[37m&\o033[0m:'
+        if [[ colourscheme == "dark" ]]; then
+                cat $batchgitChanges | sed -e 's:Repo.*:\o033[37;1m&\o033[0m:' | sed -e 's:-:\o033[31m&\o033[0m:' | sed -e 's:+:\o033[32m&\o033[0m:' | sed -e 's:Branch.*:\o033[37m&\o033[0m:'
+        elif [[ colourscheme == "light" ]]; then
+                cat $batchgitChanges | sed -e 's:Repo.*:\o033[30;1m&\o033[0m:' | sed -e 's:-:\o033[31m&\o033[0m:' | sed -e 's:+:\o033[32m&\o033[0m:' | sed -e 's:Branch.*:\o033[30m&\o033[0m:'
+        fi
         echo ""
         rm $batchgitChanges
 fi
