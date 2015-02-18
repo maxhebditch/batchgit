@@ -275,6 +275,7 @@ gitStatus () {
         gsrenamed=$(echo $statusResult | grep -w "R" | sed 's:R::g')
         gscopied=$(echo $statusResult | grep -w "C" | sed 's:C::g')
         gsunmerged=$(echo $statusResult | grep -w "U" | sed 's:U::g')
+        gsuntracked=$(git status --porcelain | grep -w "??" | sed 's:??::g' )
         if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]] || [[ ! -z $commitDiverge ]] || [[ ! -z $notStaged ]] || [[ ! -z $statusResult ]]; then
                 #gives the repo name
                 REPO=${PWD##*/}
@@ -304,6 +305,9 @@ gitStatus () {
                 if [[ ! -z $gsumerged ]]; then
                         echo "Updated but unmerged:$gsunmerged" >> $batchgitChanges
                 fi
+                if [[ ! -z $gsuntracked ]]; then
+                        echo "Untracked:$gsuntracked" >> $batchgitChanges
+                fi
                 if [[ ! -z $commitAhead ]] || [[ ! -z $commitBehind ]]; then
                         if [[ ! -z $commitAhead ]]; then
                                 echo -e "Commit: $commitAhead ahead" >> $batchgitChanges
@@ -328,8 +332,7 @@ gitPull () {
         pwdEcho
         tput cup 15 0
         git pull > .batchgitpullmessage
-        pulluptodate=$(grep "up-to-date" .batchgitpullmessage)
-        if [[ -z $pulluptodate ]]; then
+        pulluptodate=$(grep "up-to-date" .batchgitpullmessage); if [[ -z $pulluptodate ]]; then
                 # echo -e "\t\t\t$REPO\t$action" >> $batchgitChanges
                 echo -e "Repository $REPO\nBranch $BRANCH\nAction $action\n" >> $batchgitChanges
                 cat $batchgitChanges .batchgitpullmessage >> $batchgitChanges
@@ -621,6 +624,10 @@ do
 
         esac
 done
+
+if [[ -f $batchgitChanges ]]; then
+        rm $batchgitChanges
+fi
 
 #if clone flag is used
 if [[ $clone ]]; then
@@ -935,14 +942,15 @@ if [[ -f $batchgitChanges ]]; then
                         sed -e 's:Repository.*:\o033[37;1m&\o033[0m:' \
                         -e 's:Branch.*:\o033[37m&\o033[0m:' \
                         -e 's:Action.*:\o033[37;1m&\o033[0m:' \
-                        -e 's|Added:*.|\o033[32;1m&\o033[0m|' \
-                        -e 's|Deleted:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|Added:.*|\o033[32;1m&\o033[0m|' \
+                        -e 's|Deleted:.*|\o033[31;1m&\o033[0m|' \
+                        -e 's|Untracked:.*|\o033[31;1m&\o033[0m|' \
                         -e 's|To be commited:.*|\o033[33;1m&\o033[0m|' \
                         -e 's|.* ahead|\o033[36;1m&\o033[0m|' \
                         -e 's|.* behind|\o033[34;1m&\o033[0m|' \
-                        -e 's|Renamed:*.|\o033[31;1m&\o033[0m|' \
-                        -e 's|Copied:*.|\o033[31;1m&\o033[0m|' \
-                        -e 's|unmerged:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|Renamed:.*|\o033[31;1m&\o033[0m|' \
+                        -e 's|Copied:.*|\o033[31;1m&\o033[0m|' \
+                        -e 's|unmerged:.*|\o033[31;1m&\o033[0m|' \
                         -e 's|Divergence has occured|\o033[31;1m&\o033[0m|' \
                         -e 's|You are ahead and behind|\o033[31;1m&\o033[0m|'
         elif [[ $colourscheme == "light" ]]; then
@@ -952,6 +960,7 @@ if [[ -f $batchgitChanges ]]; then
                         -e 's:Action.*:\o033[30;1m&\o033[0m:' \
                         -e 's|Added:*.|\o033[32;1m&\o033[0m|' \
                         -e 's|Deleted:*.|\o033[31;1m&\o033[0m|' \
+                        -e 's|Untracked:*.|\o033[31;1m&\o033[0m|' \
                         -e 's|To be commited:.*|\o033[33;1m&\o033[0m|' \
                         -e 's|.* ahead|\o033[36;1m&\o033[0m|' \
                         -e 's|.* behind|\o033[34;1m&\o033[0m|' \
