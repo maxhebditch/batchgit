@@ -256,6 +256,17 @@ confirmClone () {
         esac
 }
 
+#Function to just quickly check if any changes have occured for an applet like conky / bar
+#Upon finding a single dir in ~/.batchgit that isn't "nothing to commit" then it quits
+#printing "Changes found" to terminal
+querydir () {
+        statusofdir=$(git status | grep -q "nothing to commit")
+        if $statusofdir ; then
+                echo "Changes found"
+                exit
+        fi
+}
+
 #function that checks the git status output for different types of
 #modifications and then echoes them
 #HERE I need to tidy up and work out which are depreciated
@@ -385,6 +396,7 @@ gitCommit () {
 batchgitHelp () {
         echo -e """${bold}Core git features${normal}
 -s \t git status all directories
+-q \t Query if any of the tracked repos have changed
 -c \t add a commit message for all requiring files
 -d \t git pull all directories
 -p \t git push all directories
@@ -456,7 +468,9 @@ ${bold}Core git features${normal}
 4) \t git push all directories
 5) \t git pull and then push all repositories
 6) \t git reset --head HARD specific repositories
+7) \t Query if any tracked repos have changed
 
+<<<<<<< HEAD
 ${bold}Managing batchgitrc${normal}
 7) \t use an alternative rc file for batchgit
 8) \t find git repos on disk and write to batchgitrc
@@ -472,6 +486,23 @@ ${bold}Other features${normal}
 14)\t remove specific directories from disk
 15) \t start the indicator applet 
 16)\t display this help file
+=======
+${bold}Managing batchgitrc:${normal}
+8) \t use an alternative rc file for batchgit
+9) \t find git repos on disk and write to batchgitrc
+10) \t add a directory to batchgitrc
+11)\t recursively add repos from a path to batchgitrc
+12)\t remove specific directories from batchgitrc
+
+${bold}Bootstrap and restoring on a new machine:${normal}
+13)\t make a batchgit backup
+14)\t clone repos on a new disk using batchgit backup
+
+${bold}Other features:${normal}
+15)\t remove specific directories from disk
+16) \t start the indicator applet 
+17)\t display this help file
+>>>>>>> testing
 
 quit or exit to stop
 """
@@ -484,16 +515,17 @@ quit or exit to stop
                 [4]) gpush=true;;
                 [5]) gpullpush=true;;
                 [6]) greset=true;;
-                [7]) other=true;ask=true;;
-                [8]) gfind=true;;
-                [9]) add=true;ask=true;;
-                [10]) gaddrec=true;ask=true;;
-                [11]) grm=true;ask=true;;
-                [12]) backup=true;;
-                [13]) clone=true;;
-                [14]) wipe=true;ask=true;;
-                [15]) indicator=true;;
-                [16]) batchgitHelp;;
+                [7]) query=true;;
+                [8]) other=true;ask=true;;
+                [9]) gfind=true;;
+                [10]) add=true;ask=true;;
+                [11]) gaddrec=true;ask=true;;
+                [12]) grm=true;ask=true;;
+                [13]) backup=true;;
+                [14]) clone=true;;
+                [15]) wipe=true;ask=true;;
+                [16]) indicator=true;;
+                [17]) batchgitHelp;;
                 [Qq][Uu][Ii][Tt]|[Qq]|[Ee][Xx][Ii][Tt]|[Qq]|[Ee]) echo -e "quiting\n"; exit;;
                 * ) echo "that was nonsense"; gitOptions;;
         esac
@@ -558,7 +590,7 @@ logLocation () {
 }
 
 #parses arguments
-while getopts sfndupbwzh?ia:r:c:l:o:g: OPTION
+while getopts sfqndupbwzh?ia:r:c:l:o:g: OPTION
 do
         case $OPTION in
                 s)
@@ -566,6 +598,9 @@ do
                         ;;
                 f)
                         gfind=true
+                        ;;
+                q)
+                        query=true
                         ;;
                 g)
                         gfind=true
@@ -874,6 +909,17 @@ if [[ $gstatus ]]; then
                 gitStatus 
         done
         clear
+fi
+
+if [[ $query ]]; then
+        MODE="QUERY"
+        for dir in "${paths[@]}"; do
+                #moves into the directory listed
+                j=$(($progNum+1))
+                progNum=$j
+                cd $dir
+                querydir
+        done
 fi
 
 #git pull
