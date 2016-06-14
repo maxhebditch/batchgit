@@ -263,12 +263,14 @@ querydir () {
         changes=$(git status --porcelain)
         if [[ $changes != "" ]]; then
                 echo "Changes found"
-                exit
         fi
-        commits=$(git status | grep -E "ahead|behind")
+        commits=$(git status | grep -E "ahead")
         if [[ $commits != "" ]]; then
-                echo "Changes found"
-                exit
+                echo "Push needed"
+        fi
+        commits=$(git status | grep -E "behind")
+        if [[ $commits != "" ]]; then
+                echo "Pull needed"
         fi
 }
 
