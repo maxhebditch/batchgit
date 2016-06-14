@@ -265,6 +265,11 @@ querydir () {
                 echo "Changes found"
                 exit
         fi
+        commits=$(git status | grep -E "ahead|behind")
+        if [[ $changes != "" ]]; then
+                echo "Changes found"
+                exit
+        fi
 }
 
 #function that checks the git status output for different types of
