@@ -260,7 +260,7 @@ confirmClone () {
 #Upon finding a single dir in ~/.batchgit that isn't "nothing to commit" then it quits
 #printing "Changes found" to terminal
 querydir () {
-        if $(git status | grep -q "nothing to commit"); then
+        if ! $(git status | grep -q "nothing to commit"); then
                 echo "Changes found"
                 exit
         fi
