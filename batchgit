@@ -266,7 +266,7 @@ querydir () {
                 exit
         fi
         commits=$(git status | grep -E "ahead|behind")
-        if [[ $changes != "" ]]; then
+        if [[ $commits != "" ]]; then
                 echo "Changes found"
                 exit
         fi
