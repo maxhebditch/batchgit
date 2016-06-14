@@ -261,7 +261,7 @@ confirmClone () {
 #printing "Changes found" to terminal
 querydir () {
         statusofdir=$(git status | grep -q "nothing to commit")
-        if $statusofdir ; then
+        if ! $statusofdir ; then
                 echo "Changes found"
                 exit
         fi
