@@ -261,7 +261,7 @@ confirmClone () {
 #printing "Changes found" to terminal
 querydir () {
         queryDir=$(git status | grep -s "nothing to commit")
-        if [[ $queryDir != "" ]]; then
+        if [[ $queryDir != "nothing to commit, working directory clean" ]]; then
                 echo "Changes found"
                 exit
         fi
